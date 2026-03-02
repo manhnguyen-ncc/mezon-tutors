@@ -1,18 +1,21 @@
-import Link from 'next/link'
-import { LoginButton } from './auth/LoginButton'
+import Link from 'next/link';
+import { LoginButton } from '../../../../packages/app/components/auth/LoginButton';
 
 const navLinks = [
   { href: '/tutors', label: 'Find tutors' },
   { href: '/business', label: 'For business' },
   { href: '/become-tutor', label: 'Become a tutor' },
   { href: '/progress', label: 'Proven Progress' },
-]
+];
 
 export function Header() {
   return (
     <header className="fixed top-0 left-0 right-0 z-50 flex h-16 items-center justify-between bg-transparent px-6 lg:px-12">
       <div className="flex items-center gap-10">
-        <Link href="/" className="flex items-center gap-2 font-bold text-xl text-zinc-900">
+        <Link
+          href="/"
+          className="flex items-center gap-2 font-bold text-xl text-zinc-900"
+        >
           <span className="flex h-9 w-9 items-center justify-center rounded-full bg-zinc-900 text-white text-sm font-bold">
             M
           </span>
@@ -38,8 +41,18 @@ export function Header() {
           className="flex items-center gap-1.5 rounded-lg border border-zinc-300 bg-white/80 px-3 py-2 text-sm font-medium text-zinc-700 backdrop-blur-sm transition-colors hover:bg-white"
         >
           <span>English, USD</span>
-          <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+          <svg
+            className="h-4 w-4"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M19 9l-7 7-7-7"
+            />
           </svg>
         </button>
         <button
@@ -47,7 +60,12 @@ export function Header() {
           className="rounded-full p-2 text-zinc-700 transition-colors hover:bg-white/50"
           aria-label="Help"
         >
-          <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <svg
+            className="h-5 w-5"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
             <path
               strokeLinecap="round"
               strokeLinejoin="round"
@@ -59,5 +77,5 @@ export function Header() {
         <LoginButton />
       </div>
     </header>
-  )
+  );
 }
