@@ -1,29 +1,26 @@
 export const themes = {
   light: {
     // ===== Surfaces =====
-    background: '#f8f6f6',
+    background: '#F8F6F6',
     backgroundMuted: '$appBackgroundMuted',
     surface: '$appSurface',
+    backgroundCard: '#FFFFFF',
 
     // ===== Text =====
-    color: '#000000',
-    colorMuted: '$appTextMuted',
+    color: '#111827',
+    colorMuted: '#6B7280',
 
     // ===== Borders =====
     borderColor: '$appBorder',
     borderSubtle: '$appBorderSubtle',
-    appBorderSubtle: '#f1f5f9',
 
     // ===== Brand =====
     primary: '$appPrimary',
     primaryHover: '$appPrimaryHover',
-    primaryActive: '$appPrimaryActive',
-    secondaryHover: '#dde6ee',
+    primaryActive: '$appPrimaryHover',
+    secondaryHover: '#DDE6EE',
 
-    // ==== Card ======
-    backgroundCard: '#ffffff',
-
-    // ==== Toast ======
+    // ===== Toast =====
     toastSuccessBg: '$green2',
     toastSuccessBorder: '$green8',
     toastSuccessText: '$green11',
@@ -42,35 +39,32 @@ export const themes = {
     background: '#101622',
     backgroundMuted: '#0B1220',
     surface: '#0F172A',
-    appSecondary: '#1e293b',
+    backgroundCard: '#171F2F',
 
     // ===== Text =====
-    appText: '#FFFFFF',
+    color: '#FFFFFF',
     colorMuted: '#9CA3AF',
 
     // ===== Borders =====
     borderColor: '#1F2937',
-    appBorderSubtle: '$appPrimary',
+    borderSubtle: '#1F2937',
 
-    // ===== Brand  =====
+    // ===== Brand =====
     primary: '$appPrimary',
     primaryHover: '$appPrimaryHover',
-    primaryActive: '$appPrimaryActive',
-    secondaryHover: '#2a344a',
+    primaryActive: '$appPrimaryHover',
+    secondaryHover: '#2A344A',
 
-    // ==== Card ======
-    backgroundCard: '#171f2f',
-
-    // ==== Toast =====
-    toastSuccessBg: '#0f2e1c',
+    // ===== Toast =====
+    toastSuccessBg: '#0F2E1C',
     toastSuccessBorder: '$green8',
     toastSuccessText: '$green3',
 
-    toastErrorBg: '#2a0f12',
+    toastErrorBg: '#2A0F12',
     toastErrorBorder: '$red8',
     toastErrorText: '$red3',
 
-    toastInfoBg: '#0b2533',
+    toastInfoBg: '#0B2533',
     toastInfoBorder: '$blue8',
     toastInfoText: '$blue3',
   },
