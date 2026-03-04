@@ -1,9 +1,10 @@
 import type { Metadata } from 'next';
 import { Geist, Geist_Mono } from 'next/font/google';
+import { NextIntlClientProvider } from 'next-intl';
 import './globals.css';
 import { AppProviders } from './providers';
 import AuthInitializer from '@mezon-tutors/app/components/AuthInitializer';
-import { ToastViewport } from '@mezon-tutors/app/ui';
+import { getLocale } from 'next-intl/server';
 
 const geistSans = Geist({
   variable: '--font-geist-sans',
@@ -21,21 +22,25 @@ export const metadata: Metadata = {
     'Learn faster with your best language tutor. Book experienced tutors for 120+ subjects.',
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
-}: Readonly<{
+}: {
   children: React.ReactNode;
-}>) {
+}) {
+  const locale = await getLocale();
+
   return (
     <html
-      lang="en"
+      lang={locale}
       suppressHydrationWarning
     >
       <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
-        <AppProviders>
-          <AuthInitializer />
-          {children}
-        </AppProviders>
+        <NextIntlClientProvider locale={locale}>
+          <AppProviders>
+            <AuthInitializer />
+            {children}
+          </AppProviders>
+        </NextIntlClientProvider>
       </body>
     </html>
   );

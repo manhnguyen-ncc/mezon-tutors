@@ -1,0 +1,13 @@
+{
+  "Header": {
+    "findTutors": "Tìm gia sư",
+    "myLessons": "Lớp học của tôi",
+    "messages": "Tin nhắn",
+    "becomeTutor": "Trở thành gia sư",
+    "login": "Đăng nhập",
+    "logout": "Đăng xuất",
+    "getStarted": "Bắt đầu ngay",
+    "myMessages": "Tin nhắn của tôi",
+    "searchPlaceholder": "Tìm kiếm bằng môn học"
+  }
+}

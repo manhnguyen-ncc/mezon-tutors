@@ -10,13 +10,15 @@ import {
   getAuthUrlAtom,
 } from '@mezon-tutors/app/store/auth.atom';
 import type { MezonAuthMessage } from '@mezon-tutors/shared/src/types/auth';
+import { useTranslations } from 'next-intl';
+import { Button } from '@mezon-tutors/app/ui';
 
 const OAUTH_CHANNEL = 'mezon-oauth-result';
 
 export function LoginButton() {
+  const t = useTranslations('Common.Header');
   const user = useAtomValue(userAtom);
   const isAuthenticated = useAtomValue(isAuthenticatedAtom);
-
   const login = useSetAtom(loginAtom);
   const logout = useSetAtom(logoutAtom);
   const getAuthUrl = useSetAtom(getAuthUrlAtom);
@@ -141,24 +143,24 @@ export function LoginButton() {
           {user?.username ?? 'Unknown User'}
         </span>
 
-        <button
-          type="button"
+        <Button
+          variant='primary'
           onClick={() => logout()}
           className="rounded-full border border-zinc-300 bg-white px-4 py-2.5 text-sm font-medium text-zinc-700 transition-colors hover:bg-zinc-100"
         >
-          Log out
-        </button>
+          {t('logout')}
+        </Button>
       </div>
     );
   }
 
   return (
-    <button
-      type="button"
+    <Button
+      variant='primary'
       onClick={handleLoginClick}
       className="flex items-center gap-2 rounded-full bg-zinc-900 px-5 py-2.5 text-sm font-medium text-white transition-colors hover:bg-zinc-800"
     >
-      Log In
-    </button>
+      {t('login')}
+    </Button>
   );
 }
