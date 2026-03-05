@@ -1,13 +1,5 @@
-import { Header, Hero, Stats } from 'src/components';
+import HomeScreen from '@mezon-tutors/app/features/home/screen';
 
-export default function Home() {
-  return (
-    <div className="min-h-screen">
-      <Header />
-      <main>
-        <Hero />
-        <Stats />
-      </main>
-    </div>
-  );
+export default function Page() {
+  return <HomeScreen />;
 }
