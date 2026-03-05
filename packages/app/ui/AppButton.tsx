@@ -6,13 +6,13 @@ import { Button as BaseButton, styled } from 'tamagui';
  */
 export const AppButton = styled(BaseButton, {
   name: 'Button',
-  borderRadius: '$appPill',
+  borderRadius: 20,
   height: 48,
   borderWidth: 1,
   borderColor: 'transparent',
 
   // Customizing default button look
-  fontWeight: '500',
+  fontWeight: '700',
   fontSize: 14,
   letterSpacing: -0.32,
 

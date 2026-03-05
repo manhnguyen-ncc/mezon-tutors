@@ -2,36 +2,45 @@ export const themes = {
   light: {
     // ===== Surfaces =====
     background: '#F8F6F6',
-    backgroundMuted: '$appBackgroundMuted',
-    surface: '$appSurface',
+    backgroundMuted: '#F1F5F9',
+    surface: '#FFFFFF',
     backgroundCard: '#FFFFFF',
 
     // ===== Text =====
-    color: '#111827',
+    appText: '#111827',
     colorMuted: '#6B7280',
 
+    // ===== Field / Input =====
+    fieldBackground: '#F1F5F9',
+
     // ===== Borders =====
-    borderColor: '$appBorder',
-    borderSubtle: '$appBorderSubtle',
+    borderColor: '#D1D5DB',
+    borderSubtle: '#E5E7EB',
 
     // ===== Brand =====
-    primary: '$appPrimary',
-    primaryHover: '$appPrimaryHover',
-    primaryActive: '$appPrimaryHover',
+    primary: '#1253D5',
+    primaryHover: '#104BC4',
+    primaryActive: '#104BC4',
     secondaryHover: '#DDE6EE',
 
     // ===== Toast =====
-    toastSuccessBg: '$green2',
-    toastSuccessBorder: '$green8',
-    toastSuccessText: '$green11',
+    toastSuccessBg: '#dcfce7',
+    toastSuccessBorder: '#15803d',
+    toastSuccessText: '#14532d',
 
-    toastErrorBg: '$red2',
-    toastErrorBorder: '$red8',
-    toastErrorText: '$red11',
+    toastErrorBg: '#fee2e2',
+    toastErrorBorder: '#b91c1c',
+    toastErrorText: '#7f1d1d',
 
-    toastInfoBg: '$blue2',
-    toastInfoBorder: '$blue8',
-    toastInfoText: '$blue11',
+    toastInfoBg: '#e0f2fe',
+    toastInfoBorder: '#0369a1',
+    toastInfoText: '#0c4a6e',
+
+    // ===== Status Card =====
+    statusSuccessBg: '#dcfce7',
+    statusSuccessBorder: '#4ade80',
+    statusErrorBg: '#fee2e2',
+    statusErrorBorder: '#f87171',
   },
 
   dark: {
@@ -39,33 +48,43 @@ export const themes = {
     background: '#101622',
     backgroundMuted: '#0B1220',
     surface: '#0F172A',
-    backgroundCard: '#171F2F',
+    backgroundCard: '#0F172A',
 
     // ===== Text =====
-    color: '#FFFFFF',
+    appText: '#FFFFFF',
     colorMuted: '#9CA3AF',
+
+    // ===== Field / Input =====
+    fieldBackground: '#334155',
 
     // ===== Borders =====
     borderColor: '#1F2937',
     borderSubtle: '#1F2937',
 
     // ===== Brand =====
-    primary: '$appPrimary',
-    primaryHover: '$appPrimaryHover',
-    primaryActive: '$appPrimaryHover',
+    primary: '#1253D5',
+    primaryHover: '#104BC4',
+    primaryActive: '#104BC4',
+    secondary: '#1253D5',
     secondaryHover: '#2A344A',
 
     // ===== Toast =====
     toastSuccessBg: '#0F2E1C',
-    toastSuccessBorder: '$green8',
-    toastSuccessText: '$green3',
+    toastSuccessBorder: '#15803d',
+    toastSuccessText: '#bbf7d0',
 
     toastErrorBg: '#2A0F12',
-    toastErrorBorder: '$red8',
-    toastErrorText: '$red3',
+    toastErrorBorder: '#b91c1c',
+    toastErrorText: '#fecaca',
 
     toastInfoBg: '#0B2533',
-    toastInfoBorder: '$blue8',
-    toastInfoText: '$blue3',
+    toastInfoBorder: '#0369a1',
+    toastInfoText: '#bae6fd',
+
+    // ===== Status Card =====
+    statusSuccessBg: '#1F3D3B',
+    statusSuccessBorder: '#6EE7B7',
+    statusErrorBg: '#3F1E29',
+    statusErrorBorder: '#FCA5A5',
   },
 };

@@ -8,7 +8,7 @@ export const Text = styled(Paragraph, {
   variants: {
     variant: {
       muted: {
-        color: '$color10',
+        color: '$colorMuted',
       },
       primary: {
         color: '$appPrimary',

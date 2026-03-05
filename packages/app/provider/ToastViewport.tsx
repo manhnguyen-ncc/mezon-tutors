@@ -1,4 +1,6 @@
-import { ToastViewport as ToastViewportOg } from '@mezon-tutors/app/ui';
+'use client';
+
+import { ToastViewport as ToastViewportOg } from '@tamagui/toast';
 
 export const ToastViewport = () => {
   return (

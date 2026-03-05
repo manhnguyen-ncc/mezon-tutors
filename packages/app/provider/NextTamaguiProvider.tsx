@@ -43,26 +43,20 @@ export const NextTamaguiProvider = ({ children }: { children: ReactNode }) => {
   });
 
   return (
-    <NextThemeProvider
-      skipNextHead
-      defaultTheme="light"
-      attribute="class"
-    >
-      <QueryClientProvider client={queryClient}>
-        <TamaguiProvider
-          config={config}
-          defaultTheme="light"
+    <QueryClientProvider client={queryClient}>
+      <TamaguiProvider
+        config={config}
+        defaultTheme="light"
+      >
+        <ToastProvider
+          swipeDirection="horizontal"
+          duration={6000}
+          native={isWeb ? [] : ['mobile']}
         >
-          <ToastProvider
-            swipeDirection="horizontal"
-            duration={6000}
-            native={isWeb ? [] : ['mobile']}
-          >
-            <ToastViewport />
-            {children}
-          </ToastProvider>
-        </TamaguiProvider>
-      </QueryClientProvider>
-    </NextThemeProvider>
+          <ToastViewport />
+          {children}
+        </ToastProvider>
+      </TamaguiProvider>
+    </QueryClientProvider>
   );
 };
