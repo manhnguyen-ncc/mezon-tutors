@@ -14,17 +14,15 @@ export class TutorProfileService {
   async upsertByUserId(userId: string, dto: SubmitTutorProfileDto): Promise<void> {
     const ratingAverage = 0;
 
-    let profileId = '';
+    const user = await this.prisma.user.findUnique({
+      where: { id: userId },
+    });
 
-    await this.prisma.$transaction(async (tx) => {
-      const user = await tx.user.findUnique({
-        where: { id: userId },
-      });
+    if (!user) {
+      throw new Error('User not found');
+    }
 
-      if (!user) {
-        throw new Error('User not found');
-      }
-
+    const profile = await this.prisma.$transaction(async (tx) => {
       if (user.role !== Role.TUTOR) {
         await tx.user.update({
           where: { id: userId },
@@ -65,39 +63,65 @@ export class TutorProfileService {
         },
       });
 
-      profileId = profile.id;
+      return profile;
     });
 
-    if (dto.languages?.length && profileId) {
-      await this.upsertTutorLanguageByUserId(profileId, dto.languages);
+    if (dto.languages?.length && profile) {
+      await this.upsertTutorLanguageByUserId(profile.id, dto.languages);
     }
 
-    if (dto.availability?.length && profileId) {
-      await this.createTutorAvailabilitySlotByUserId(profileId, dto.availability);
+    if (dto.availability?.length && profile) {
+      await this.createTutorAvailabilitySlotByUserId(profile.id, dto.availability);
     }
   }
 
   async upsertTutorLanguageByUserId(userId: string, dto: TutorLanguageDto[]): Promise<void> {
-    const upserts = dto.map((l) =>
-      this.prisma.tutorLanguage.upsert({
-        where: {
-          tutorId_languageCode: {
+    await this.prisma.$transaction(async (tx) => {
+      const current = await tx.tutorLanguage.findMany({
+        where: { tutorId: userId },
+      });
+
+      const currentMap = new Map(current.map((l) => [l.languageCode, l]));
+      const dtoMap = new Map(dto.map((l) => [l.languageCode, l]));
+      const toCreate = dto.filter((l) => !currentMap.has(l.languageCode));
+      const toUpdate = dto.filter((l) => currentMap.has(l.languageCode));
+      const toDelete = current.filter((l) => !dtoMap.has(l.languageCode));
+
+      if (toCreate.length) {
+        await tx.tutorLanguage.createMany({
+          data: toCreate.map((l) => ({
             tutorId: userId,
             languageCode: l.languageCode,
+            proficiency: l.proficiency,
+          })),
+        });
+      }
+
+      for (const l of toUpdate) {
+        await tx.tutorLanguage.update({
+          where: {
+            tutorId_languageCode: {
+              tutorId: userId,
+              languageCode: l.languageCode,
+            },
           },
-        },
-        update: {
-          languageCode: l.languageCode,
-          proficiency: l.proficiency,
-        },
-        create: {
-          tutorId: userId,
-          languageCode: l.languageCode,
-          proficiency: l.proficiency,
-        },
-      })
-    );
-    await this.prisma.$transaction(upserts);
+          data: {
+            proficiency: l.proficiency,
+          },
+        });
+      }
+
+      if (toDelete.length) {
+        await tx.tutorLanguage.deleteMany({
+          where: {
+            tutorId: userId,
+            languageCode: {
+              in: toDelete.map((l) => l.languageCode),
+            },
+          },
+        });
+      }
+    });
   }
 
   async createTutorAvailabilitySlotByUserId(userId: string, dto: TutorAvailabilitySlotDto[]) {
@@ -109,7 +133,6 @@ export class TutorProfileService {
         endTime: a.endTime,
         isActive: true,
       })),
-      skipDuplicates: true,
     });
   }
 }

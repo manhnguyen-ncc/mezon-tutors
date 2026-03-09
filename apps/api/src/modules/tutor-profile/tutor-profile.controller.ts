@@ -13,7 +13,7 @@ export class TutorProfileController {
 
   @UseGuards(JwtAuthGuard)
   @Post()
-  async submit(@Req() req: Request, @Body() body: SubmitTutorProfileDto) {
+  async HandleSubmitTutorProfile(@Req() req: Request, @Body() body: SubmitTutorProfileDto) {
     const user = req.user as AuthUserPayload;
     await this.tutorProfileService.upsertByUserId(user.sub, body);
     return { success: true };
