@@ -11,9 +11,47 @@ import { Role } from '@mezon-tutors/db';
 export class TutorProfileService {
   constructor(private readonly prisma: PrismaService) {}
 
-  async upsertByUserId(userId: string, dto: SubmitTutorProfileDto): Promise<void> {
-    const ratingAverage = 0;
+  async createByUserId(userId: string, dto: SubmitTutorProfileDto): Promise<void> {
+    const user = await this.prisma.user.findUnique({
+      where: { id: userId },
+    });
 
+    if (!user) {
+      throw new Error('User not found');
+    }
+
+    if (user.role !== Role.TUTOR) {
+      throw new Error('User is already tutor yet!');
+    }
+
+    const profile = await this.prisma.tutorProfile.create({
+      data: {
+        userId: userId,
+        firstName: dto.firstName,
+        lastName: dto.lastName,
+        avatar: dto.avatar ?? '',
+        videoUrl: dto.videoUrl ?? '',
+        country: dto.country,
+        introduce: dto.introduce,
+        experience: dto.specialization,
+        motivate: dto.motivate,
+        headline: dto.headline,
+        pricePerHour: dto.pricePerHour,
+        ratingAverage: 0,
+        verificationStatus: 'pending',
+      },
+    });
+
+    if (dto.languages?.length && profile) {
+      await this.upsertTutorLanguageByUserId(profile.id, dto.languages);
+    }
+
+    if (dto.availability?.length && profile) {
+      await this.upsertTutorAvailabilitySlotByUserId(profile.id, dto.availability);
+    }
+  }
+
+  async updateByUserId(userId: string, dto: SubmitTutorProfileDto): Promise<void> {
     const user = await this.prisma.user.findUnique({
       where: { id: userId },
     });
@@ -30,9 +68,9 @@ export class TutorProfileService {
         });
       }
 
-      const profile = await tx.tutorProfile.upsert({
+      const profile = await tx.tutorProfile.update({
         where: { userId },
-        update: {
+        data: {
           firstName: dto.firstName,
           lastName: dto.lastName,
           avatar: dto.avatar ?? '',
@@ -46,21 +84,6 @@ export class TutorProfileService {
           isProfessional: !!dto.teachingCertificateName,
           verificationStatus: 'pending',
         },
-        create: {
-          userId: userId,
-          firstName: dto.firstName,
-          lastName: dto.lastName,
-          avatar: dto.avatar ?? '',
-          videoUrl: dto.videoUrl ?? '',
-          country: dto.country,
-          introduce: dto.introduce,
-          experience: dto.specialization,
-          motivate: dto.motivate,
-          headline: dto.headline,
-          pricePerHour: dto.pricePerHour,
-          ratingAverage,
-          verificationStatus: 'pending',
-        },
       });
 
       return profile;
@@ -71,16 +94,15 @@ export class TutorProfileService {
     }
 
     if (dto.availability?.length && profile) {
-      await this.createTutorAvailabilitySlotByUserId(profile.id, dto.availability);
+      await this.upsertTutorAvailabilitySlotByUserId(profile.id, dto.availability);
     }
   }
 
   async upsertTutorLanguageByUserId(userId: string, dto: TutorLanguageDto[]): Promise<void> {
+    const current = await this.prisma.tutorLanguage.findMany({
+      where: { tutorId: userId },
+    });
     await this.prisma.$transaction(async (tx) => {
-      const current = await tx.tutorLanguage.findMany({
-        where: { tutorId: userId },
-      });
-
       const currentMap = new Map(current.map((l) => [l.languageCode, l]));
       const dtoMap = new Map(dto.map((l) => [l.languageCode, l]));
       const toCreate = dto.filter((l) => !currentMap.has(l.languageCode));
@@ -124,15 +146,53 @@ export class TutorProfileService {
     });
   }
 
-  async createTutorAvailabilitySlotByUserId(userId: string, dto: TutorAvailabilitySlotDto[]) {
-    await this.prisma.tutorAvailability.createMany({
-      data: dto.map((a) => ({
-        tutorId: userId,
-        dayOfWeek: a.dayOfWeek,
-        startTime: a.startTime,
-        endTime: a.endTime,
-        isActive: true,
-      })),
+  async upsertTutorAvailabilitySlotByUserId(
+    userId: string,
+    dto: TutorAvailabilitySlotDto[]
+  ): Promise<void> {
+    const current = await this.prisma.tutorAvailability.findMany({
+      where: { tutorId: userId },
+    });
+
+    await this.prisma.$transaction(async (tx) => {
+      const currentMap = new Map(
+        current.map((s) => [`${s.dayOfWeek}_${s.startTime}_${s.endTime}`, s])
+      );
+
+      const dtoMap = new Map(dto.map((s) => [`${s.dayOfWeek}_${s.startTime}_${s.endTime}`, s]));
+
+      const toCreate = dto.filter(
+        (s) => !currentMap.has(`${s.dayOfWeek}_${s.startTime}_${s.endTime}`)
+      );
+
+      const toDelete = current.filter(
+        (s) => !dtoMap.has(`${s.dayOfWeek}_${s.startTime}_${s.endTime}`)
+      );
+
+      if (toCreate.length) {
+        await tx.tutorAvailability.createMany({
+          data: toCreate.map((s) => ({
+            tutorId: userId,
+            dayOfWeek: s.dayOfWeek,
+            startTime: s.startTime,
+            endTime: s.endTime,
+            isActive: true,
+          })),
+        });
+      }
+
+      if (toDelete.length) {
+        await tx.tutorAvailability.deleteMany({
+          where: {
+            tutorId: userId,
+            OR: toDelete.map((s) => ({
+              dayOfWeek: s.dayOfWeek,
+              startTime: s.startTime,
+              endTime: s.endTime,
+            })),
+          },
+        });
+      }
     });
   }
 }
