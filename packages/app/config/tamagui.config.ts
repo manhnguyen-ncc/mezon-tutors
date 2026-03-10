@@ -37,12 +37,14 @@ const shorthands = {
 export const config = createTamagui({
   ...defaultConfig,
   shorthands,
+  tokens,
+  themes,
   animations,
   fonts: {
     body: bodyFont,
     heading: headingFont,
   },
-  tokens,
+
   media: {
     xs: { maxWidth: 660 },
     sm: { maxWidth: 800 },
@@ -63,5 +65,4 @@ export const config = createTamagui({
     ...defaultConfig.settings,
     onlyAllowShorthands: false,
   },
-  themes,
 });

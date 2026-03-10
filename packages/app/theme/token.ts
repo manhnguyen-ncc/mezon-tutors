@@ -2,10 +2,7 @@ import { createTokens } from 'tamagui';
 import { defaultConfig } from '@tamagui/config/v4';
 
 export const tokens = createTokens({
-  ...defaultConfig.tokens,
   color: {
-    ...(defaultConfig.tokens as any).color,
-
     // ===== Core Brand =====
     appPrimary: '#1253D5',
     appPrimaryHover: '#104BC4',
@@ -25,7 +22,7 @@ export const tokens = createTokens({
     appBorderEmphasis: '#1253D5',
 
     // ===== Secondary / UI =====
-    appSecondary: '#F0F4F8',
+    appSecondary: '#1152D41A',
     appShadow: '#0000000F',
     appWhiteSubtle: '#FFFFFFB3',
     appIconSubtle: '#6B7280',
@@ -46,6 +43,7 @@ export const tokens = createTokens({
     red6: '#dc2626',
     red8: '#b91c1c',
     red9: '#991b1b',
+    red10: '#dc2626', // validation/error text
     red11: '#7f1d1d',
     red12: '#450a0a',
 
@@ -74,7 +72,10 @@ export const tokens = createTokens({
 
   radius: {
     ...defaultConfig.tokens.radius,
-    appCard: 24,
+    appCard: 9999,
     appPill: 999,
   },
+  size: defaultConfig.tokens.size,
+  space: defaultConfig.tokens.space,
+  zIndex: defaultConfig.tokens.zIndex,
 });

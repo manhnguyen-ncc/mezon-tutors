@@ -5,14 +5,24 @@ import '@tamagui/font-inter/css/400.css';
 import '@tamagui/font-inter/css/700.css';
 import '@tamagui/polyfill-dev';
 
-import { useState, type ReactNode } from 'react';
+import { useEffect, useState, type ReactNode } from 'react';
 import { useServerInsertedHTML } from 'next/navigation';
-import { NextThemeProvider } from '@tamagui/next-theme';
 import { StyleSheet } from 'react-native';
-import { config } from '../config';
+import { config, DEFAULT_THEME } from '../config';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { isWeb, TamaguiProvider } from 'tamagui';
+import { isWeb, TamaguiProvider, useThemeName } from 'tamagui';
 import { ToastProvider, ToastViewport } from '@tamagui/toast';
+
+/** Syncs Tamagui theme to html[data-theme] for CSS (e.g. autofill styles). */
+function ThemeSyncToDataAttribute() {
+  const themeName = useThemeName();
+  useEffect(() => {
+    if (typeof document !== 'undefined' && themeName) {
+      document.documentElement.setAttribute('data-theme', themeName);
+    }
+  }, [themeName]);
+  return null;
+}
 
 export const NextTamaguiProvider = ({ children }: { children: ReactNode }) => {
   const [queryClient] = useState(() => new QueryClient());
@@ -43,26 +53,21 @@ export const NextTamaguiProvider = ({ children }: { children: ReactNode }) => {
   });
 
   return (
-    <NextThemeProvider
-      skipNextHead
-      defaultTheme="light"
-      attribute="class"
-    >
-      <QueryClientProvider client={queryClient}>
-        <TamaguiProvider
-          config={config}
-          defaultTheme="light"
+    <QueryClientProvider client={queryClient}>
+      <TamaguiProvider
+        config={config}
+        defaultTheme={DEFAULT_THEME}
+      >
+        <ThemeSyncToDataAttribute />
+        <ToastProvider
+          swipeDirection="horizontal"
+          duration={6000}
+          native={isWeb ? [] : ['mobile']}
         >
-          <ToastProvider
-            swipeDirection="horizontal"
-            duration={6000}
-            native={isWeb ? [] : ['mobile']}
-          >
-            <ToastViewport />
-            {children}
-          </ToastProvider>
-        </TamaguiProvider>
-      </QueryClientProvider>
-    </NextThemeProvider>
+          <ToastViewport />
+          {children}
+        </ToastProvider>
+      </TamaguiProvider>
+    </QueryClientProvider>
   );
 };
