@@ -45,6 +45,7 @@
     "check-dependency-version-consistency": "^4.1.0",
     "husky": "^9.1.6",
     "react-hook-form": "^7.71.1",
+    "react-native-svg": "^15.15.3",
     "turbo": "^1.13.4",
     "typescript": "~5.8.3",
     "ultra-runner": "^3.10.5",

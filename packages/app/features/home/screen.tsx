@@ -1,6 +1,7 @@
 'use client';
 
-import { YStack, H1, Paragraph, ScrollView, Container } from '@mezon-tutors/app/ui';
+import { YStack, Paragraph, ScrollView, Container } from '@mezon-tutors/app/ui';
+import { H1 } from 'tamagui';
 
 export function HomeScreen() {
   return (

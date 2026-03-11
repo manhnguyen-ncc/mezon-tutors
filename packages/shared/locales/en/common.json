@@ -1,0 +1,14 @@
+{
+  "Header": {
+    "title": "TutorFlow",
+    "findTutors": "Find Tutors",
+    "myLessons": "My Lessons",
+    "messages": "Messages",
+    "becomeTutor": "Become a Tutor",
+    "login": "Login",
+    "logout": "Logout",
+    "getStarted": "Get Started",
+    "myMessages": "My Messages",
+    "searchPlaceholder": "Search by Subject.."
+  }
+}

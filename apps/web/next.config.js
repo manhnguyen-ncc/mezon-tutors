@@ -54,6 +54,17 @@ const nextConfig = {
       module: './empty.js',
     },
   },
+  images: {
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: 'images.unsplash.com',
+      },
+    ],
+  },
 };
+const createNextIntlPlugin = require('next-intl/plugin');
 
-module.exports = nextConfig;
+const withNextIntl = createNextIntlPlugin();
+
+module.exports = withNextIntl(nextConfig);

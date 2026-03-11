@@ -5,15 +5,27 @@ import '@tamagui/font-inter/css/400.css';
 import '@tamagui/font-inter/css/700.css';
 import '@tamagui/polyfill-dev';
 
-import type { ReactNode } from 'react';
+import { useEffect, useState, type ReactNode } from 'react';
 import { useServerInsertedHTML } from 'next/navigation';
-import { NextThemeProvider, useRootTheme } from '@tamagui/next-theme';
-import { Provider } from '@mezon-tutors/app/provider';
 import { StyleSheet } from 'react-native';
-import { config } from '../config';
+import { config, DEFAULT_THEME } from '../config';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { isWeb, TamaguiProvider, useThemeName } from 'tamagui';
+import { ToastProvider, ToastViewport } from '@tamagui/toast';
+
+/** Syncs Tamagui theme to html[data-theme] for CSS (e.g. autofill styles). */
+function ThemeSyncToDataAttribute() {
+  const themeName = useThemeName();
+  useEffect(() => {
+    if (typeof document !== 'undefined' && themeName) {
+      document.documentElement.setAttribute('data-theme', themeName);
+    }
+  }, [themeName]);
+  return null;
+}
 
 export const NextTamaguiProvider = ({ children }: { children: ReactNode }) => {
-  const [theme, setTheme] = useRootTheme();
+  const [queryClient] = useState(() => new QueryClient());
 
   useServerInsertedHTML(() => {
     // @ts-ignore
@@ -28,14 +40,7 @@ export const NextTamaguiProvider = ({ children }: { children: ReactNode }) => {
           dangerouslySetInnerHTML={{ __html: rnwStyle.textContent }}
           id={rnwStyle.id}
         />
-        <style
-          dangerouslySetInnerHTML={{
-            // the first time this runs you'll get the full CSS including all themes
-            // after that, it will only return CSS generated since the last call
-            __html: config.getNewCSS(),
-          }}
-        />
-
+        <style dangerouslySetInnerHTML={{ __html: config.getNewCSS() }} />
         <style
           dangerouslySetInnerHTML={{
             __html: config.getCSS({
@@ -43,31 +48,26 @@ export const NextTamaguiProvider = ({ children }: { children: ReactNode }) => {
             }),
           }}
         />
-
-        <script
-          dangerouslySetInnerHTML={{
-            // avoid flash of animated things on enter:
-            __html: `document.documentElement.classList.add('t_unmounted')`,
-          }}
-        />
       </>
     );
   });
 
   return (
-    <NextThemeProvider
-      skipNextHead
-      defaultTheme="light"
-      onChangeTheme={(next) => {
-        setTheme(next as 'light' | 'dark');
-      }}
-    >
-      <Provider
-        disableRootThemeClass
-        defaultTheme={'light'}
+    <QueryClientProvider client={queryClient}>
+      <TamaguiProvider
+        config={config}
+        defaultTheme={DEFAULT_THEME}
       >
-        {children}
-      </Provider>
-    </NextThemeProvider>
+        <ThemeSyncToDataAttribute />
+        <ToastProvider
+          swipeDirection="horizontal"
+          duration={6000}
+          native={isWeb ? [] : ['mobile']}
+        >
+          <ToastViewport />
+          {children}
+        </ToastProvider>
+      </TamaguiProvider>
+    </QueryClientProvider>
   );
 };

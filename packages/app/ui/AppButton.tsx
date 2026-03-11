@@ -6,13 +6,13 @@ import { Button as BaseButton, styled } from 'tamagui';
  */
 export const AppButton = styled(BaseButton, {
   name: 'Button',
-  borderRadius: '$appPill',
+  borderRadius: 20,
   height: 48,
   borderWidth: 1,
   borderColor: 'transparent',
 
   // Customizing default button look
-  fontWeight: '500',
+  fontWeight: '700',
   fontSize: 14,
   letterSpacing: -0.32,
 
@@ -35,26 +35,26 @@ export const AppButton = styled(BaseButton, {
         color: 'white',
         borderColor: '$appPrimary',
         hoverStyle: {
-          backgroundColor: '$appPrimary',
-          borderColor: '$appPrimary',
+          backgroundColor: '$appPrimaryHover',
+          borderColor: '$appPrimaryHover',
         },
       },
       secondary: {
-        backgroundColor: 'white',
+        backgroundColor: '$appSecondary',
         color: '$appText',
-        borderColor: '$appBorderSubtle',
+        borderColor: '$appSecondary',
         hoverStyle: {
-          backgroundColor: 'white',
-          borderColor: '$appBorderSubtle',
+          backgroundColor: '$appSecondary',
+          borderColor: '$appSecondary',
         },
       },
       outline: {
-        backgroundColor: 'transparent',
-        color: 'white',
-        borderColor: 'white',
+        backgroundColor: '$appSecondary',
+        color: '$appPrimary',
+        borderColor: '$appPrimary',
         hoverStyle: {
           backgroundColor: 'transparent',
-          borderColor: 'white',
+          borderColor: '$appPrimary',
         },
       },
       ghost: {
@@ -62,7 +62,7 @@ export const AppButton = styled(BaseButton, {
         color: '$appText',
         borderColor: 'transparent',
         hoverStyle: {
-          backgroundColor: '$appBackground',
+          backgroundColor: '$appSecondary',
           borderColor: 'transparent',
         },
       },
