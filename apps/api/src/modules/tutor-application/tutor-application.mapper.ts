@@ -6,8 +6,6 @@ import {
   IdentityVerification,
   parseEnum,
   ProfessionalDocument,
-  TutorAdminNote,
-  TutorAvailability,
   TutorProfile,
   VALID_IDENTITY_VERIFICATION_STATUSES,
   VALID_PROFESSIONAL_DOCUMENT_STATUSES,
@@ -55,17 +53,6 @@ export class TutorApplicationMapper {
     };
   }
 
-  mapAdminNote(note: Prisma.TutorAdminNoteGetPayload<{}>): TutorAdminNote {
-    return {
-      id: note.id,
-      tutorId: note.tutorId,
-      reviewerId: note.reviewerId,
-      reviewerName: note.reviewerName,
-      content: note.content,
-      createdAt: note.createdAt,
-    };
-  }
-
   mapProfessionalDocument(doc: Prisma.ProfessionalDocumentGetPayload<{}>): ProfessionalDocument {
     return {
       id: doc.id,
@@ -102,17 +89,6 @@ export class TutorApplicationMapper {
     };
   }
 
-  mapTutorAvailability(availability: Prisma.TutorAvailabilityGetPayload<{}>): TutorAvailability {
-    return {
-      id: availability.id,
-      tutorId: availability.tutorId,
-      dayOfWeek: availability.dayOfWeek,
-      startTime: availability.startTime,
-      endTime: availability.endTime,
-      isActive: availability.isActive,
-    };
-  }
-
   mapFullTutorApplication(
     profile: TutorProfileWithUser,
     notes: Prisma.TutorAdminNoteGetPayload<{}>[],
@@ -122,10 +98,10 @@ export class TutorApplicationMapper {
   ): FullTutorApplication {
     return {
       profile: this.mapTutorProfile(profile),
-      adminNotes: notes.map((n) => this.mapAdminNote(n)),
+      adminNotes: notes,
       professionalDocuments: documents.map((d) => this.mapProfessionalDocument(d)),
       identityVerification: verification ? this.mapIdentityVerification(verification) : null,
-      availability: availability.map((a) => this.mapTutorAvailability(a)),
+      availability: availability,
     };
   }
 }

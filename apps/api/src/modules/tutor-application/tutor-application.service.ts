@@ -142,10 +142,7 @@ export class TutorApplicationService {
     ]);
 
     if (profile.user?.email) {
-      await this.emailService.sendApprovalEmail(
-        profile.user.email,
-        profile.user.username ?? 'Tutor'
-      );
+      await this.emailService.sendApprovalEmail(profile.user.email, profile.user.username);
     }
 
     return { success: true };
