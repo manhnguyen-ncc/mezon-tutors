@@ -182,19 +182,6 @@ export class AuthService {
     } catch {}
   }
 
-  async revokeAllUserTokens(userId: string): Promise<void> {
-    await this.prisma.refreshToken.updateMany({
-      where: {
-        userId,
-        revokedAt: null,
-        expiresAt: { gt: new Date() },
-      },
-      data: {
-        revokedAt: new Date(),
-      },
-    });
-  }
-
   async refreshAccessToken(refreshToken: string): Promise<AuthTokens> {
     const user = await this.validateRefreshToken(refreshToken);
 
@@ -202,7 +189,6 @@ export class AuthService {
       throw new UnauthorizedException('Invalid or expired refresh token');
     }
 
-    const jwtConfig = this.appConfig.jwtConfig;
     const payload: AuthUserPayload = {
       sub: user.id,
       mezonUserId: user.mezonUserId,

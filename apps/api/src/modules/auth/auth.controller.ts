@@ -63,26 +63,11 @@ export class AuthController {
   @UseGuards(JwtAuthGuard)
   @Post('logout')
   async logout(@Body() body: { refreshToken?: string }, @Req() req: Request) {
-    if (body.refreshToken) {
-      await this.authService.revokeRefreshToken(body.refreshToken);
-    } else {
-      const user = req.user as { sub: string };
-      await this.authService.revokeAllUserTokens(user.sub);
-    }
+    await this.authService.revokeRefreshToken(body.refreshToken!);
+
     return {
       success: true,
       message: 'Logged out successfully',
-    };
-  }
-
-  @UseGuards(JwtAuthGuard)
-  @Post('logout-all')
-  async logoutAll(@Req() req: Request) {
-    const user = req.user as { sub: string };
-    await this.authService.revokeAllUserTokens(user.sub);
-    return {
-      success: true,
-      message: 'Logged out from all devices',
     };
   }
 }
