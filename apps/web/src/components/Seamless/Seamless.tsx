@@ -12,7 +12,7 @@ export default function Seamless() {
 
         <p>
           TutorMatch integrates with Mezon to create a focused and
-          connected learning space. No need to switch between too
+          connected learning space. < br/ > No need to switch between too
           many apps.
         </p>
       </div>
@@ -21,8 +21,9 @@ export default function Seamless() {
       <div className={styles.cards}>
 
         <div className={styles.card}>
-          <div className={styles.icon}>💬</div>
-
+           <div className={styles.icons}>
+           <img src="/icons/ic1seamless.svg" alt="ic1" />
+           </div>
           <div>
             <h3>Virtual Classroom</h3>
 
@@ -34,8 +35,9 @@ export default function Seamless() {
         </div>
 
         <div className={styles.card}>
-          <div className={styles.icon}>📹</div>
-
+          <div className={styles.icons}>
+            <img src="/icons/ic2seamless.svg" alt="ic2" />
+             </div>
           <div>
             <h3>Virtual Classroom</h3>
 

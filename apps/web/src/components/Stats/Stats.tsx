@@ -11,8 +11,8 @@ export default function Stats() {
         <img src="/teach.jpg" alt="Teaching" />
 
         <div className={styles.badge}>
-          <strong>+15M VND</strong>
-          <span>Average income / month</span>
+          <h3>+15M VND</h3>
+          <span>AVERAGE INCOME / MONTH </span>
         </div>
       </div>
 
@@ -30,9 +30,12 @@ export default function Stats() {
         </p>
 
         <ul className={styles.list}>
-          <li>✔ Get paid after every lesson</li>
-          <li>✔ Teaching tools support</li>
-          <li>✔ Flexible schedule</li>
+          <li style={{ display: "flex", alignItems: "center", gap: "10px", marginBottom: "10px" }} ><img src="/icons/iccheck.svg" alt="check" />
+    <span> Get paid after every lesson</span></li>
+          <li style={{ display: "flex", alignItems: "center", gap: "10px", marginBottom: "10px" }}><img src="/icons/iccheck.svg" alt="check" />
+    <span> Teaching tools support</span></li>
+          <li style={{ display: "flex", alignItems: "center", gap: "10px", marginBottom: "10px" }}><img src="/icons/iccheck.svg" alt="check" />
+    <span> Flexible schedule</span></li>
         </ul>
 
         <button className={styles.button}>

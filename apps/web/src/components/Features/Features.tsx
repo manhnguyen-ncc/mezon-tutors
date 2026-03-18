@@ -14,7 +14,7 @@ export default function Features() {
 
           <p>
             Our learning system is specifically designed to optimize the
-            time of working professionals, helping you conquer foreign
+            time of working <br /> professionals, helping you conquer foreign
             languages without affecting your career.
           </p>
         </div>
@@ -29,7 +29,9 @@ export default function Features() {
       <div className={styles.cards}>
 
         <div className={styles.card}>
-          <div className={styles.icon}>🌙</div>
+          <div className={styles.icon}>
+            <img src="/icons/ft1.svg" alt="icft1" />
+          </div>
 
           <h3>Evening classes</h3>
 
@@ -40,7 +42,10 @@ export default function Features() {
         </div>
 
         <div className={styles.card}>
-          <div className={styles.icon}>📅</div>
+          <div className={styles.icon}>
+            <img src="/icons/ft2.svg" alt="icft2"
+            style={{ width: "24px", height: "24px" }} />
+          </div>
 
           <h3>Flexible weekends</h3>
 
@@ -51,7 +56,9 @@ export default function Features() {
         </div>
 
         <div className={styles.card}>
-          <div className={styles.icon}>💬</div>
+          <div className={styles.icon}>
+            <img src="/icons/ft3.svg" alt="icft3" />
+          </div>
 
           <h3>Learn via Mezon</h3>
 

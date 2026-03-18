@@ -19,14 +19,9 @@
   font-size: 18px;
 }
 
-.logoIcon {
-  width: 34px;
-  height: 34px;
-  background: #2563eb;
-  border-radius: 8px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+.logo img {
+  width: 28px;
+  height: 28px;
 }
 
 /* menu */

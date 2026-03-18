@@ -7,14 +7,15 @@ export default function Header() {
     <header className={styles.header}>
 
       {/* LEFT - LOGO */}
-      <div className={styles.logo}>
-        <div className={styles.logoIcon}>
-          🎓
-        </div>
-        <span>TutorMatch</span>
+          <div className={styles.logo}>
+        <div style={{display: "flex",alignItems: "center",gap: "10px"}} className={styles.icons}>
+  <img src="/icons/Background.svg" alt="background" />
+       <span style={{ margin: 0 }}>TutorMatch</span>
+</div>
       </div>
 
       {/* CENTER - MENU */}
+
       <nav className={styles.nav}>
         <Link href="#">Find Tutor</Link>
         <Link href="#">Become a Tutor</Link>
