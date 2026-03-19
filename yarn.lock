@@ -3299,6 +3299,7 @@ __metadata:
     "@tamagui/lucide-icons": "npm:^1.144.2"
     "@tamagui/select": "npm:2.0.0-rc.26"
     "@tamagui/shorthands": "npm:^1.144.2"
+    "@tamagui/slider": "npm:2.0.0-rc.26"
     "@tamagui/themes": "npm:^1.144.2"
     "@tamagui/toast": "npm:^1.144.2"
     "@tanstack/react-query": "npm:^5.62.8"
@@ -7511,6 +7512,27 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@tamagui/slider@npm:2.0.0-rc.26":
+  version: 2.0.0-rc.26
+  resolution: "@tamagui/slider@npm:2.0.0-rc.26"
+  dependencies:
+    "@tamagui/compose-refs": "npm:2.0.0-rc.26"
+    "@tamagui/constants": "npm:2.0.0-rc.26"
+    "@tamagui/core": "npm:2.0.0-rc.26"
+    "@tamagui/create-context": "npm:2.0.0-rc.26"
+    "@tamagui/get-token": "npm:2.0.0-rc.26"
+    "@tamagui/helpers": "npm:2.0.0-rc.26"
+    "@tamagui/stacks": "npm:2.0.0-rc.26"
+    "@tamagui/use-controllable-state": "npm:2.0.0-rc.26"
+    "@tamagui/use-debounce": "npm:2.0.0-rc.26"
+    "@tamagui/use-direction": "npm:2.0.0-rc.26"
+  peerDependencies:
+    react: ">=19"
+    react-native: "*"
+  checksum: 10c0/c642df6cbb46a28720ffad138935d65250368a8c7ba6b74648e5b515a55c66229716fea0e2f2e0f1c356306eac3ba3c884aac7172c615cf07dcd5a84300c78b2
+  languageName: node
+  linkType: hard
+
 "@tamagui/stacks@npm:1.144.3":
   version: 1.144.3
   resolution: "@tamagui/stacks@npm:1.144.3"
@@ -7955,6 +7977,15 @@ __metadata:
   peerDependencies:
     react: "*"
   checksum: 10c0/f5f0a13a7bff7b97ce8f14046e3c214bfd8f29b6f2570acdeec477d9a8f1896cc3ba30a8c10b3725bd952f6521de36016625b28e3aa1657fa9ec714a70ab13c6
+  languageName: node
+  linkType: hard
+
+"@tamagui/use-direction@npm:2.0.0-rc.26":
+  version: 2.0.0-rc.26
+  resolution: "@tamagui/use-direction@npm:2.0.0-rc.26"
+  peerDependencies:
+    react: ">=19"
+  checksum: 10c0/c78cbf6d9153a0b6afcd66d709c6ccedada14734cf3a4292c82a4711bfc4cbb60f7a2c831efd398ccfbd0f24429a4b4a810224abe04de03b1ee24f16abe3174a
   languageName: node
   linkType: hard
 

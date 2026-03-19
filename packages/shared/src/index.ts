@@ -8,6 +8,7 @@ export * from './types/tutor-profile';
 // Enums
 export * from './enums/verification-status';
 export * from './enums/filters';
+export * from './enums/tutor-profile';
 
 // Constants
 export * from './constants/admin-tutor-application';
@@ -19,3 +20,4 @@ export * from './constants/urls';
 // Utils
 export * from './utils/enum';
 export * from './utils/youtube';
+export * from './utils/mapper';

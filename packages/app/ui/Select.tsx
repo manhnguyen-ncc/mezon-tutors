@@ -10,7 +10,7 @@ type Option = {
 
 type BaseSelectProps = TamaguiSelectProps & {
   label?: string
-  options: Option[]
+  options?: Option[]
   value?: string
   defaultValue?: string
   placeholder?: string
@@ -32,15 +32,20 @@ export function Select({
   flex,
   triggerWidth = 220,
   gap = '$2',
+  children,
   ...rest
 }: BaseSelectProps) {
   const [internalValue, setInternalValue] = useState(defaultValue ?? '')
   const isControlled = value !== undefined
   const selectedValue = isControlled ? value : internalValue
+  const selectedLabel = useMemo(() => {
+    if (!options || !selectedValue) return null
+    return options.find((o) => o.value === selectedValue)?.label ?? null
+  }, [options, selectedValue])
 
   const renderedOptions = useMemo(
     () =>
-      options.map((option, i) => (
+      options?.map((option, i) => (
         <TamaguiSelect.Item index={i} key={option.value} value={option.value}>
           <TamaguiSelect.ItemText>{option.label}</TamaguiSelect.ItemText>
           <TamaguiSelect.ItemIndicator marginLeft="auto">
@@ -71,8 +76,15 @@ export function Select({
           iconAfter={ChevronDown}
           borderRadius="$4"
           backgroundColor="$background"
+          color="$appText"
         >
-          <TamaguiSelect.Value placeholder={placeholder} />
+          {selectedLabel ? (
+            <TamaguiSelect.Value>{selectedLabel}</TamaguiSelect.Value>
+          ) : selectedValue ? (
+            <TamaguiSelect.Value>{selectedValue}</TamaguiSelect.Value>
+          ) : (
+            <TamaguiSelect.Value placeholder={placeholder} />
+          )}
         </TamaguiSelect.Trigger>
 
         <TamaguiSelect.Content>
@@ -84,7 +96,7 @@ export function Select({
             height="$3"
           >
             <YStack zIndex={10}>
-              <ChevronUp size={20} />
+              <ChevronUp size={20} color="$appText" />
             </YStack>
             <LinearGradient
               start={[0, 0]}
@@ -102,7 +114,9 @@ export function Select({
             borderWidth={1}
             borderColor="$borderColor"
           >
-            <TamaguiSelect.Group>{renderedOptions}</TamaguiSelect.Group>
+            <TamaguiSelect.Group>
+              {renderedOptions ? renderedOptions : <YStack padding="$4">{children}</YStack>}
+            </TamaguiSelect.Group>
           </TamaguiSelect.Viewport>
 
           <TamaguiSelect.ScrollDownButton

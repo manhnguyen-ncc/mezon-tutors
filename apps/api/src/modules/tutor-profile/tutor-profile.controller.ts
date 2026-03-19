@@ -28,6 +28,6 @@ export class TutorProfileController {
   async getVerifiedTutors(
     @Query() query: VerifiedTutorQueryDto
   ): Promise<PaginatedResponse<VerifiedTutorProfileDto>> {
-    return this.tutorProfileService.getVerifiedTutors(query.page, query.limit, query.sortBy)
+    return this.tutorProfileService.getVerifiedTutors(query)
   }
 }

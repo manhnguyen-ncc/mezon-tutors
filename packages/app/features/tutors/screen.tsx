@@ -1,121 +1,216 @@
 'use client'
 
-import {
-  Screen,
-  Container,
-  YStack,
-  XStack,
-  ScrollView,
-  Text,
-  Button,
-  Pagination,
-} from '@mezon-tutors/app/ui'
+import { Screen, Container, YStack, XStack, Text, Pagination, Empty, OverlayLoading } from '@mezon-tutors/app/ui'
 import { PreviewCard } from './components/PreviewCard'
 import { TutorsFilter } from './components/TutorsFilter'
-import { VerifiedTutorProfileDto } from '@mezon-tutors/shared'
-import { useEffect, useState } from 'react'
+import { ECountry, ESubject, VerifiedTutorProfileDto } from '@mezon-tutors/shared'
+import { useMemo, useRef, useState } from 'react'
 import { TutorCard } from './components/TutorCard'
-import { Select } from '@mezon-tutors/app/ui/Select'
-import { TutorSortBy } from '@mezon-tutors/shared'
+import { Select } from '@mezon-tutors/app/ui'
+import { ETutorSortBy } from '@mezon-tutors/shared'
 import { useGetVerifiedTutors } from '@mezon-tutors/app/services/tutor-profile/tutor-profile.api'
+import { useTranslations } from 'next-intl'
+import { usePathname, useSearchParams } from 'next/navigation'
 
-const LIMIT = 5
+const DEFAULT_LIMIT = 5
+const PREVIEW_GAP = 16
+const PREVIEW_WIDTH = 420
+const PREVIEW_ANIM_MS = 400
 
 export function TutorsScreen() {
-  const [page, setPage] = useState(1)
-  const [totalTutors, setTotalTutors] = useState(0)
-  const [totalPages, setTotalPages] = useState(1)
-  const [sortByFilter, setSortByFilter] = useState<TutorSortBy>(TutorSortBy.POPULARITY)
+  const t = useTranslations('Tutors.Screen')
+  const tFilter = useTranslations('Tutors.Filter')
+  const pathname = usePathname()
+  const searchParams = useSearchParams()
+
+  const [page, setPage] = useState(() => {
+    const initialPage = Number(searchParams.get('page') ?? '1')
+    if (Number.isNaN(initialPage) || initialPage < 1) return 1
+    return initialPage
+  })
+  const [limit] = useState(() => Number(searchParams.get('limit') ?? String(DEFAULT_LIMIT)))
+
+  const [sortByFilter, setSortByFilter] = useState<ETutorSortBy>(ETutorSortBy.POPULARITY)
+  const [subjectFilter, setSubjectFilter] = useState<ESubject>(ESubject.ANY_SUBJECT)
+  const [countryFilter, setCountryFilter] = useState<ECountry>(ECountry.ANY_COUNTRY)
+  const [priceFilter, setPriceFilter] = useState<string>('')
   const {
     data: verifiedTutorsResponse,
     isLoading,
     isError,
-  } = useGetVerifiedTutors(page, LIMIT, sortByFilter)
+    isFetching,
+  } = useGetVerifiedTutors(page, limit, {
+    sortBy: sortByFilter,
+    subject: subjectFilter,
+    country: countryFilter,
+    pricePerLesson: priceFilter,
+  })
   const [hoverTutor, setHoverTutor] = useState<VerifiedTutorProfileDto | null>(null)
+  const [hoverRect, setHoverRect] = useState<DOMRect | null>(null)
+  const [anchorRect, setAnchorRect] = useState<DOMRect | null>(null)
+  const listRef = useRef<HTMLElement | null>(null)
 
-  const [languageFilter, setLanguageFilter] = useState<string>('English')
-
-  useEffect(() => {
-    if (!verifiedTutorsResponse) return
-
-    setTotalTutors(verifiedTutorsResponse.meta.total)
-    setTotalPages(verifiedTutorsResponse.meta.totalPages)
-  }, [verifiedTutorsResponse])
-
-  const handlePageChange = (page: number) => {
-    setPage(page)
+  const handlePageChange = (nextPage: number) => {
+    setPage(nextPage)
+    if (typeof window !== 'undefined') {
+      const params = new URLSearchParams(window.location.search)
+      params.set('page', String(nextPage))
+      params.set('limit', String(limit))
+      const url = `${pathname}?${params.toString()}`
+      window.history.replaceState({}, '', url)
+    }
     setHoverTutor(null)
+    setHoverRect(null)
   }
 
-  const handleSortChange = (value: string) => {
-    setSortByFilter(value as TutorSortBy)
+  const handleSortChange = (value: ETutorSortBy) => {
+    setSortByFilter(value)
     setPage(1)
     setHoverTutor(null)
+    setHoverRect(null)
   }
 
-  const handleTutorCardHover = (tutor: VerifiedTutorProfileDto) => {
+  const handleSubjectChange = (value: ESubject) => {
+    setSubjectFilter(value)
+    setPage(1)
+    setHoverTutor(null)
+    setHoverRect(null)
+  }
+
+  const handleCountryChange = (value: ECountry) => {
+    setCountryFilter(value)
+    setPage(1)
+    setHoverTutor(null)
+    setHoverRect(null)
+  }
+
+  const handlePriceChange = (value: string) => {
+    setPriceFilter(value)
+    setPage(1)
+    setHoverTutor(null)
+    setHoverRect(null)
+  }
+
+  const handleTutorCardHover = (tutor: VerifiedTutorProfileDto, el: HTMLElement) => {
     setHoverTutor(tutor)
+    setHoverRect(el.getBoundingClientRect())
+    setAnchorRect(listRef.current?.getBoundingClientRect?.() ?? null)
   }
+  const previewPosition = useMemo(() => {
+    if (!hoverRect || !anchorRect) return null
 
-  if (isLoading) {
-    return (
-      <YStack flex={1} justifyContent="center" alignItems="center" padding={24}>
-        <Text variant="default">Loading...</Text>
-      </YStack>
-    )
-  }
+    const vw = window.innerWidth
 
-  if (isError) {
-    return (
-      <YStack padding={16} backgroundColor="$red9" borderRadius={8}>
-        <Text variant="default">Error loading verified tutors</Text>
-      </YStack>
-    )
-  }
+    const showOnRight = hoverRect.right + PREVIEW_GAP + PREVIEW_WIDTH <= vw
 
-  if (!verifiedTutorsResponse) {
-    return (
-      <YStack padding={16} backgroundColor="$red9" borderRadius={8}>
-        <Text variant="default">No verified tutors found</Text>
-      </YStack>
-    )
-  }
+    const leftViewport = showOnRight
+      ? hoverRect.right + PREVIEW_GAP
+      : hoverRect.left - PREVIEW_GAP - PREVIEW_WIDTH
+
+    const left = leftViewport - anchorRect.left
+    const y = hoverRect.top - anchorRect.top
+
+    return { left, y }
+  }, [hoverRect, anchorRect])
+
+  const totalTutors = verifiedTutorsResponse?.meta.total ?? 0
+  const totalPages = verifiedTutorsResponse?.meta.totalPages ?? 1
+  const items = verifiedTutorsResponse?.items ?? []
+  const showInitialLoading = isLoading && !verifiedTutorsResponse
+
   return (
     <Screen>
       <YStack flex={1}>
         <Container padded paddingTop="$4" paddingBottom="$6" gap="$4">
-          <TutorsFilter />
-
+          <TutorsFilter
+            subject={subjectFilter}
+            country={countryFilter}
+            pricePerLesson={priceFilter}
+            onSubjectChange={handleSubjectChange}
+            onCountryChange={handleCountryChange}
+            onPricePerLessonChange={handlePriceChange}
+          />
           <XStack gap="$8" flexDirection="row" alignItems="flex-start">
-            <YStack width="65%" height="100vh" gap="$3">
+            <YStack
+              ref={(node) => {
+                listRef.current = node as unknown as HTMLElement | null
+              }}
+              width="65%"
+              height="65vh"
+              gap="$3"
+              position="relative"
+            >
               <XStack justifyContent="space-between" alignItems="center" flexWrap="wrap" gap="$2">
                 <Text variant="muted">
-                  {totalTutors} {languageFilter} tutors available
+                  {subjectFilter === ESubject.ANY_SUBJECT
+                    ? t('totalLabelNoSubject', { count: totalTutors })
+                    : t('totalLabel', {
+                        count: totalTutors,
+                        subject: tFilter(subjectFilter),
+                      })}
                 </Text>
                 <XStack gap="$2" alignItems="center">
-                  <Text variant="muted">Sort by:</Text>
+                  <Text variant="muted">{t('sortBy')}</Text>
                   <Select
                     value={sortByFilter}
                     onValueChange={handleSortChange}
-                    options={Object.values(TutorSortBy).map((sort) => ({
-                      label: sort,
-                      value: sort,
+                    options={(Object.values(ETutorSortBy) as ETutorSortBy[]).map((value) => ({
+                      label: t(value),
+                      value: value as string,
                     }))}
                   />
                 </XStack>
               </XStack>
-              <ScrollView contentContainerStyle={{ gap: 16 }}>
-                {(verifiedTutorsResponse?.items ?? []).map((tutor) => (
-                  <TutorCard key={tutor.id} tutor={tutor} onHover={handleTutorCardHover} />
-                ))}
-              </ScrollView>
+
+              {showInitialLoading ? (
+                <YStack
+                  flex={1}
+                  justifyContent="center"
+                  alignItems="center"
+                  padding={24}
+                  gap="$2"
+                >
+                  <Text variant="default">{t('loading')}</Text>
+                </YStack>
+              ) : items.length === 0 ? (
+                <Empty title={t('empty')} />
+              ) : (
+                items.map((tutor) => (
+                  <YStack key={tutor.id}>
+                    <TutorCard
+                      tutor={tutor}
+                      onHover={handleTutorCardHover}
+                      isActive={hoverTutor?.id === tutor.id}
+                    />
+                  </YStack>
+                ))
+              )}
+
+              <OverlayLoading isOpen={isFetching && items.length === 0 && !showInitialLoading} />
+
               <XStack justifyContent="center" alignItems="center" paddingTop="$4">
                 <Pagination page={page} totalPages={totalPages} onPageChange={handlePageChange} />
               </XStack>
-            </YStack>
 
-            <YStack flex={1} minWidth={280}>
-              <PreviewCard tutor={hoverTutor} isPopularWeek={false} />
+              {hoverTutor && previewPosition && (
+                <YStack
+                  style={{
+                    position: 'absolute',
+                    left: previewPosition.left,
+                    top: 0,
+                    width: PREVIEW_WIDTH,
+                    zIndex: 50,
+                    pointerEvents: 'none',
+                    transform: `translate3d(0, ${previewPosition.y}px, 0)`,
+                    transition: `transform ${PREVIEW_ANIM_MS}ms ease`,
+                    willChange: 'transform',
+                  }}
+                >
+                  <YStack style={{ pointerEvents: 'auto' }}>
+                    <PreviewCard tutor={hoverTutor} isPopularWeek={false} />
+                  </YStack>
+                </YStack>
+              )}
             </YStack>
           </XStack>
         </Container>
