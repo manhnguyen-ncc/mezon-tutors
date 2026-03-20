@@ -1,14 +1,4 @@
-export {
-  XStack,
-  YStack,
-  ScrollView,
-  Separator,
-  Input,
-  Label,
-  Paragraph,
-  Dialog,
-  AlertDialog,
-} from 'tamagui';
+export { XStack, YStack, ScrollView, Separator, Input, Label, Paragraph,Dialog, AlertDialog } from 'tamagui';
 
 export { Toast, ToastProvider, useToastController } from '@tamagui/toast';
 
