@@ -13,7 +13,7 @@ import { useTranslations } from 'next-intl'
 import { usePathname, useSearchParams } from 'next/navigation'
 import { useMedia } from 'tamagui'
 
-const DEFAULT_LIMIT = 5
+const DEFAULT_LIMIT = 10
 const PREVIEW_GAP = 32
 const PREVIEW_WIDTH = 420
 const PREVIEW_ANIM_MS = 400

@@ -12,7 +12,7 @@ import {
   TutorLanguageDto,
   VerifiedTutorProfileDto,
 } from '@mezon-tutors/shared';
-import { Role, VerificationStatus } from '@mezon-tutors/db';
+import { Prisma, Role, VerificationStatus } from '@mezon-tutors/db';
 import { toVerifiedTutorProfileDto } from './tutor-profile.mapper';
 import { VerifiedTutorQueryDto } from './dto/verified-tutor-query.dto';
 
@@ -212,10 +212,6 @@ export class TutorProfileService {
       case ETutorSortBy.TOP_PICKS:
         return [{ totalStudents: 'desc' as const }]
       case ETutorSortBy.POPULARITY:
-        return [
-          { ratingAverage: 'desc' as const },
-          { ratingCount: 'desc' as const },
-        ]
       default:
         return [
           { ratingAverage: 'desc' as const },
@@ -225,15 +221,18 @@ export class TutorProfileService {
   }
 
   private getPricePerLessonFilter(pricePerLesson: string) {
-    const getMinMax = (range: string) => {
-      const [min, max] = range.split('_').map(Number)
+    const [minStr, maxStr] = pricePerLesson.split('_')
+
+    const min = Number(minStr)
+    const max = Number(maxStr)
+    
+    if (!isNaN(min) && !isNaN(max)) {
       return {
-        min,
-        max,
+        gte: min,
+        lte: max,
       }
     }
-    const { min, max } = getMinMax(pricePerLesson)
-    return {gte: min, lte: max}
+    return undefined
   }
 
   async getVerifiedTutors(
@@ -250,7 +249,7 @@ export class TutorProfileService {
 
     const orderBy = this.getVerifiedTutorOrderBy(sortBy)
 
-    const where: any = {
+    const where: Prisma.TutorProfileWhereInput = {
       verificationStatus: VerificationStatus.APPROVED,
     }
 
