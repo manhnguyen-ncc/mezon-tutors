@@ -1,14 +1,15 @@
 import { apiClient } from '../api-client'
-import { keepPreviousData, useQuery } from '@tanstack/react-query'
+import { keepPreviousData, useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { tutorProfileQueryKey } from './tutor-profile.qkey'
 import {
+  ApiResponse,
   PaginatedData,
   PaginatedResponse,
   ETutorSortBy,
   ECountry,
   ESubject,
   VerifiedTutorProfileDto,
-  TANSTACK_QUERY_STALE_TIME,
+  SubmitTutorProfileDto,
 } from '@mezon-tutors/shared'
 
 type VerifiedTutorFilters = {
@@ -18,27 +19,33 @@ type VerifiedTutorFilters = {
   pricePerLesson?: string
 }
 
-const getVerifiedTutors = async (
-  page: number,
-  limit: number,
-  filters: VerifiedTutorFilters
-): Promise<PaginatedData<VerifiedTutorProfileDto> | null> => {
-  const { sortBy, subject, country, pricePerLesson } = filters
+export const tutorProfileApi = {
+  async getVerifiedTutors(
+    page: number,
+    limit: number,
+    filters: VerifiedTutorFilters
+  ): Promise<PaginatedData<VerifiedTutorProfileDto> | null> {
+    const { sortBy, subject, country, pricePerLesson } = filters
 
-  const response = await apiClient.get<PaginatedResponse<VerifiedTutorProfileDto>>(
-    '/tutor-profiles/verified',
-    {
-      params: {
-        page,
-        limit,
-        sortBy,
-        subject,
-        country,
-        pricePerLesson,
-      },
-    }
-  )
-  return response.data
+    const response = await apiClient.get<PaginatedResponse<VerifiedTutorProfileDto>>(
+      '/tutor-profiles/verified',
+      {
+        params: {
+          page,
+          limit,
+          sortBy,
+          subject,
+          country,
+          pricePerLesson,
+        },
+      }
+    )
+    return response.data
+  },
+
+  submit(payload: SubmitTutorProfileDto): Promise<boolean> {
+    return apiClient.post<ApiResponse<boolean>, boolean>('/tutor-profiles', payload)
+  },
 }
 
 const useGetVerifiedTutors = (page: number, limit: number, filters: VerifiedTutorFilters) => {
@@ -51,12 +58,24 @@ const useGetVerifiedTutors = (page: number, limit: number, filters: VerifiedTuto
       filters.country,
       filters.pricePerLesson
     ),
-    queryFn: () => getVerifiedTutors(page, limit, filters),
+    queryFn: () => tutorProfileApi.getVerifiedTutors(page, limit, filters),
     placeholderData: keepPreviousData,
-    staleTime: TANSTACK_QUERY_STALE_TIME,
-    refetchOnMount: false,
-    refetchOnWindowFocus: false,
   })
 }
 
-export { useGetVerifiedTutors }
+const useSubmitTutorProfileMutation = () => {
+  const queryClient = useQueryClient()
+
+  return useMutation({
+    mutationFn: (payload: SubmitTutorProfileDto) => tutorProfileApi.submit(payload),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['verified-tutors'] })
+    },
+  })
+}
+
+export function submitTutorProfile(payload: SubmitTutorProfileDto): Promise<boolean> {
+  return tutorProfileApi.submit(payload)
+}
+
+export { useGetVerifiedTutors, useSubmitTutorProfileMutation }

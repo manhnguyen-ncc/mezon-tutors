@@ -19,6 +19,4 @@ export type MetricCard = {
 export type {
   TutorCertificate,
   TutorApplication,
-  TutorApplicationApproveBody,
-  TutorApplicationRejectBody,
 } from '@mezon-tutors/shared';

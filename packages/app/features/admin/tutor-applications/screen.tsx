@@ -1,9 +1,9 @@
 'use client';
 
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useTranslations } from 'next-intl';
 import { Text, YStack } from '@mezon-tutors/app/ui';
-import { tutorApplicationService } from '@mezon-tutors/app/services/tutor-application.service';
+import { useTutorApplicationListQuery } from '@mezon-tutors/app/services';
 import { TutorApplicationsMetricsRow } from './MetricsRow';
 import { TutorApplicationsToolbarRow } from './ToolbarRow';
 import { TutorApplicationsList } from './ApplicationsList';
@@ -12,32 +12,21 @@ import type { TutorApplication } from './types';
 
 export function TutorApplicationsScreen() {
   const t = useTranslations('Admin.TutorApplications');
-  const [applications, setApplications] = useState<TutorApplication[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [search, setSearch] = useState('');
 
-  const loadApplications = useCallback(async () => {
-    setLoading(true);
-    setError(null);
-    try {
-      const list = await tutorApplicationService.getList();
-      setApplications(list);
-      if (list.length > 0 && !selectedId) {
-        setSelectedId(list[0].id);
-      }
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to load applications');
-      setApplications([]);
-    } finally {
-      setLoading(false);
-    }
-  }, []);
+  const {
+    data: applications = [],
+    isLoading,
+    isError,
+    error,
+  } = useTutorApplicationListQuery();
 
   useEffect(() => {
-    loadApplications();
-  }, [loadApplications]);
+    if (applications.length > 0 && !selectedId) {
+      setSelectedId(applications[0].id);
+    }
+  }, [applications, selectedId]);
 
   const filteredApplications = useMemo(() => {
     const query = search.trim().toLowerCase();
@@ -97,17 +86,17 @@ export function TutorApplicationsScreen() {
 
       <TutorApplicationsMetricsRow />
 
-      {error && (
+      {isError && (
         <YStack
           padding={16}
           backgroundColor="$red9"
           borderRadius={8}
         >
-          {error}
+          <Text variant="default">{error instanceof Error ? error.message : t('error')}</Text>
         </YStack>
       )}
 
-      {loading ? (
+      {isLoading ? (
         <YStack
           flex={1}
           justifyContent="center"

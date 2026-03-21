@@ -65,8 +65,8 @@ export function TutorsScreen() {
     setHoverRect(null)
   }
 
-  const handleSortChange = (value: ETutorSortBy) => {
-    setSortByFilter(value)
+  const handleSortChange = (value: string) => {
+    setSortByFilter(value as ETutorSortBy)
     setPage(1)
     setHoverTutor(null)
     setHoverRect(null)
@@ -139,7 +139,7 @@ export function TutorsScreen() {
               }}
               width="100%"
               height="auto"
-              $gtMd={{ width: '65%', height: '65vh' }}
+              $gtMd={{ width: '65%' }}
               gap="$3"
               position="relative"
             >

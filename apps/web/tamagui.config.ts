@@ -1,2 +1,2 @@
-import { config } from '@mezon-tutors/app';
+import { config } from '@mezon-tutors/app/config';
 export default config;

@@ -10,7 +10,7 @@ type TutorProfileStickyActionsProps = {
 export function TutorProfileStickyActions({ children }: TutorProfileStickyActionsProps) {
   return (
     <XStack
-      position="sticky"
+      position="relative"
       bottom={0}
       left={0}
       right={0}
@@ -19,6 +19,7 @@ export function TutorProfileStickyActions({ children }: TutorProfileStickyAction
       borderColor="$borderSubtle"
       paddingVertical="$4"
       zIndex={10}
+      style={{ position: 'sticky' }}
       $xs={{ paddingVertical: '$3' }}
     >
       <Container

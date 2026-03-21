@@ -11,9 +11,8 @@ import { Separator } from '@mezon-tutors/app/ui';
 import { DownloadIcon, DocumentIcon, EyeIcon, VerifiedIcon } from '@mezon-tutors/app/ui/icons';
 import { useTranslations } from 'next-intl';
 import { useState } from 'react';
-import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useParams } from 'solito/navigation';
-import { adminTutorApplicationService } from '@mezon-tutors/app/services/admin-tutor-application.service';
+import { useUpdateProfessionalDocumentStatusMutation } from '@mezon-tutors/app/services';
 import { useToastController } from '@mezon-tutors/app/ui';
 
 import { type ProfessionalDocument, type ProfessionalDocumentStatus } from '@mezon-tutors/shared';
@@ -37,25 +36,24 @@ export function ProfessionalDocumentsTable({
 }: ProfessionalDocumentsTableProps) {
   const t = useTranslations('AdminTutorApplications.Detail');
   const { id: tutorId } = useParams<{ id: string }>();
-  const queryClient = useQueryClient();
   const toast = useToastController();
 
   const [isApproveConfirmOpen, setIsApproveConfirmOpen] = useState(false);
   const [isRejectConfirmOpen, setIsRejectConfirmOpen] = useState(false);
 
-  const updateStatusMutation = useMutation({
-    mutationFn: (status: ProfessionalDocumentStatus) => {
-      if (!selectedProfessionalDocId) return Promise.reject('No document selected');
-      return adminTutorApplicationService.updateProfessionalDocumentStatus(
-        selectedProfessionalDocId,
-        status
-      );
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['admin-tutor-application', tutorId] });
-      toast.show(t('messages.docStatusUpdated'), { variant: 'success' });
-    },
-  });
+  const updateStatusMutation = useUpdateProfessionalDocumentStatusMutation();
+
+  const handleUpdateStatus = async (status: ProfessionalDocumentStatus) => {
+    if (!selectedProfessionalDocId) return;
+
+    await updateStatusMutation.mutateAsync({
+      tutorId,
+      documentId: selectedProfessionalDocId,
+      status,
+    });
+
+    toast.show(t('messages.docStatusUpdated'), { variant: 'success' });
+  };
 
   return (
     <YStack>
@@ -290,7 +288,7 @@ export function ProfessionalDocumentsTable({
             t('modals.defaultDocName'),
         })}
         confirmLabel={t('sections.documents.professionalDocuments.actions.approve')}
-        onConfirm={() => updateStatusMutation.mutate('APPROVED')}
+        onConfirm={() => handleUpdateStatus('APPROVED')}
         isLoading={updateStatusMutation.isPending}
       />
 
@@ -305,7 +303,7 @@ export function ProfessionalDocumentsTable({
         })}
         confirmLabel={t('sections.documents.professionalDocuments.actions.reject')}
         destructive
-        onConfirm={() => updateStatusMutation.mutate('REJECTED')}
+        onConfirm={() => handleUpdateStatus('REJECTED')}
         isLoading={updateStatusMutation.isPending}
       />
     </YStack>

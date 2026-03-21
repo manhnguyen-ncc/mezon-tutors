@@ -1,6 +1,6 @@
 'use client';
 
-import { useTheme, Input, Label, YStack, isWeb, ColorTokens } from 'tamagui';
+import { useTheme, Input, YStack, isWeb, ColorTokens } from 'tamagui';
 import { Text } from './Text';
 
 export type FieldProps = {
@@ -57,13 +57,17 @@ export function Field({
       }
     : undefined;
 
+  const normalizedLabel = typeof label === 'string' ? label.trim() : '';
+  const normalizedError = typeof error === 'string' ? error.trim() : '';
+  const normalizedHelperText = typeof helperText === 'string' ? helperText.trim() : '';
+
   return (
     <YStack gap="$2" flex={flex}>
-      {label && (
-        <Label htmlFor={inputId} color="$colorMuted" fontSize={13}>
-          {label}
-        </Label>
-      )}
+      {normalizedLabel ? (
+        <Text size="sm" color="$colorMuted">
+          {normalizedLabel}
+        </Text>
+      ) : null}
       {useNativeInputForSuggestions ? (
         <>
           <input
@@ -97,13 +101,13 @@ export function Field({
           onChangeText={onChangeText}
         />
       )}
-      {error ? (
+      {normalizedError ? (
         <Text size="sm" color="$red10" fontWeight="500">
-          {error}
+          {normalizedError}
         </Text>
-      ) : helperText ? (
+      ) : normalizedHelperText ? (
         <Text size="sm" variant="muted">
-          {helperText}
+          {normalizedHelperText}
         </Text>
       ) : null}
     </YStack>

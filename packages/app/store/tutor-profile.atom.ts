@@ -8,7 +8,7 @@ import {
   parseEnum,
   type SubmitTutorProfileDto,
 } from '@mezon-tutors/shared';
-import { submitTutorProfile } from '@mezon-tutors/app/services/tutor-profile.service';
+import { submitTutorProfile } from '@mezon-tutors/app/services';
 
 export type TimeSlot = {
   startTime: string;

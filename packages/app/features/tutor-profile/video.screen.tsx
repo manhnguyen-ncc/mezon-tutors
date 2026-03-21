@@ -5,6 +5,7 @@ import { useAtom, useAtomValue, useSetAtom } from 'jotai';
 import { useTranslations } from 'next-intl';
 import { useRouter } from 'next/navigation';
 import { useForm, Controller } from 'react-hook-form';
+import type { TamaguiElement } from 'tamagui';
 import {
   Button,
   Container,
@@ -61,7 +62,7 @@ export function TutorProfileVideoScreen() {
   const { videoLink, videoId } = videoState;
   const [videoDuration, setVideoDuration] = useState<number | null>(null);
   const [durationError, setDurationError] = useState<string | null>(null);
-  const videoInputSectionRef = useRef<HTMLDivElement | null>(null);
+  const videoInputSectionRef = useRef<TamaguiElement | null>(null);
   const lastSavedAt = useAtomValue(tutorProfileLastSavedAtAtom);
   const setLastSavedAt = useSetAtom(tutorProfileLastSavedAtAtom);
 
@@ -137,7 +138,8 @@ export function TutorProfileVideoScreen() {
   const handleContinue = (values: VideoFormValues) => {
     if (!videoId) {
       setDurationError(t('errors.missingBeforeContinue'));
-      videoInputSectionRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      const section = videoInputSectionRef.current as HTMLElement | null;
+      section?.scrollIntoView({ behavior: 'smooth', block: 'center' });
       return;
     }
     if (videoDuration !== null && videoDuration > 120) {
@@ -202,7 +204,7 @@ export function TutorProfileVideoScreen() {
               >
                 {/* Left column: video preview + link input (cùng width) */}
                 <YStack
-                  ref={videoInputSectionRef as React.RefObject<unknown>}
+                  ref={videoInputSectionRef}
                   width={VIDEO_PREVIEW_WIDTH}
                   gap="$4"
                   $xs={{ width: '100%' }}
@@ -416,7 +418,7 @@ export function TutorProfileVideoScreen() {
           </Button>
           <Button
             variant="primary"
-            onPress={handleContinue}
+            onPress={handleSubmit(handleContinue)}
           >
             {t('continue')}
           </Button>

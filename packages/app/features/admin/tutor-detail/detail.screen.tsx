@@ -19,8 +19,13 @@ import { EditListIcon } from '@mezon-tutors/app/ui/icons';
 import { DocumentsTab } from './documents-tab';
 
 import { useParams } from 'solito/navigation';
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { adminTutorApplicationService } from '@mezon-tutors/app/services/admin-tutor-application.service';
+import {
+  useAdminTutorApplicationApi,
+  useApproveTutorApplicationMutation,
+  useCreateAdminNoteMutation,
+  useRejectTutorApplicationMutation,
+  useWaitlistTutorApplicationMutation,
+} from '@mezon-tutors/app/services';
 import { FullApplicationTab } from './full-application-tab';
 import { StatusBadge } from '@mezon-tutors/app/ui/StatusBadge';
 import { useToastController } from '@mezon-tutors/app/ui';
@@ -34,7 +39,6 @@ export function AdminTutorApplicationDetailScreen() {
   const { id } = useParams<{ id: string }>();
   const [activeTab, setActiveTab] = useState<DetailTab>('full-application');
   const [noteContent, setNoteContent] = useState('');
-  const queryClient = useQueryClient();
   const toast = useToastController();
   const user = useAtomValue(userAtom);
 
@@ -43,54 +47,12 @@ export function AdminTutorApplicationDetailScreen() {
   const [isWaitlistConfirmOpen, setIsWaitlistConfirmOpen] = useState(false);
   const [isSaveNoteConfirmOpen, setIsSaveNoteConfirmOpen] = useState(false);
 
-  const {
-    data: fullData,
-    isLoading,
-    error,
-  } = useQuery({
-    queryKey: ['admin-tutor-application', id],
-    queryFn: () => adminTutorApplicationService.getTutorProfile(id!),
-    enabled: !!id,
-  });
+  const { data: fullData, isLoading, error } = useAdminTutorApplicationApi(id ?? '');
 
-  const approveMutation = useMutation({
-    mutationFn: (tutorId: string) => adminTutorApplicationService.approveTutorApplication(tutorId),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['admin-tutor-application', id] });
-      toast.show('Application approved successfully', { variant: 'success' });
-    },
-  });
-
-  const rejectMutation = useMutation({
-    mutationFn: (tutorId: string) => adminTutorApplicationService.rejectTutorApplication(tutorId),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['admin-tutor-application', id] });
-      toast.show('Application rejected', { variant: 'success' });
-    },
-  });
-
-  const waitlistMutation = useMutation({
-    mutationFn: (tutorId: string) => adminTutorApplicationService.waitlistTutorApplication(tutorId),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['admin-tutor-application', id] });
-      toast.show('Application moved to waitlist', { variant: 'success' });
-    },
-  });
-
-  const noteMutation = useMutation({
-    mutationFn: (content: string) =>
-      adminTutorApplicationService.createAdminNote({
-        tutorId: id!,
-        reviewerId: user?.id || 'dummy-admin-id',
-        reviewerName: user?.username || 'Admin',
-        content,
-      }),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['admin-tutor-application', id] });
-      setNoteContent('');
-      toast.show('Note added', { variant: 'success' });
-    },
-  });
+  const approveMutation = useApproveTutorApplicationMutation();
+  const rejectMutation = useRejectTutorApplicationMutation();
+  const waitlistMutation = useWaitlistTutorApplicationMutation();
+  const noteMutation = useCreateAdminNoteMutation();
 
   if (isLoading) {
     return (
@@ -398,7 +360,9 @@ export function AdminTutorApplicationDetailScreen() {
         description={t('modals.approve.description', { name: `${profile.firstName} ${profile.lastName}` })}
         confirmLabel={t('modals.approve.confirm')}
         onConfirm={async () => {
-          if (id) await approveMutation.mutateAsync(id);
+          if (!id) return;
+          await approveMutation.mutateAsync(id);
+          toast.show('Application approved successfully', { variant: 'success' });
         }}
         isLoading={approveMutation.isPending}
       />
@@ -411,7 +375,9 @@ export function AdminTutorApplicationDetailScreen() {
         confirmLabel={t('modals.reject.confirm')}
         destructive
         onConfirm={async () => {
-          if (id) await rejectMutation.mutateAsync(id);
+          if (!id) return;
+          await rejectMutation.mutateAsync(id);
+          toast.show('Application rejected', { variant: 'success' });
         }}
         isLoading={rejectMutation.isPending}
       />
@@ -423,7 +389,9 @@ export function AdminTutorApplicationDetailScreen() {
         description={t('modals.waitlist.description', { name: `${profile.firstName} ${profile.lastName}` })}
         confirmLabel={t('modals.waitlist.confirm')}
         onConfirm={async () => {
-          if (id) await waitlistMutation.mutateAsync(id);
+          if (!id) return;
+          await waitlistMutation.mutateAsync(id);
+          toast.show('Application moved to waitlist', { variant: 'success' });
         }}
         isLoading={waitlistMutation.isPending}
       />
@@ -435,7 +403,15 @@ export function AdminTutorApplicationDetailScreen() {
         description={t('modals.saveNote.description')}
         confirmLabel={t('modals.saveNote.confirm')}
         onConfirm={async () => {
-          await noteMutation.mutateAsync(noteContent);
+          if (!id) return;
+          await noteMutation.mutateAsync({
+            tutorId: id,
+            reviewerId: user?.id || 'dummy-admin-id',
+            reviewerName: user?.username || 'Admin',
+            content: noteContent,
+          });
+          setNoteContent('');
+          toast.show('Note added', { variant: 'success' });
         }}
         isLoading={noteMutation.isPending}
       />
