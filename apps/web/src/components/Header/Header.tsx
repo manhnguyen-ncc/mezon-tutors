@@ -1,37 +1,32 @@
-'use client';
-import Link from 'next/link';
-import styles from './Header.module.css';
+'use client'
+import Link from 'next/link'
+import styles from './Header.module.css'
+import { useAtomValue } from 'jotai'
+import { isAuthenticatedAtom } from '@mezon-tutors/app/store/auth.atom'
+import { LoginButton } from '@mezon-tutors/app/components/auth/LoginButton'
+import { LogoutButton } from '@mezon-tutors/app/components/auth/LogoutButton'
+import { ROUTES } from '@mezon-tutors/shared'
 
 export default function Header() {
+  const isAuthenticated = useAtomValue(isAuthenticatedAtom)
   return (
     <header className={styles.header}>
-
-      {/* LEFT - LOGO */}
-          <div className={styles.logo}>
-        <div style={{display: "flex",alignItems: "center",gap: "10px"}} className={styles.icons}>
-  <img src="/icons/Background.svg" alt="background" />
-       <span style={{ margin: 0 }}>TutorMatch</span>
-</div>
+      <div className={styles.logo}>
+        <div
+          style={{ display: 'flex', alignItems: 'center', gap: '10px' }}
+          className={styles.icons}
+        >
+          <img src="/icons/Background.svg" alt="background" />
+          <span style={{ margin: 0 }}>TutorMatch</span>
+        </div>
       </div>
-
-      {/* CENTER - MENU */}
 
       <nav className={styles.nav}>
-        <Link href="#">Find Tutor</Link>
-        <Link href="#">Become a Tutor</Link>
+        <Link href={ROUTES.TUTOR.INDEX}>Find Tutor</Link>
+        <Link href={ROUTES.BECOME_TUTOR.INDEX}>Become a Tutor</Link>
       </nav>
 
-      {/* RIGHT - ACTIONS */}
-      <div className={styles.actions}>
-        <Link href="#" className={styles.login}>
-          Login
-        </Link>
-
-        <button className={styles.startBtn}>
-          Get Started
-        </button>
-      </div>
-
+      {isAuthenticated ? <LogoutButton /> : <LoginButton />}
     </header>
-  );
+  )
 }

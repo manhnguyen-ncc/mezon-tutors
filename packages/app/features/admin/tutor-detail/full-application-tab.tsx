@@ -142,7 +142,7 @@ export function FullApplicationTab({ fullData }: { fullData: FullTutorApplicatio
                   <iframe
                     width="100%"
                     height="100%"
-                    src={youtubeEmbedUrl}
+                    src={youtubeEmbedUrl ?? undefined}
                     title="YouTube video player"
                     frameBorder="0"
                     allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"

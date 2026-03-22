@@ -56,8 +56,10 @@ export default function AdminLayout({ children }: { children: ReactNode }) {
         <YStack
           flex={1}
           minWidth={0}
-          padding={{ xs: 12, sm: 16, md: 24 }}
-          gap={{ xs: 16, sm: 20, md: 24 }}
+          padding={24}
+          gap={24}
+          $sm={{ padding: 16, gap: 20 }}
+          $xs={{ padding: 12, gap: 16 }}
         >
           {children}
         </YStack>

@@ -18,7 +18,7 @@ export * from './constants/tutor-profile';
 export * from './constants/urls';
 
 // Utils
-export * from './utils';
+export * from './utils/utils';
 export * from './utils/enum';
 export * from './utils/youtube';
 export * from './utils/mapper';

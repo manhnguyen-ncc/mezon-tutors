@@ -52,6 +52,11 @@
 .login {
   color: white;
   text-decoration: none;
+  cursor: pointer;
+
+  &:hover {
+    color: #1d4ed8;
+  }
 }
 
 .startBtn {

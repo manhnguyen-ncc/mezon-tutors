@@ -21,9 +21,8 @@ import {
 } from '@mezon-tutors/app/ui/icons';
 import { useTranslations } from 'next-intl';
 import { useState } from 'react';
-import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useParams } from 'solito/navigation';
-import { adminTutorApplicationService } from '@mezon-tutors/app/services/admin-tutor-application.service';
+import { useUpdateIdentityVerificationStatusMutation } from '@mezon-tutors/app/services';
 import { useToastController } from '@mezon-tutors/app/ui';
 import { ProfessionalDocumentsTable } from './professional-documents-table';
 
@@ -46,27 +45,26 @@ export function DocumentsTab({ fullData }: { fullData: FullTutorApplication }) {
   const [isRejectConfirmOpen, setIsRejectConfirmOpen] = useState(false);
 
   const { id: tutorId } = useParams<{ id: string }>();
-  const queryClient = useQueryClient();
   const toast = useToastController();
 
-  const identityMutation = useMutation({
-    mutationFn: (status: IdentityVerificationStatus) => {
-      if (!identityVerification?.id) return Promise.reject('No identity document');
-      return adminTutorApplicationService.updateIdentityVerificationStatus(
-        identityVerification.id,
-        {
-          status,
-          nameMatch: identityChecklist.nameMatchesProfile,
-          notExpired: identityChecklist.documentNotExpired,
-          photoClarity: identityChecklist.photoClarityVerified,
-        }
-      );
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['admin-tutor-application', tutorId] });
-      toast.show('Identity verification status updated', { variant: 'success' });
-    },
-  });
+  const identityMutation = useUpdateIdentityVerificationStatusMutation();
+
+  const handleIdentityUpdate = async (status: IdentityVerificationStatus) => {
+    if (!identityVerification?.id) return;
+
+    await identityMutation.mutateAsync({
+      tutorId,
+      verificationId: identityVerification.id,
+      payload: {
+        status,
+        nameMatch: identityChecklist.nameMatchesProfile,
+        notExpired: identityChecklist.documentNotExpired,
+        photoClarity: identityChecklist.photoClarityVerified,
+      },
+    });
+
+    toast.show('Identity verification status updated', { variant: 'success' });
+  };
 
   return (
     <>
@@ -351,7 +349,7 @@ export function DocumentsTab({ fullData }: { fullData: FullTutorApplication }) {
           name: `${profile.firstName} ${profile.lastName}`,
         })}
         confirmLabel={t('modals.idApproval.confirm')}
-        onConfirm={() => identityMutation.mutate('APPROVED')}
+        onConfirm={() => handleIdentityUpdate('APPROVED')}
         isLoading={identityMutation.isPending}
       />
 
@@ -364,7 +362,7 @@ export function DocumentsTab({ fullData }: { fullData: FullTutorApplication }) {
         })}
         confirmLabel={t('modals.idRejection.confirm')}
         destructive
-        onConfirm={() => identityMutation.mutate('REJECTED')}
+        onConfirm={() => handleIdentityUpdate('REJECTED')}
         isLoading={identityMutation.isPending}
       />
     </>

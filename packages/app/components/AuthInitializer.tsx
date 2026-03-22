@@ -9,9 +9,7 @@ export default function AuthInitializer() {
   const initAuth = useSetAtom(initAuthAtom);
 
   useEffect(() => {
-    if (token) {
-      initAuth();
-    }
+    void initAuth();
   }, [token, initAuth]);
 
   return null;

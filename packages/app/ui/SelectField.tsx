@@ -1,6 +1,6 @@
 'use client';
 
-import type { Control, FieldValues, RegisterOptions } from 'react-hook-form';
+import type { Control, FieldValues, Path, RegisterOptions } from 'react-hook-form';
 import { Controller } from 'react-hook-form';
 import { useTheme, Label, YStack } from 'tamagui';
 import { Text } from './Text';
@@ -144,7 +144,7 @@ export function SelectField({
 
 export type SelectInputFieldProps<TFieldValues extends FieldValues = FieldValues> = {
   control: Control<TFieldValues>;
-  name: string;
+  name: Path<TFieldValues>;
   label: string;
   placeholder?: string;
   helperText?: string;

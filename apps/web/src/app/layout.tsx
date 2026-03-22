@@ -6,6 +6,8 @@ import { AppProviders } from './providers';
 import AuthInitializer from '@mezon-tutors/app/components/AuthInitializer';
 import { DEFAULT_THEME } from '@mezon-tutors/app';
 import { getLocale } from 'next-intl/server';
+import Header from 'src/components/Header/Header';
+import Footer from 'src/components/Footer/Footer';
 
 const geistSans = Geist({
   variable: '--font-geist-sans',
@@ -40,7 +42,9 @@ export default async function RootLayout({
         <NextIntlClientProvider locale={locale}>
           <AppProviders>
             <AuthInitializer />
+            <Header />
             {children}
+            <Footer />
           </AppProviders>
         </NextIntlClientProvider>
       </body>
