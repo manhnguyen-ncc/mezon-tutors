@@ -1,0 +1,41 @@
+name: Snyk Security Scan
+
+on:
+  pull_request:
+  push:
+    branches: [main, develop]
+
+jobs:
+  snyk:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: yarn
+
+      - name: Install dependencies
+        run: yarn install --frozen-lockfile
+
+      - name: Install Snyk CLI
+        run: npm install -g snyk
+
+      - name: Snyk test (warning only - phase 1)
+        id: snyk_scan
+        continue-on-error: true
+        env:
+          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+        run: snyk test --all-projects --severity-threshold=high
+
+      - name: Warn when vulnerabilities found
+        if: steps.snyk_scan.outcome == 'failure'
+        run: echo "::warning::Snyk found High/Critical vulnerabilities (phase 1 warning-only)."
+
+      - name: Add scan summary
+        if: always()
+        run: |
+          echo "## Snyk scan result" >> $GITHUB_STEP_SUMMARY
+          echo "- Mode: warning only (phase 1)" >> $GITHUB_STEP_SUMMARY
+          echo "- Workflow does not block PR yet." >> $GITHUB_STEP_SUMMARY
