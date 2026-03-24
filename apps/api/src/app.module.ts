@@ -7,7 +7,8 @@ import { HealthController } from './health.controller';
 import { ResponseInterceptor } from './common/interceptors/response.interceptor';
 import { AuthModule } from './modules/auth/auth.module';
 import { TutorProfileModule } from './modules/tutor-profile/tutor-profile.module';
-import { TutorApplicationsModule } from './modules/tutor-applications/tutor-applications.module';
+import { MyLessonsModule } from './modules/my-lessons/my-lessons.module';
+import { TutorApplicationModule } from './modules/tutor-application/tutor-application.module';
 
 @Module({
   imports: [
@@ -18,7 +19,8 @@ import { TutorApplicationsModule } from './modules/tutor-applications/tutor-appl
     PrismaModule,
     AuthModule,
     TutorProfileModule,
-    TutorApplicationsModule,
+    TutorApplicationModule,
+    MyLessonsModule,
   ],
   controllers: [HealthController],
   providers: [

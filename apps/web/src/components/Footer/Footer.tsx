@@ -1,26 +1,30 @@
-'use client';
+'use client'
 
-import styles from './Footer.module.css';
+import styles from './Footer.module.css'
 
 export default function Footer() {
   return (
     <footer className={styles.footer}>
-
       <div className={styles.container}>
-
         {/* BRAND */}
         <div className={styles.brand}>
           <div className={styles.logo}>
-  <span className={styles.logoIcon}>🎓</span> <h3>TutorMatch</h3>
-</div>
+            <div
+              style={{ display: 'flex', alignItems: 'center', gap: '10px' }}
+              className={styles.icons}
+            >
+              <img src="/icons/Background.svg" alt="background" />
+              <h3 style={{ margin: 0 }}>TutorMatch</h3>
+            </div>
+          </div>
           <p>
-            The leading language tutor matching platform
-            for working professionals in Vietnam.
+            The leading language tutor <br /> matching platform for working <br /> professionals in
+            Vietnam.
           </p>
 
           <div className={styles.icons}>
-            <span>🌐</span>
-            <span>@</span>
+            <img src="/icons/foot1.svg" alt="foot1" />
+            <img src="/icons/foot2.svg" alt="foot2" />
           </div>
         </div>
 
@@ -53,7 +57,6 @@ export default function Footer() {
             <li>Contact</li>
           </ul>
         </div>
-
       </div>
 
       <div className={styles.bottom}>
@@ -64,7 +67,6 @@ export default function Footer() {
           <span>Privacy</span>
         </div>
       </div>
-
     </footer>
-  );
+  )
 }

@@ -3,10 +3,8 @@
 import { useCallback, useEffect, useRef } from 'react';
 import { useAtomValue, useSetAtom } from 'jotai';
 import {
-  userAtom,
   isAuthenticatedAtom,
   loginAtom,
-  logoutAtom,
   getAuthUrlAtom,
 } from '@mezon-tutors/app/store/auth.atom';
 import type { MezonAuthMessage } from '@mezon-tutors/shared/src/types/auth';
@@ -17,10 +15,8 @@ const OAUTH_CHANNEL = 'mezon-oauth-result';
 
 export function LoginButton() {
   const t = useTranslations('Common.Header');
-  const user = useAtomValue(userAtom);
   const isAuthenticated = useAtomValue(isAuthenticatedAtom);
   const login = useSetAtom(loginAtom);
-  const logout = useSetAtom(logoutAtom);
   const getAuthUrl = useSetAtom(getAuthUrlAtom);
 
   const popupRef = useRef<Window | null>(null);
@@ -48,6 +44,7 @@ export function LoginButton() {
 
       if (payload.type === 'MEZON_AUTH_SUCCESS') {
         const tokens = payload.data?.tokens;
+        const loginUser = payload.data?.user;
 
         if (!tokens?.accessToken) {
           console.warn('[OAUTH] SUCCESS but missing accessToken');
@@ -58,7 +55,7 @@ export function LoginButton() {
           window.localStorage.setItem('refreshToken', tokens.refreshToken);
         }
 
-        login({ accessToken: tokens.accessToken });
+        login({ accessToken: tokens.accessToken, user: loginUser });
         cleanup('success');
         return;
       }
@@ -136,28 +133,14 @@ export function LoginButton() {
     }
   }, [getAuthUrl, cleanup]);
 
-  if (isAuthenticated) {
-    return (
-      <div className="flex items-center gap-2">
-        <span className="rounded-full bg-zinc-900 px-5 py-2.5 text-sm font-medium text-white">
-          {user?.username ?? 'Unknown User'}
-        </span>
-
-        <Button
-          variant='primary'
-          onClick={() => logout()}
-          className="rounded-full border border-zinc-300 bg-white px-4 py-2.5 text-sm font-medium text-zinc-700 transition-colors hover:bg-zinc-100"
-        >
-          {t('logout')}
-        </Button>
-      </div>
-    );
-  }
+  if (isAuthenticated) return null;
 
   return (
     <Button
       variant='primary'
-      onClick={handleLoginClick}
+      onPress={() => {
+        void handleLoginClick();
+      }}
       className="flex items-center gap-2 rounded-full bg-zinc-900 px-5 py-2.5 text-sm font-medium text-white transition-colors hover:bg-zinc-800"
     >
       {t('login')}

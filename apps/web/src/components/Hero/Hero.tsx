@@ -9,8 +9,8 @@ export default function Hero() {
       {/* LEFT CONTENT */}
       <div className={styles.left}>
 
-        <span className={styles.badge}>
-          ⚡ MATCHING STYLE TINDER
+        <span className={styles.badge} >
+          <img src="/icons/flash.svg" alt="flash" />  MATCHING STYLE TINDER
         </span>
 
         <h1 className={styles.title}>
@@ -30,44 +30,52 @@ export default function Hero() {
             Start now
           </button>
 
-          <button className={styles.secondary}>
-            ▶ Watch demo
+          <button className={styles.secondary} style={{display: "flex", alignItems: "center",gap: "8px"}}>
+            <img src="/icons/wdemo.svg" alt="demo" />
+            <span>Watch demo</span>
           </button>
         </div>
 
       </div>
 
       {/* RIGHT IMAGE */}
-      <div className={styles.right}>
+     <div className={styles.right}>
+  <div className={styles.cardWrapper}> {/* 👈 thêm cái này */}
 
-        <div className={styles.card}>
-          <img
-            src="/tutor.png"
-            alt="Tutor"
-          />
+    {/* CARD CHÍNH */}
+    <div className={styles.card}>
+      <img src="/tutor.png" alt="Tutor" />
 
-          <div className={styles.cardInfo}>
-            <span className={styles.match}>95% MATCH ⭐ 4.9</span>
+      <div className={styles.cardInfo}>
+        <div className={styles.topRow}>
+          <span className={styles.match}>95% MATCH</span>
 
-            <h3>Nguyen Minh Anh, 24</h3>
-
-            <p>IELTS 8.0 • Dedicated to busy learners</p>
-
-            <div className={styles.cardButtons}>
-              <button className={styles.profile}>
-                Profile
-              </button>
-
-              <button className={styles.connect}>
-                Connect
-              </button>
-            </div>
-
+          <div className={styles.rating}>
+            <img src="/icons/star.svg" alt="star" />
+            <span>4.9</span>
           </div>
         </div>
 
-      </div>
+        <h3>Nguyen Minh Anh, 24</h3>
+        <p>IELTS 8.0 • Dedicated to busy learners</p>
 
+        <div className={styles.cardButtons}>
+          <button className={styles.profile}>Profile</button>
+          <button className={styles.connect}>Connect</button>
+        </div>
+      </div>
+    </div>
+
+    {/* CARD NHỎ */}
+    <div className={styles.smallCard}>
+      <img src="/cardbe.svg" alt="cardbe" />
+      <div className={styles.play}>
+        <img src="/icons/play.svg" alt="play" />
+      </div>
+    </div>
+
+  </div>
+</div>
     </section>
   );
 }

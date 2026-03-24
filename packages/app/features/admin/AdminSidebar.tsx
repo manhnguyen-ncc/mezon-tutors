@@ -1,6 +1,6 @@
 'use client'
 
-import type { ReactNode } from 'react'
+import type { ReactElement, ReactNode } from 'react'
 import { useMedia } from 'tamagui'
 import { Card, Text, XStack, YStack } from '@mezon-tutors/app/ui'
 import {
@@ -37,7 +37,7 @@ export type AdminSidebarProps = {
 
 const ICON_MAP: Record<
   AdminSidebarItemIcon,
-  (props: { size?: number | string; color?: string }) => JSX.Element
+  (props: { size?: number | string; color?: string }) => ReactElement
 > = {
   dashboard: GridIcon,
   'tutor-applications': UsersIcon,

@@ -1,16 +1,16 @@
-import { useCallback, useEffect, useState } from 'react'
+import { useMemo } from 'react'
 import { useTranslations } from 'next-intl'
 import { useTheme } from 'tamagui'
 import { Card, Text, XStack, YStack } from '@mezon-tutors/app/ui'
 import { TaskIcon } from '@mezon-tutors/app/ui/icons/TaskIcon'
 import { TimerIcon } from '@mezon-tutors/app/ui/icons/TimerIcon'
 import { VerifiedIcon } from '@mezon-tutors/app/ui/icons'
-import { tutorApplicationService } from '@mezon-tutors/app/services/tutor-application.service'
-import type { TutorApplicationMetricsApi } from '@mezon-tutors/shared'
+import { useTutorApplicationMetricsQuery } from '@mezon-tutors/app/services'
+import type { TutorApplicationMetrics } from '@mezon-tutors/shared'
 import type { MetricCard, MetricStatus } from './types'
 import { AdminMetric } from './types'
 
-function mapMetricsApiToCards(api: TutorApplicationMetricsApi): MetricCard[] {
+function mapMetricsApiToCards(api: TutorApplicationMetrics): MetricCard[] {
   return [
     {
       id: AdminMetric.TotalPending,
@@ -81,29 +81,14 @@ export function TutorApplicationsMetricsRow() {
   const iconColor = theme.appPrimary?.val
   const itemBackground = theme.itemBackground?.val
 
-  const [metrics, setMetrics] = useState<MetricCard[]>([])
-  const [loading, setLoading] = useState(true)
-  const [error, setError] = useState<string | null>(null)
+  const { data, isLoading, isError, error } = useTutorApplicationMetricsQuery()
 
-  const loadMetrics = useCallback(async () => {
-    setLoading(true)
-    setError(null)
-    try {
-      const data = await tutorApplicationService.getMetrics()
-      setMetrics(mapMetricsApiToCards(data))
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to load metrics')
-      setMetrics([])
-    } finally {
-      setLoading(false)
-    }
-  }, [])
+  const metrics = useMemo<MetricCard[]>(
+    () => (data ? mapMetricsApiToCards(data) : []),
+    [data],
+  )
 
-  useEffect(() => {
-    loadMetrics()
-  }, [loadMetrics])
-
-  if (loading) {
+  if (isLoading) {
     return (
       <XStack gap={32} flexWrap="wrap" marginHorizontal={30}>
         {[1, 2, 3].map((i) => (
@@ -124,11 +109,11 @@ export function TutorApplicationsMetricsRow() {
     )
   }
 
-  if (error) {
+  if (isError) {
     return (
       <XStack marginHorizontal={30} padding={12} backgroundColor="$red3" borderRadius={8}>
         <Text size="sm" color="$red11">
-          {error}
+          {error instanceof Error ? error.message : t('error')}
         </Text>
       </XStack>
     )
