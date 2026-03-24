@@ -75,6 +75,11 @@ export default function Header() {
     }
   }, [])
 
+  useEffect(() => {
+    // Prevent accidental dropdown open right after auth state changes/navigation.
+    setShowUserMenu(false)
+  }, [isAuthenticated, pathname])
+
   const toggleTheme = useCallback(() => {
     const nextTheme = themeMode === 'dark' ? 'light' : 'dark'
     setThemeMode(nextTheme)

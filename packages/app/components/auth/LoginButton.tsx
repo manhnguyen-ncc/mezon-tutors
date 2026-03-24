@@ -14,10 +14,11 @@ import { Button } from '@mezon-tutors/app/ui';
 const OAUTH_CHANNEL = 'mezon-oauth-result';
 
 type LoginButtonProps = {
+  label?: string;
   redirectTo?: string;
 };
 
-export function LoginButton({ redirectTo }: LoginButtonProps) {
+export function LoginButton({ label, redirectTo }: LoginButtonProps) {
   const t = useTranslations('Common.Header');
   const isAuthenticated = useAtomValue(isAuthenticatedAtom);
   const login = useSetAtom(loginAtom);
@@ -151,9 +152,9 @@ export function LoginButton({ redirectTo }: LoginButtonProps) {
       onPress={() => {
         void handleLoginClick();
       }}
-      className="flex items-center gap-2 rounded-full bg-zinc-900 px-5 py-2.5 text-sm font-medium text-white transition-colors hover:bg-zinc-800"
+      className="flex items-center gap-2 rounded-full border border-blue-400/60 bg-blue-600 px-5 py-2.5 text-sm font-semibold text-white shadow-[0_8px_22px_rgba(29,102,242,0.45)] transition-all hover:bg-blue-500 hover:shadow-[0_10px_24px_rgba(29,102,242,0.55)]"
     >
-      {t('login')}
+      {label ?? t('login')}
     </Button>
   );
 }

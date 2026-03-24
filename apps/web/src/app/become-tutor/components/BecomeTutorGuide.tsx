@@ -171,14 +171,12 @@ export function BecomeTutorGuide() {
               ))}
             </XStack>
           </YStack>
-        </YStack>
 
-        <YStack padding={isCompact ? 16 : 22} backgroundColor="$tutorsPageBackground" gap="$4">
           <YStack
             alignItems="center"
             gap="$2"
-            marginTop={isCompact ? -8 : -10}
-            marginBottom={isCompact ? 2 : 8}
+            marginTop={isCompact ? 8 : 12}
+            marginBottom={isCompact ? 2 : 4}
           >
             <YStack
               borderRadius={999}
@@ -189,7 +187,10 @@ export function BecomeTutorGuide() {
               shadowRadius={20}
               shadowOffset={{ width: 0, height: 8 }}
             >
-              <LoginButton redirectTo={ROUTES.BECOME_TUTOR.INDEX} />
+              <LoginButton
+                label={t('loginNow')}
+                redirectTo={ROUTES.BECOME_TUTOR.INDEX}
+              />
             </YStack>
             <Paragraph
               color="$myLessonsPromoDescription"
@@ -199,7 +200,9 @@ export function BecomeTutorGuide() {
               {t('ctaNote')}
             </Paragraph>
           </YStack>
+        </YStack>
 
+        <YStack padding={isCompact ? 16 : 22} backgroundColor="$tutorsPageBackground" gap="$4">
           <XStack flexDirection={isCompact ? 'column' : 'row'} gap="$2.5">
             {highlights.map((item, index) => {
               const isHovered = hoveredCard === index;
