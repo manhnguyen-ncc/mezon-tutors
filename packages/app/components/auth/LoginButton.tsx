@@ -13,7 +13,11 @@ import { Button } from '@mezon-tutors/app/ui';
 
 const OAUTH_CHANNEL = 'mezon-oauth-result';
 
-export function LoginButton() {
+type LoginButtonProps = {
+  redirectTo?: string;
+};
+
+export function LoginButton({ redirectTo }: LoginButtonProps) {
   const t = useTranslations('Common.Header');
   const isAuthenticated = useAtomValue(isAuthenticatedAtom);
   const login = useSetAtom(loginAtom);
@@ -23,7 +27,7 @@ export function LoginButton() {
   const intervalRef = useRef<number | null>(null);
   const channelRef = useRef<BroadcastChannel | null>(null);
 
-  const cleanup = useCallback((reason?: string) => {
+  const cleanup = useCallback(() => {
     if (intervalRef.current !== null) {
       window.clearInterval(intervalRef.current);
       intervalRef.current = null;
@@ -34,6 +38,7 @@ export function LoginButton() {
     }
 
     if (channelRef.current) {
+      channelRef.current.close();
       channelRef.current = null;
     }
   }, []);
@@ -56,16 +61,20 @@ export function LoginButton() {
         }
 
         login({ accessToken: tokens.accessToken, user: loginUser });
-        cleanup('success');
+        cleanup();
+
+        if (redirectTo && window.location.pathname !== redirectTo) {
+          window.location.assign(redirectTo);
+        }
         return;
       }
 
       if (payload.type === 'MEZON_AUTH_ERROR') {
         console.error('[OAUTH] ERROR:', payload.error);
-        cleanup('error');
+        cleanup();
       }
     },
-    [login, cleanup]
+    [login, cleanup, redirectTo]
   );
 
   useEffect(() => {
@@ -93,7 +102,7 @@ export function LoginButton() {
 
     return () => {
       window.removeEventListener('message', handleMessage);
-      cleanup('unmount');
+      cleanup();
     };
   }, [processOAuthPayload, cleanup]);
 
@@ -101,35 +110,36 @@ export function LoginButton() {
     if (typeof window === 'undefined') return;
 
     try {
-      const url = await getAuthUrl();
-
       const width = 800;
       const height = 500;
       const left = window.screenX + (window.outerWidth - width) / 2;
       const top = window.screenY + (window.outerHeight - height) / 2;
 
       const popup = window.open(
-        url,
+        'about:blank',
         'mezon-oauth',
         `width=${width},height=${height},left=${left},top=${top},resizable=yes,scrollbars=yes`
       );
 
       if (!popup) {
         console.error('[OAUTH] popup blocked');
-        cleanup('popup_blocked');
+        cleanup();
         return;
       }
 
       popupRef.current = popup;
 
+      const url = await getAuthUrl();
+      popup.location.href = url;
+
       intervalRef.current = window.setInterval(() => {
         if (!popup || popup.closed) {
-          cleanup('popup_closed');
+          cleanup();
         }
       }, 5000);
     } catch (error) {
       console.error('[OAUTH] start login error:', error);
-      cleanup('catch');
+      cleanup();
     }
   }, [getAuthUrl, cleanup]);
 

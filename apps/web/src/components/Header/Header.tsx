@@ -1,17 +1,15 @@
 'use client'
 import Link from 'next/link'
 import styles from './Header.module.css'
-import { useAtomValue, useSetAtom } from 'jotai'
-import { getAuthUrlAtom, isAuthenticatedAtom, userAtom } from '@mezon-tutors/app/store/auth.atom'
+import { useAtomValue } from 'jotai'
+import { isAuthenticatedAtom, userAtom } from '@mezon-tutors/app/store/auth.atom'
 import { LoginButton } from '@mezon-tutors/app/components/auth/LoginButton'
 import { LogoutButton } from '@mezon-tutors/app/components/auth/LogoutButton'
 import { ROUTES } from '@mezon-tutors/shared'
-import { useCallback, useEffect, useMemo, useState, type CSSProperties, type MouseEvent } from 'react'
+import { useCallback, useEffect, useMemo, useState, type CSSProperties } from 'react'
 import { useLocale } from 'next-intl'
-import { useRouter } from 'next/navigation'
 import { useTheme } from 'tamagui'
-
-const POST_LOGIN_REDIRECT_KEY = 'post-login-redirect'
+import { usePathname, useRouter, useSearchParams } from 'next/navigation'
 
 function ThemeIcon({ isDark }: { isDark: boolean }) {
   if (isDark) {
@@ -54,12 +52,13 @@ function ThemeIcon({ isDark }: { isDark: boolean }) {
 }
 
 export default function Header() {
-  const router = useRouter()
   const locale = useLocale()
   const theme = useTheme()
+  const router = useRouter()
+  const pathname = usePathname()
+  const searchParams = useSearchParams()
   const isAuthenticated = useAtomValue(isAuthenticatedAtom)
   const user = useAtomValue(userAtom)
-  const getAuthUrl = useSetAtom(getAuthUrlAtom)
   const [themeMode, setThemeMode] = useState<'light' | 'dark'>('light')
   const [showUserMenu, setShowUserMenu] = useState(false)
 
@@ -76,46 +75,6 @@ export default function Header() {
     }
   }, [])
 
-  const handleStartLogin = useCallback(async () => {
-    try {
-      const url = await getAuthUrl()
-      const width = 800
-      const height = 500
-      const left = window.screenX + (window.outerWidth - width) / 2
-      const top = window.screenY + (window.outerHeight - height) / 2
-
-      window.open(
-        url,
-        'mezon-oauth',
-        `width=${width},height=${height},left=${left},top=${top},resizable=yes,scrollbars=yes`
-      )
-    } catch (error) {
-      console.error('[OAUTH] start login error:', error)
-    }
-  }, [getAuthUrl])
-
-  const handleBecomeTutorClick = useCallback(
-    (event: MouseEvent<HTMLAnchorElement | HTMLButtonElement>) => {
-      if (isAuthenticated) return
-      event.preventDefault()
-      if (typeof window !== 'undefined') {
-        window.sessionStorage.setItem(POST_LOGIN_REDIRECT_KEY, ROUTES.BECOME_TUTOR.INDEX)
-      }
-      void handleStartLogin()
-    },
-    [handleStartLogin, isAuthenticated]
-  )
-
-  useEffect(() => {
-    if (!isAuthenticated || typeof window === 'undefined') return
-
-    const redirectPath = window.sessionStorage.getItem(POST_LOGIN_REDIRECT_KEY)
-    if (!redirectPath) return
-
-    window.sessionStorage.removeItem(POST_LOGIN_REDIRECT_KEY)
-    router.push(redirectPath)
-  }, [isAuthenticated, router])
-
   const toggleTheme = useCallback(() => {
     const nextTheme = themeMode === 'dark' ? 'light' : 'dark'
     setThemeMode(nextTheme)
@@ -129,10 +88,12 @@ export default function Header() {
       // Persist selected locale for next-intl middleware/request config.
       document.cookie = `NEXT_LOCALE=${nextLocale}; path=/; max-age=31536000; samesite=lax`
 
-      // Re-render current route with the updated locale cookie.
+      const query = searchParams.toString()
+      const nextPath = query ? `${pathname}?${query}` : pathname
+      router.replace(nextPath)
       router.refresh()
     },
-    [locale, router]
+    [locale, pathname, router, searchParams]
   )
 
   const headerCssVars = useMemo(
@@ -171,13 +132,7 @@ export default function Header() {
       <nav className={styles.nav}>
         <Link href={ROUTES.TUTOR.INDEX}>Find Tutor</Link>
         <Link href={ROUTES.MY_LESSONS.INDEX}>My Lessons</Link>
-        {isAuthenticated ? (
-          <Link href={ROUTES.BECOME_TUTOR.INDEX}>Become a Tutor</Link>
-        ) : (
-          <button type="button" className={styles.navLinkButton} onClick={handleBecomeTutorClick}>
-            Become a Tutor
-          </button>
-        )}
+        <Link href={ROUTES.BECOME_TUTOR.INDEX}>Become a Tutor</Link>
       </nav>
 
       <div className={styles.actions}>
