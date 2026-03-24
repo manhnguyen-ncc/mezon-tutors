@@ -71,7 +71,6 @@ export const themes = {
     webHeaderToggleHover: '#f3f7ff',
     webHeaderLocaleActiveBg: '#1d66f2',
     webHeaderLocaleActiveText: '#ffffff',
-
     myLessonsPageBackground: '#F3F5F9',
     myLessonsTopNavBackground: '#FFFFFF',
     myLessonsTopNavBorder: '#E2E7F0',
@@ -242,7 +241,6 @@ export const themes = {
     webHeaderToggleHover: 'rgba(255, 255, 255, 0.12)',
     webHeaderLocaleActiveBg: 'rgba(29, 102, 242, 0.75)',
     webHeaderLocaleActiveText: '#ffffff',
-
     myLessonsPageBackground: '#050D1A',
     myLessonsTopNavBackground: '#070F1F',
     myLessonsTopNavBorder: 'rgba(20, 44, 89, 0.9)',
