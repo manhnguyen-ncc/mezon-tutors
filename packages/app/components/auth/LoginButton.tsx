@@ -27,7 +27,7 @@ export function LoginButton({ redirectTo }: LoginButtonProps) {
   const intervalRef = useRef<number | null>(null);
   const channelRef = useRef<BroadcastChannel | null>(null);
 
-  const cleanup = useCallback(() => {
+  const cleanup = useCallback((reason?: string) => {
     if (intervalRef.current !== null) {
       window.clearInterval(intervalRef.current);
       intervalRef.current = null;
@@ -61,7 +61,7 @@ export function LoginButton({ redirectTo }: LoginButtonProps) {
         }
 
         login({ accessToken: tokens.accessToken, user: loginUser });
-        cleanup();
+        cleanup('success');
 
         if (redirectTo && window.location.pathname !== redirectTo) {
           window.location.assign(redirectTo);
@@ -71,7 +71,7 @@ export function LoginButton({ redirectTo }: LoginButtonProps) {
 
       if (payload.type === 'MEZON_AUTH_ERROR') {
         console.error('[OAUTH] ERROR:', payload.error);
-        cleanup();
+        cleanup('error');
       }
     },
     [login, cleanup, redirectTo]
@@ -102,7 +102,7 @@ export function LoginButton({ redirectTo }: LoginButtonProps) {
 
     return () => {
       window.removeEventListener('message', handleMessage);
-      cleanup();
+      cleanup('unmount');
     };
   }, [processOAuthPayload, cleanup]);
 
@@ -123,7 +123,7 @@ export function LoginButton({ redirectTo }: LoginButtonProps) {
 
       if (!popup) {
         console.error('[OAUTH] popup blocked');
-        cleanup();
+        cleanup('popup_blocked');
         return;
       }
 
@@ -134,12 +134,12 @@ export function LoginButton({ redirectTo }: LoginButtonProps) {
 
       intervalRef.current = window.setInterval(() => {
         if (!popup || popup.closed) {
-          cleanup();
+          cleanup('popup_closed');
         }
       }, 5000);
     } catch (error) {
       console.error('[OAUTH] start login error:', error);
-      cleanup();
+      cleanup('catch');
     }
   }, [getAuthUrl, cleanup]);
 
