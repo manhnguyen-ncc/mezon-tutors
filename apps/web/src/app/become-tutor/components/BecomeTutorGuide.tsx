@@ -99,7 +99,6 @@ function GuideHighlightCard({
       position="relative"
       overflow="hidden"
       cursor="pointer"
-      y={0}
       group
       hoverStyle={{
         borderColor: '$myLessonsPrimaryButtonBorder',
