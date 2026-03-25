@@ -21,16 +21,11 @@ import { useMedia, XStack, YStack, Paragraph, H1, H2, Text } from 'tamagui';
 type GuideStepCardProps = {
   step: GuideStep;
   isCompact: boolean;
-  title: string;
-  description: string;
 };
 
 type GuideHighlightCardProps = {
   item: GuideHighlight;
   isCompact: boolean;
-  title: string;
-  description: string;
-  tag: string;
 };
 
 const HIGHLIGHT_ICON_BY_KEY: Record<GuideHighlightIconKey, typeof WalletOutlineIcon> = {
@@ -39,7 +34,9 @@ const HIGHLIGHT_ICON_BY_KEY: Record<GuideHighlightIconKey, typeof WalletOutlineI
   growProfessionally: GrowthOutlineIcon,
 };
 
-function GuideStepCard({ step, isCompact, title, description }: GuideStepCardProps) {
+function GuideStepCard({ step, isCompact }: GuideStepCardProps) {
+  const t = useTranslations('BecomeTutorGuide');
+
   return (
     <YStack
       flex={1}
@@ -63,7 +60,7 @@ function GuideStepCard({ step, isCompact, title, description }: GuideStepCardPro
         </Text>
       </XStack>
       <H2 color="$myLessonsHeaderTitle" fontSize={isCompact ? 20 : 24} lineHeight={isCompact ? 24 : 30}>
-        {title}
+        {t(step.titleKey)}
       </H2>
       <Paragraph
         color="$myLessonsPromoDescription"
@@ -72,7 +69,7 @@ function GuideStepCard({ step, isCompact, title, description }: GuideStepCardPro
         textAlign={isCompact ? 'left' : 'center'}
         maxWidth={250}
       >
-        {description}
+        {t(step.descriptionKey)}
       </Paragraph>
     </YStack>
   );
@@ -81,10 +78,8 @@ function GuideStepCard({ step, isCompact, title, description }: GuideStepCardPro
 function GuideHighlightCard({
   item,
   isCompact,
-  title,
-  description,
-  tag,
 }: GuideHighlightCardProps) {
+  const t = useTranslations('BecomeTutorGuide');
   const Icon = HIGHLIGHT_ICON_BY_KEY[item.iconKey];
 
   return (
@@ -159,7 +154,7 @@ function GuideHighlightCard({
           color: '$myLessonsPrimaryButtonText',
         }}
       >
-        {title}
+        {t(item.titleKey)}
       </H2>
       <Paragraph
         color="$myLessonsPromoDescription"
@@ -171,7 +166,7 @@ function GuideHighlightCard({
           opacity: 0.92,
         }}
       >
-        {description}
+        {t(item.descriptionKey)}
       </Paragraph>
 
       <YStack flex={1} />
@@ -187,7 +182,7 @@ function GuideHighlightCard({
             color: '$myLessonsPrimaryButtonText',
           }}
         >
-          {tag}
+          {t(item.tagKey)}
         </Text>
         <Text
           color="$myLessonsPrimaryButton"
@@ -270,13 +265,10 @@ export function BecomeTutorGuide() {
 
             <XStack flexDirection={isCompact ? 'column' : 'row'} gap={isCompact ? '$2.5' : '$2'}>
               {GUIDE_STEPS.map((step) => (
-                <GuideStepCard
-                  key={step.id}
-                  step={step}
-                  isCompact={isCompact}
-                  title={t(step.titleKey)}
-                  description={t(step.descriptionKey)}
-                />
+                <GuideStepCard 
+                key={step.id} 
+                step={step} 
+                isCompact={isCompact} />
               ))}
             </XStack>
           </YStack>
@@ -307,14 +299,10 @@ export function BecomeTutorGuide() {
         <YStack padding={isCompact ? 16 : 22} backgroundColor="$tutorsPageBackground" gap="$4">
           <XStack flexDirection={isCompact ? 'column' : 'row'} gap="$2.5">
             {GUIDE_HIGHLIGHTS.map((item) => (
-              <GuideHighlightCard
-                key={item.id}
-                item={item}
-                isCompact={isCompact}
-                title={t(item.titleKey)}
-                description={t(item.descriptionKey)}
-                tag={t(item.tagKey)}
-              />
+              <GuideHighlightCard 
+              key={item.id} 
+              item={item} 
+              isCompact={isCompact} />
             ))}
           </XStack>
         </YStack>
