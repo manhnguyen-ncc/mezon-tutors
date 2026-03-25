@@ -1,19 +1,22 @@
-import Header from './Header/Header'
-import Hero from './Hero/Hero'
-import Features from './Features/Features'
-import Stats from './Stats/Stats'
-import Seamless from './Seamless/Seamless'
-import Footer from './Footer/Footer'
+'use client';
+
+import Header from './Header/Header';
+import Hero from './Hero/Hero';
+import Features from './Features/Features';
+import Stats from './Stats/Stats';
+import Seamless from './Seamless/Seamless';
+import Footer from './Footer/Footer';
+import { YStack } from 'tamagui';
 
 export default function LandingPage() {
   return (
-    <div className="bg-[#050A15] min-h-screen text-white">
+    <YStack backgroundColor="#050A15" minHeight="100vh">
       <Header />
       <Hero />
       <Features />
       <Stats />
       <Seamless />
       <Footer />
-    </div>
-  )
+    </YStack>
+  );
 }

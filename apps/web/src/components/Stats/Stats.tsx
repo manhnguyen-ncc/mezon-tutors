@@ -1,58 +1,113 @@
 'use client';
-
-import styles from './Stats.module.css';
+import { useTranslation } from 'react-i18next';
+import { XStack, YStack, Text, Button, Paragraph } from 'tamagui';
 
 export default function Stats() {
+  const { t } = useTranslation();
+
   return (
-    <section className={styles.stats}>
+    <XStack
+      tag="section"
+      backgroundColor="#081124"
+      paddingVertical={80}
+      paddingHorizontal={20}
+      gap={40}
+      flexDirection="column"
+      $gtSm={{ paddingHorizontal: 40 }}
+      $gtLg={{ 
+        flexDirection: 'row', 
+        alignItems: 'center', 
+        justifyContent: 'space-between',
+        paddingVertical: 120, 
+        paddingHorizontal: 120, 
+        gap: 80 
+      }}
+    >
+      {/* LEFT: IMAGE & GLASSMORPHISM BADGE */}
+      <YStack position="relative" width="100%" $gtLg={{ flex: 1, maxWidth: '50%' }}>
+        
+        {/* FIX LỖI MẤT ẢNH: Dùng thẻ img thuần, ép tỉ lệ 1:1 (hình vuông) cho giống design */}
+        <img 
+          src="/teach.jpg" 
+          alt="Teaching" 
+          style={{ 
+            width: '100%', 
+            aspectRatio: '1 / 1', 
+            objectFit: 'cover', 
+            borderRadius: '24px' 
+          }} 
+        />
+        
+        {/* FIX BADGE KÍNH MỜ (GLASSMORPHISM) */}
+        <YStack 
+          position="absolute" 
+          top={24} 
+          left={24} 
+          paddingVertical={14} 
+          paddingHorizontal={24} 
+          borderRadius={16} 
+          backgroundColor="rgba(255, 255, 255, 0.15)" // Màu nền trắng trong suốt
+          borderWidth={1}
+          borderColor="rgba(255, 255, 255, 0.2)"
+          style={{ backdropFilter: 'blur(12px)' }} // Hiệu ứng làm mờ
+        >
+          <Text color="#2563eb" fontSize={24} fontWeight="900" marginBottom={4}>
+            +15M VNĐ
+          </Text>
+          <Text color="#94a3b8" fontSize={11} fontWeight="700" letterSpacing={1}>
+            {t('stats.income_label', 'AVERAGE INCOME / MONTH')}
+          </Text>
+        </YStack>
+      </YStack>
 
-      {/* IMAGE */}
-      <div className={styles.imageBox}>
-        <img src="/teach.jpg" alt="Teaching" />
+      {/* RIGHT: TEXT CONTENT */}
+      <YStack width="100%" $gtLg={{ flex: 1, maxWidth: 520 }}>
+        <YStack>
+          <Text color="white" fontSize={36} lineHeight={46} fontWeight="800" $gtSm={{ fontSize: 42, lineHeight: 52 }} $gtLg={{ fontSize: 48, lineHeight: 58 }}>
+            {t('stats.title_part1', 'Become a tutor and')}
+          </Text>
+          <Text color="#2563eb" fontSize={36} lineHeight={46} fontWeight="800" $gtSm={{ fontSize: 42, lineHeight: 52 }} $gtLg={{ fontSize: 48, lineHeight: 58 }}>
+            {t('stats.title_part2', 'increase your income')}
+          </Text>
+        </YStack>
 
-        <div className={styles.badge}>
-          <h3>+15M VND</h3>
-          <span>AVERAGE INCOME / MONTH</span>
-        </div>
-      </div>
+        <Paragraph marginTop={20} color="#94a3b8" fontSize={15} lineHeight={26}>
+          {t('stats.description', 'For students and professionals with high language proficiency. Share knowledge, manage your time, and build a personal brand in our knowledge community.')}
+        </Paragraph>
 
-      {/* CONTENT */}
-      <div className={styles.content}>
+        {/* CẬP NHẬT TEXT THEO ĐÚNG DESIGN CỦA SẾP */}
+        <YStack marginTop={30} gap={16}>
+          <StatListItem text={t('stats.benefit1', 'Get paid after every lesson')} />
+          <StatListItem text={t('stats.benefit2', '4.0 teaching tools support')} />
+          <StatListItem text={t('stats.benefit3', '100% flexible schedule')} />
+        </YStack>
 
-        <h2>
-          Become a tutor and <br />
-          <span>increase your income</span>
-        </h2>
+        <Button 
+          marginTop={40} 
+          backgroundColor="white" 
+          color="#0f172a" 
+          paddingHorizontal={32} 
+          height={54} 
+          borderRadius={999} 
+          borderWidth={0} 
+          fontWeight="700" 
+          fontSize={16}
+          hoverStyle={{ backgroundColor: '#f1f5f9', scale: 1.02 }} 
+          pressStyle={{ scale: 0.98 }} 
+          alignSelf="flex-start"
+        >
+          {t('stats.cta', 'Register to teach')}
+        </Button>
+      </YStack>
+    </XStack>
+  );
+}
 
-        <p>
-          For students and professionals with high language proficiency.
-          Share knowledge, manage your time, and build a personal brand
-          in our learning community.
-        </p>
-
-        <ul className={styles.list}>
-          <li>
-            <img src="/icons/iccheck.svg" alt="check" />
-            <span>Get paid after every lesson</span>
-          </li>
-
-          <li>
-            <img src="/icons/iccheck.svg" alt="check" />
-            <span>Teaching tools support</span>
-          </li>
-
-          <li>
-            <img src="/icons/iccheck.svg" alt="check" />
-            <span>Flexible schedule</span>
-          </li>
-        </ul>
-
-        <button className={styles.button}>
-          Register to teach
-        </button>
-
-      </div>
-
-    </section>
+function StatListItem({ text }: { text: string }) {
+  return (
+    <XStack alignItems="center" gap={12}>
+      <img src="/icons/iccheck.svg" alt="check" style={{ width: 22, height: 22 }} />
+      <Text color="white" fontSize={15} fontWeight="600">{text}</Text>
+    </XStack>
   );
 }
