@@ -1,11 +1,45 @@
 'use client';
 import { useTranslation } from 'react-i18next';
-// Đã bỏ Image của tamagui đi vì chúng ta dùng img thuần của HTML cho icon
 import { XStack, YStack, Text, H2, Paragraph } from 'tamagui';
 import { ArrowRight } from 'lucide-react';
+// GỌI THẰNG EM VÀO ĐÂY
+import FeatureCard from './FeatureCard';
 
 export default function Features() {
   const { t } = useTranslation();
+  
+  const FEATURES_LIST = [
+    {
+      id: 'ft-1',
+      isFeatured: true,
+      icon: "/icons/ft1.svg",
+      titleKey: 'features.card1_title',
+      titleDefault: 'Evening classes',
+      descKey: 'features.card1_desc',
+      descDefault: 'Make use of your time after work with tutors ready to accompany you until 11 PM.',
+      iconSize: "95%"
+    },
+    {
+      id: 'ft-2',
+      isFeatured: false,
+      icon: "/icons/ft2.svg",
+      titleKey: 'features.card2_title',
+      titleDefault: 'Flexible weekends',
+      descKey: 'features.card2_desc',
+      descDefault: 'No more worrying about work pressure, spend 2 weekend days to upgrade your communication skills.',
+      iconSize: "45%"
+    },
+    {
+      id: 'ft-3',
+      isFeatured: false,
+      icon: "/icons/ft3.svg",
+      titleKey: 'features.card3_title',
+      titleDefault: 'Learn via Mezon',
+      descKey: 'features.card3_desc',
+      descDefault: 'Chat, video call, and share materials smoothly on the familiar Mezon app.',
+      iconSize: "85%"
+    }
+  ];
 
   return (
     <YStack
@@ -33,78 +67,17 @@ export default function Features() {
       </XStack>
 
       <XStack flexWrap="wrap" gap={16} $gtSm={{ gap: 20 }} $gtLg={{ gap: 32 }}>
-        <FeatureCard 
-          isFeatured 
-          icon="/icons/ft1.svg" 
-          title={t('features.card1_title', 'Evening classes')} 
-          desc={t('features.card1_desc', 'Make use of your time after work with tutors ready to accompany you until 11 PM.')} 
-          iconSize="95%" // Đã tăng mập mạp lên 95%
-        />
-        <FeatureCard 
-          icon="/icons/ft2.svg" 
-          title={t('features.card2_title', 'Flexible weekends')} 
-          desc={t('features.card2_desc', 'No more worrying about work pressure, spend 2 weekend days to upgrade your communication skills.')} 
-          iconSize="45%" 
-        />
-        <FeatureCard 
-          icon="/icons/ft3.svg" 
-          title={t('features.card3_title', 'Learn via Mezon')} 
-          desc={t('features.card3_desc', 'Chat, video call, and share materials smoothly on the familiar Mezon app.')} 
-          iconSize="85%" // Đã tăng mập mạp lên 85%
-        />
+        {FEATURES_LIST.map((item) => (
+          <FeatureCard 
+            key={item.id}
+            isFeatured={item.isFeatured}
+            icon={item.icon}
+            title={t(item.titleKey, item.titleDefault)}
+            desc={t(item.descKey, item.descDefault)}
+            iconSize={item.iconSize}
+          />
+        ))}
       </XStack>
-    </YStack>
-  );
-}
-
-// Bổ sung iconSize vào Interface
-interface FeatureCardProps {
-  icon: string;
-  title: string;
-  desc: string;
-  isFeatured?: boolean;
-  iconSize?: string; 
-}
-
-function FeatureCard({ icon, title, desc, isFeatured = false, iconSize = "50%" }: FeatureCardProps) {
-  return (
-    <YStack
-      flexBasis={"100%" as any}
-      padding={22}
-      borderRadius={16}
-      borderWidth={1}
-      borderColor="rgba(255, 255, 255, 0.08)"
-      animation="quick"
-      hoverStyle={{ y: -5, borderColor: 'rgba(59, 130, 246, 0.4)' }}
-      style={{ background: 'linear-gradient(145deg, #0b1628, #111c3b)' }}
-      $gtSm={{ 
-        flexBasis: (isFeatured ? '100%' : 'calc(50% - 10px)') as any,
-        padding: 26 
-      }}
-      $gtLg={{ 
-        flexBasis: 'calc(33.33% - 22px)' as any,
-        padding: 36, 
-        borderRadius: 20 
-      }}
-    >
-      <XStack 
-        width={40} height={40} 
-        backgroundColor="rgba(37, 99, 235, 0.15)" 
-        borderRadius={999} 
-        alignItems="center" justifyContent="center" 
-        marginBottom={16} 
-        $gtLg={{ width: 48, height: 48 }}
-      >
-        {/* Nhận iconSize từ cha truyền xuống để ép size */}
-        <img 
-          src={icon} 
-          alt={title} 
-          style={{ width: iconSize, height: iconSize, objectFit: 'contain' }} 
-        />
-      </XStack>
-
-      <Text color="white" fontSize={16} fontWeight="600" marginBottom={8} $gtLg={{ fontSize: 20 }}>{title}</Text>
-      <Paragraph fontSize={13} lineHeight={20} color="#9fb3c8" $gtLg={{ fontSize: 15, lineHeight: 24 }}>{desc}</Paragraph>
     </YStack>
   );
 }

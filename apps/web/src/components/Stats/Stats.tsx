@@ -1,9 +1,16 @@
 'use client';
 import { useTranslation } from 'react-i18next';
 import { XStack, YStack, Text, Button, Paragraph } from 'tamagui';
+import StatListItem from './StatListItem';
 
 export default function Stats() {
   const { t } = useTranslation();
+  
+  const STAT_BENEFITS = [
+    { id: 'benefit-1', text: t('stats.benefit1', 'Get paid after every lesson') },
+    { id: 'benefit-2', text: t('stats.benefit2', '4.0 teaching tools support') },
+    { id: 'benefit-3', text: t('stats.benefit3', '100% flexible schedule') },
+  ];
 
   return (
     <XStack
@@ -23,10 +30,7 @@ export default function Stats() {
         gap: 80 
       }}
     >
-      {/* LEFT: IMAGE & GLASSMORPHISM BADGE */}
       <YStack position="relative" width="100%" $gtLg={{ flex: 1, maxWidth: '50%' }}>
-        
-        {/* FIX LỖI MẤT ẢNH: Dùng thẻ img thuần, ép tỉ lệ 1:1 (hình vuông) cho giống design */}
         <img 
           src="/teach.jpg" 
           alt="Teaching" 
@@ -38,7 +42,6 @@ export default function Stats() {
           }} 
         />
         
-        {/* FIX BADGE KÍNH MỜ (GLASSMORPHISM) */}
         <YStack 
           position="absolute" 
           top={24} 
@@ -46,10 +49,10 @@ export default function Stats() {
           paddingVertical={14} 
           paddingHorizontal={24} 
           borderRadius={16} 
-          backgroundColor="rgba(255, 255, 255, 0.15)" // Màu nền trắng trong suốt
+          backgroundColor="rgba(255, 255, 255, 0.15)" 
           borderWidth={1}
           borderColor="rgba(255, 255, 255, 0.2)"
-          style={{ backdropFilter: 'blur(12px)' }} // Hiệu ứng làm mờ
+          style={{ backdropFilter: 'blur(12px)' }} 
         >
           <Text color="#2563eb" fontSize={24} fontWeight="900" marginBottom={4}>
             +15M VNĐ
@@ -75,11 +78,10 @@ export default function Stats() {
           {t('stats.description', 'For students and professionals with high language proficiency. Share knowledge, manage your time, and build a personal brand in our knowledge community.')}
         </Paragraph>
 
-        {/* CẬP NHẬT TEXT THEO ĐÚNG DESIGN CỦA SẾP */}
         <YStack marginTop={30} gap={16}>
-          <StatListItem text={t('stats.benefit1', 'Get paid after every lesson')} />
-          <StatListItem text={t('stats.benefit2', '4.0 teaching tools support')} />
-          <StatListItem text={t('stats.benefit3', '100% flexible schedule')} />
+          {STAT_BENEFITS.map((benefit) => (
+            <StatListItem key={benefit.id} text={benefit.text} />
+          ))}
         </YStack>
 
         <Button 
@@ -99,15 +101,6 @@ export default function Stats() {
           {t('stats.cta', 'Register to teach')}
         </Button>
       </YStack>
-    </XStack>
-  );
-}
-
-function StatListItem({ text }: { text: string }) {
-  return (
-    <XStack alignItems="center" gap={12}>
-      <img src="/icons/iccheck.svg" alt="check" style={{ width: 22, height: 22 }} />
-      <Text color="white" fontSize={15} fontWeight="600">{text}</Text>
     </XStack>
   );
 }

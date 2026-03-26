@@ -5,6 +5,25 @@ import { Play } from 'lucide-react';
 
 export default function Hero() {
   const { t } = useTranslation();
+  const HERO_CONTENT = {
+    badge: t('hero.badge', 'MATCHING STYLE TINDER'),
+    titlePart1: t('hero.title_part1', 'Find your ideal tutor -'),
+    titlePart2: t('hero.title_part2', 'Just a swipe away'),
+    description: t('hero.description', 'Connect busy professionals with talented tutors. Learn any language, anytime, anywhere via the integrated Mezon platform.'),
+  };
+
+  const TUTOR_INFO = {
+    matchRate: "95% MATCH",
+    rating: "4.9",
+    name: t('hero.tutor_name', 'Nguyhn Minh Anh, 24'), 
+    desc: `"${t('hero.tutor_desc', 'IELTS 8.0 • Dedicated to busy learners')}"`,
+    imageUri: '/tutor.png'
+  };
+
+  const CARD_BUTTONS = [
+    { label: t('hero.profile', 'Profile'), bgColor: "rgba(255, 255, 255, 0.15)" },
+    { label: t('hero.connect', 'Connect'), bgColor: "#2563eb" }
+  ];
 
   return (
     <XStack
@@ -33,23 +52,22 @@ export default function Hero() {
           >
             <Image source={{ uri: '/icons/flash.svg', width: 14, height: 14 }} alt="flash" />
             <Text color="#3b82f6" fontSize={12} fontWeight="800" letterSpacing={1}>
-              {t('hero.badge', 'MATCHING STYLE TINDER')}
+              {HERO_CONTENT.badge}
             </Text>
           </XStack>
 
-          {/* Title - Chỉnh lại line-height và letter-spacing cho giống design */}
           <YStack>
             <Text fontSize={64} fontWeight="900" lineHeight={76} letterSpacing={-1} color="white">
-              {t('hero.title_part1', 'Find your ideal tutor -')}
+              {HERO_CONTENT.titlePart1}
             </Text>
             <Text fontSize={64} fontWeight="900" lineHeight={76} letterSpacing={-1} color="#2563eb">
-              {t('hero.title_part2', 'Just a swipe away')}
+              {HERO_CONTENT.titlePart2}
             </Text>
           </YStack>
 
           {/* Description */}
           <Paragraph color="#94a3b8" lineHeight={28} fontSize={16} maxWidth={500}>
-            {t('hero.description', 'Connect busy professionals with talented tutors. Learn any language, anytime, anywhere via the integrated Mezon platform.')}
+            {HERO_CONTENT.description}
           </Paragraph>
 
           {/* Buttons Group */}
@@ -62,7 +80,7 @@ export default function Hero() {
               color="white"
               fontWeight="700"
               borderWidth={0}
-              boxShadow="0 10px 25px rgba(37, 99, 235, 0.4)" // Thêm hiệu ứng Glow xanh
+              boxShadow="0 10px 25px rgba(37, 99, 235, 0.4)" 
               hoverStyle={{ backgroundColor: '#1d4ed8' }}
             >
               {t('hero.start_now', 'Start now')}
@@ -85,7 +103,7 @@ export default function Hero() {
           </XStack>
         </YStack>
 
-        {/* RIGHT CONTENT - CARDS */}
+        {/* RIGHT CONTENT */}
         <YStack width="50%" alignItems="center" position="relative">
           <ZStack width={384} height={512}>
             
@@ -99,7 +117,7 @@ export default function Hero() {
               boxShadow="0 40px 100px rgba(0, 0, 0, 0.7)"
               position="relative"
             >
-              <Image source={{ uri: '/tutor.png', width: 384, height: 512 }} objectFit="cover" />
+              <Image source={{ uri: TUTOR_INFO.imageUri, width: 384, height: 512 }} objectFit="cover" />
               
               <YStack
                 position="absolute" bottom={0} left={0} right={0} height="60%"
@@ -108,47 +126,44 @@ export default function Hero() {
               />
 
               <YStack position="absolute" bottom={0} left={0} padding={20} width="100%" zIndex={2} gap={6}>
-                
-                {/* FIX CHÍNH: Đổi space-between thành flex-start, thêm gap={12} */}
                 <XStack justifyContent="flex-start" alignItems="center" gap={12} marginBottom={4}>
                   <XStack backgroundColor="#2563eb" paddingHorizontal={10} paddingVertical={4} borderRadius={999}>
-                    <Text color="white" fontSize={11} fontWeight="800">95% MATCH</Text>
+                    <Text color="white" fontSize={11} fontWeight="800">{TUTOR_INFO.matchRate}</Text>
                   </XStack>
                   <XStack alignItems="center" gap={4}>
                     <Image source={{ uri: '/icons/star.svg', width: 14, height: 14 }} />
-                    <Text color="#facc15" fontSize={14} fontWeight="700">4.9</Text>
+                    <Text color="#facc15" fontSize={14} fontWeight="700">{TUTOR_INFO.rating}</Text>
                   </XStack>
                 </XStack>
 
                 <Text color="white" fontSize={22} fontWeight="700">
-                  {t('hero.tutor_name', 'Nguyhn Minh Anh, 24')}
+                  {TUTOR_INFO.name}
                 </Text>
                 <Text color="#cbd5f5" fontSize={13}>
-                  {/* Thêm ngoặc kép chuẩn design */}
-                  "{t('hero.tutor_desc', 'IELTS 8.0 • Dedicated to busy learners')}"
+                  {TUTOR_INFO.desc}
                 </Text>
 
+                {/* Map Buttons */}
                 <XStack gap={10} marginTop={16}>
-                  <Button flex={1} backgroundColor="rgba(255, 255, 255, 0.15)" borderRadius={20} height={40} borderWidth={0}>
-                    <Text color="white" fontWeight="600">{t('hero.profile', 'Profile')}</Text>
-                  </Button>
-                  <Button flex={1} backgroundColor="#2563eb" borderRadius={20} height={40} borderWidth={0}>
-                    <Text color="white" fontWeight="600">{t('hero.connect', 'Connect')}</Text>
-                  </Button>
+                  {CARD_BUTTONS.map((btn, idx) => (
+                    <Button key={idx} flex={1} backgroundColor={btn.bgColor as any} borderRadius={20} height={40} borderWidth={0}>
+                      <Text color="white" fontWeight="600">{btn.label}</Text>
+                    </Button>
+                  ))}
                 </XStack>
               </YStack>
             </YStack>
 
-            {/* SMALL OVERLAY CARD - Điều chỉnh lại tọa độ */}
+            {/* SMALL VIDEO CARD */}
             <YStack
               position="absolute"
-              bottom={-15} // Nhích lên 1 chút cho đỡ bị tụt
-              right={-115} // Kéo vào trong 1 chút
+              bottom={-15} 
+              right={-115} 
               width={192}
               height={108}
               borderRadius={16}
               overflow="hidden"
-              rotate="-2deg" // Card nhỏ trong design hơi nghiêng ngược lại
+              rotate="-2deg" 
               boxShadow="0 15px 35px rgba(0, 0, 0, 0.6)"
               zIndex={3}
               backgroundColor="black"

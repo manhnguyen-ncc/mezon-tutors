@@ -6,6 +6,18 @@ import { Globe, Moon } from 'lucide-react';
 
 export default function Header() {
   const { t } = useTranslation();
+  const NAV_ITEMS = [
+    {
+      labelKey: 'header.find_tutor',
+      defaultLabel: 'Find Tutor',
+      href: '#',
+    },
+    {
+      labelKey: 'header.become_tutor',
+      defaultLabel: 'Become a Tutor',
+      href: '#',
+    },
+  ];
 
   return (
     <XStack
@@ -28,18 +40,20 @@ export default function Header() {
         </XStack>
       </Link>
 
-      {/* CENTER - NAVIGATION */}
       <XStack tag="nav" gap={40}>
-        <Link href="#" passHref style={{ textDecoration: 'none' }}>
-          <Text color="#cbd5e1" fontSize={15} fontWeight="500" hoverStyle={{ color: 'white' }} animation="quick">
-            {t('header.find_tutor', 'Find Tutor')} 
-          </Text>
-        </Link>
-        <Link href="#" passHref style={{ textDecoration: 'none' }}>
-          <Text color="#cbd5e1" fontSize={15} fontWeight="500" hoverStyle={{ color: 'white' }} animation="quick">
-            {t('header.become_tutor', 'Become a Tutor')} 
-          </Text>
-        </Link>
+        {NAV_ITEMS.map((item, index) => (
+          <Link key={index} href={item.href} passHref style={{ textDecoration: 'none' }}>
+            <Text 
+              color="#cbd5e1" 
+              fontSize={15} 
+              fontWeight="500" 
+              hoverStyle={{ color: 'white' }} 
+              animation="quick"
+            >
+              {t(item.labelKey, item.defaultLabel)} 
+            </Text>
+          </Link>
+        ))}
       </XStack>
 
       {/* RIGHT - ACTIONS */}
