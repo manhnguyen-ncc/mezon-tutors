@@ -29,14 +29,17 @@ export function toVerifiedTutorProfileDto(
 }
 
 export function toTutorReviewDto(review: TutorReview & { reviewer: Pick<User, 'id' | 'username' | 'avatar'> }): TutorReviewDto {
+  const { id, rating, comment, createdAt, reviewer } = review
+  const { id: reviewerId, username: reviewerName, avatar: reviewerAvatar } = reviewer
+
   return {
-    id: review.id,
-    reviewerId: review.reviewer.id,
-    reviewerName: review.reviewer.username,
-    reviewerAvatar: review.reviewer.avatar,
-    rating: review.rating,
-    comment: review.comment,
-    createdAt: review.createdAt.toISOString(),
+    id,
+    reviewerId,
+    reviewerName,
+    reviewerAvatar,
+    rating,
+    comment,
+    createdAt: createdAt.toISOString(),
   }
 }
 
