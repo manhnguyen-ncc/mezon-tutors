@@ -1,10 +1,15 @@
-import { Body, Controller, Get, Post, Query, Req, UseGuards } from '@nestjs/common'
+import { Body, Controller, Get, Param, Post, Query, Req, UseGuards } from '@nestjs/common'
 import { ApiTags } from '@nestjs/swagger'
 import type { Request } from 'express'
 import type { AuthUserPayload } from '../auth/interfaces/auth.interfaces'
 import type {
   PaginatedResponse,
   SubmitTutorProfileDto,
+  TutorDetailDto,
+  TutorAboutDto,
+  TutorScheduleDto,
+  TutorReviewsDto,
+  TutorResourcesDto,
   VerifiedTutorProfileDto,
 } from '@mezon-tutors/shared'
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard'
@@ -29,5 +34,25 @@ export class TutorProfileController {
     @Query() query: VerifiedTutorQueryDto
   ): Promise<PaginatedResponse<VerifiedTutorProfileDto>> {
     return this.tutorProfileService.getVerifiedTutors(query)
+  }
+
+  @Get(':id/about')
+  async getTutorAbout(@Param('id') id: string): Promise<TutorAboutDto> {
+    return this.tutorProfileService.getTutorAbout(id)
+  }
+
+  @Get(':id/schedule')
+  async getTutorSchedule(@Param('id') id: string): Promise<TutorScheduleDto> {
+    return this.tutorProfileService.getTutorSchedule(id)
+  }
+
+  @Get(':id/reviews')
+  async getTutorReviews(@Param('id') id: string): Promise<TutorReviewsDto> {
+    return this.tutorProfileService.getTutorReviews(id)
+  }
+
+  @Get(':id/resources')
+  async getTutorResources(@Param('id') id: string): Promise<TutorResourcesDto> {
+    return this.tutorProfileService.getTutorResources(id)
   }
 }

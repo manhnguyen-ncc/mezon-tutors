@@ -8,7 +8,8 @@ import {
 } from '@mezon-tutors/app/ui/icons'
 import { type GuideHighlight, type GuideHighlightIconKey } from '@mezon-tutors/shared'
 import { useTranslations } from 'next-intl'
-import { H2, Paragraph, Text, XStack, YStack } from 'tamagui'
+import { Paragraph, Text, XStack, YStack } from '@mezon-tutors/app/ui'
+import { H2 } from 'tamagui'
 
 type GuideHighlightCardProps = {
   item: GuideHighlight

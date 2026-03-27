@@ -8,7 +8,6 @@ import { LogoutButton } from '@mezon-tutors/app/components/auth/LogoutButton'
 import { ROUTES } from '@mezon-tutors/shared'
 import { useCallback, useEffect, useMemo, useState, type CSSProperties } from 'react'
 import { useLocale, useTranslations } from 'next-intl'
-import { useTheme } from 'tamagui'
 import { usePathname, useRouter, useSearchParams } from 'next/navigation'
 
 function ThemeIcon({ isDark }: { isDark: boolean }) {
@@ -54,7 +53,6 @@ function ThemeIcon({ isDark }: { isDark: boolean }) {
 export default function Header() {
   const locale = useLocale()
   const t = useTranslations('Common.Header')
-  const theme = useTheme()
   const router = useRouter()
   const pathname = usePathname()
   const searchParams = useSearchParams()
@@ -62,6 +60,37 @@ export default function Header() {
   const user = useAtomValue(userAtom)
   const [themeMode, setThemeMode] = useState<'light' | 'dark'>('light')
   const [showUserMenu, setShowUserMenu] = useState(false)
+
+  const headerThemeVarsByMode = {
+    light: {
+      '--header-bg-start': '#0b1628',
+      '--header-bg-end': '#101f3f',
+      '--header-border': 'rgba(255, 255, 255, 0.10)',
+      '--header-logo-text': '#ffffff',
+      '--header-nav-text': '#cbd5e1',
+      '--header-nav-hover': '#ffffff',
+      '--header-toggle-border': 'rgba(255, 255, 255, 0.22)',
+      '--header-toggle-bg': 'rgba(255, 255, 255, 0.04)',
+      '--header-toggle-text': '#e7eeff',
+      '--header-toggle-hover': 'rgba(255, 255, 255, 0.12)',
+      '--header-locale-active-bg': 'rgba(29, 102, 242, 0.75)',
+      '--header-locale-active-text': '#ffffff',
+    } as CSSProperties,
+    dark: {
+      '--header-bg-start': '#050d19',
+      '--header-bg-end': '#0b1628',
+      '--header-border': 'rgba(148, 163, 184, 0.20)',
+      '--header-logo-text': '#f8fafc',
+      '--header-nav-text': '#cbd5e1',
+      '--header-nav-hover': '#ffffff',
+      '--header-toggle-border': 'rgba(148, 163, 184, 0.35)',
+      '--header-toggle-bg': 'rgba(15, 23, 42, 0.45)',
+      '--header-toggle-text': '#e2e8f0',
+      '--header-toggle-hover': 'rgba(148, 163, 184, 0.18)',
+      '--header-locale-active-bg': 'rgba(29, 102, 242, 0.82)',
+      '--header-locale-active-text': '#ffffff',
+    } as CSSProperties,
+  }
 
   useEffect(() => {
     const currentTheme = document.documentElement.getAttribute('data-theme')
@@ -102,24 +131,7 @@ export default function Header() {
     [locale, pathname, router, searchParams]
   )
 
-  const headerCssVars = useMemo(
-    () =>
-      ({
-        '--header-bg-start': theme.webHeaderBgStart?.get(),
-        '--header-bg-end': theme.webHeaderBgEnd?.get(),
-        '--header-border': theme.webHeaderBorder?.get(),
-        '--header-logo-text': theme.webHeaderLogoText?.get(),
-        '--header-nav-text': theme.webHeaderNavText?.get(),
-        '--header-nav-hover': theme.webHeaderNavHover?.get(),
-        '--header-toggle-border': theme.webHeaderToggleBorder?.get(),
-        '--header-toggle-bg': theme.webHeaderToggleBg?.get(),
-        '--header-toggle-text': theme.webHeaderToggleText?.get(),
-        '--header-toggle-hover': theme.webHeaderToggleHover?.get(),
-        '--header-locale-active-bg': theme.webHeaderLocaleActiveBg?.get(),
-        '--header-locale-active-text': theme.webHeaderLocaleActiveText?.get(),
-      }) as CSSProperties,
-    [theme]
-  )
+  const headerCssVars = useMemo(() => headerThemeVarsByMode[themeMode], [themeMode])
 
   return (
     <header className={styles.header} style={headerCssVars}>
