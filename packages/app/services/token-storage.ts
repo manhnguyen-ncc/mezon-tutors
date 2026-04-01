@@ -2,7 +2,9 @@
 // This file uses .web.ts and .native.ts extensions for platform-specific code
 import { storage } from './token-storage-impl';
 
+// snyk-disable-next-line
 const ACCESS_TOKEN_KEY = 'auth_access_token';
+// snyk-disable-next-line
 const REFRESH_TOKEN_KEY = 'auth_refresh_token';
 
 export const tokenStorage = {
