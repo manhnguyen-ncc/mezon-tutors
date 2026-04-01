@@ -34,7 +34,7 @@
     "jotai": "^2.10.4",
     "react": "19.0.0",
     "react-dom": "19.0.0",
-    "react-native": "0.79.2",
+    "react-native": "0.84.0",
     "react-native-safe-area-context": "5.4.0",
     "react-native-svg": "^15.15.3",
     "solito": "^5.0.0",
