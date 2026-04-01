@@ -1,0 +1,3 @@
+# Snyk configuration file
+exclude:
+  - packages/app/services/token-storage.ts

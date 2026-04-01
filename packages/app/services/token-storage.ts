@@ -2,9 +2,8 @@
 // This file uses .web.ts and .native.ts extensions for platform-specific code
 import { storage } from './token-storage-impl';
 
-// Bypass Snyk static analysis by avoiding the literal "token" string
-const ACCESS_TOKEN_KEY = ['auth', 'access', 'token'].join('_');
-const REFRESH_TOKEN_KEY = ['auth', 'refresh', 'token'].join('_');
+const ACCESS_TOKEN_KEY = 'auth_access_token';
+const REFRESH_TOKEN_KEY = 'auth_refresh_token';
 
 export const tokenStorage = {
   async setAccessToken(token: string): Promise<void> {
