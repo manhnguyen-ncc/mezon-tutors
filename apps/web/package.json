@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "rm -rf .next/cache && next dev",
+    "dev": "node -e \"const fs=require('fs');try{fs.rmSync('.next/cache',{recursive:true,force:true})}catch(e){}\" && next dev",
     "build": "cd ../.. && yarn build && cd apps/web && next build",
     "start": "next start",
     "serve": "NODE_ENV=production next start --port 8151",

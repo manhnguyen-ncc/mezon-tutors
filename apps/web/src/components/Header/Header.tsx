@@ -6,7 +6,7 @@ import { isAuthenticatedAtom, userAtom } from '@mezon-tutors/app/store/auth.atom
 import { LoginButton } from '@mezon-tutors/app/components/auth/LoginButton'
 import { LogoutButton } from '@mezon-tutors/app/components/auth/LogoutButton'
 import { ROUTES } from '@mezon-tutors/shared'
-import { useCallback, useEffect, useMemo, useState, type CSSProperties } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import { useLocale, useTranslations } from 'next-intl'
 import { usePathname, useRouter, useSearchParams } from 'next/navigation'
 
@@ -58,39 +58,8 @@ export default function Header() {
   const searchParams = useSearchParams()
   const isAuthenticated = useAtomValue(isAuthenticatedAtom)
   const user = useAtomValue(userAtom)
-  const [themeMode, setThemeMode] = useState<'light' | 'dark'>('light')
+  const [themeMode, setThemeMode] = useState<'light' | 'dark'>('dark')
   const [showUserMenu, setShowUserMenu] = useState(false)
-
-  const headerThemeVarsByMode = {
-    light: {
-      '--header-bg-start': '#0b1628',
-      '--header-bg-end': '#101f3f',
-      '--header-border': 'rgba(255, 255, 255, 0.10)',
-      '--header-logo-text': '#ffffff',
-      '--header-nav-text': '#cbd5e1',
-      '--header-nav-hover': '#ffffff',
-      '--header-toggle-border': 'rgba(255, 255, 255, 0.22)',
-      '--header-toggle-bg': 'rgba(255, 255, 255, 0.04)',
-      '--header-toggle-text': '#e7eeff',
-      '--header-toggle-hover': 'rgba(255, 255, 255, 0.12)',
-      '--header-locale-active-bg': 'rgba(29, 102, 242, 0.75)',
-      '--header-locale-active-text': '#ffffff',
-    } as CSSProperties,
-    dark: {
-      '--header-bg-start': '#050d19',
-      '--header-bg-end': '#0b1628',
-      '--header-border': 'rgba(148, 163, 184, 0.20)',
-      '--header-logo-text': '#f8fafc',
-      '--header-nav-text': '#cbd5e1',
-      '--header-nav-hover': '#ffffff',
-      '--header-toggle-border': 'rgba(148, 163, 184, 0.35)',
-      '--header-toggle-bg': 'rgba(15, 23, 42, 0.45)',
-      '--header-toggle-text': '#e2e8f0',
-      '--header-toggle-hover': 'rgba(148, 163, 184, 0.18)',
-      '--header-locale-active-bg': 'rgba(29, 102, 242, 0.82)',
-      '--header-locale-active-text': '#ffffff',
-    } as CSSProperties,
-  }
 
   useEffect(() => {
     const currentTheme = document.documentElement.getAttribute('data-theme')
@@ -102,6 +71,7 @@ export default function Header() {
     const savedTheme = window.localStorage.getItem('app-theme')
     if (savedTheme === 'dark' || savedTheme === 'light') {
       setThemeMode(savedTheme)
+      document.documentElement.setAttribute('data-theme', savedTheme)
     }
   }, [])
 
@@ -113,6 +83,8 @@ export default function Header() {
   const toggleTheme = useCallback(() => {
     const nextTheme = themeMode === 'dark' ? 'light' : 'dark'
     setThemeMode(nextTheme)
+    document.documentElement.setAttribute('data-theme', nextTheme)
+    window.localStorage.setItem('app-theme', nextTheme)
     window.dispatchEvent(new CustomEvent('app-theme-change', { detail: nextTheme }))
   }, [themeMode])
 
@@ -131,10 +103,8 @@ export default function Header() {
     [locale, pathname, router, searchParams]
   )
 
-  const headerCssVars = useMemo(() => headerThemeVarsByMode[themeMode], [themeMode])
-
   return (
-    <header className={styles.header} style={headerCssVars}>
+    <header className={styles.header}>
       <div className={styles.logo}>
         <Link href={ROUTES.HOME.index} className={styles.logoLink}>
           <div

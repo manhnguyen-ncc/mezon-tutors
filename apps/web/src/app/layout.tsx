@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import { Geist, Geist_Mono } from 'next/font/google';
 import { NextIntlClientProvider } from 'next-intl';
 import './globals.css';
+import '../styles/theme.css';
 import { AppProviders } from './providers';
 import AuthInitializer from '@mezon-tutors/app/components/AuthInitializer';
 import { DEFAULT_THEME } from '@mezon-tutors/app';
