@@ -21,6 +21,7 @@ export * from './constants/tutor-detail';
 export * from './constants/pagination';
 export * from './constants/urls';
 export * from './constants/home';
+export * from './constants/footer';
 
 // Utils
 export * from './utils/utils';

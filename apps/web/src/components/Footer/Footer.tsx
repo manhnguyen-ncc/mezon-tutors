@@ -1,72 +1,121 @@
-'use client'
+'use client';
 
-import styles from './Footer.module.css'
+import Link from 'next/link';
+import { useTranslations } from 'next-intl';
+import { ROUTES, FOOTER_COLUMNS, FOOTER_SOCIALS } from '@mezon-tutors/shared';
+import { XStack, YStack, Text, useMedia } from '@mezon-tutors/app/ui';
 
 export default function Footer() {
+  const t = useTranslations('Common.Footer');
+  const media = useMedia();
+  const isCompact = media.md || media.sm || media.xs;
+
   return (
-    <footer className={styles.footer}>
-      <div className={styles.container}>
-        {/* BRAND */}
-        <div className={styles.brand}>
-          <div className={styles.logo}>
-            <div
-              style={{ display: 'flex', alignItems: 'center', gap: '10px' }}
-              className={styles.icons}
-            >
-              <img src="/icons/Background.svg" alt="background" />
-              <h3 style={{ margin: 0 }}>TutorMatch</h3>
-            </div>
-          </div>
-          <p>
-            The leading language tutor <br /> matching platform for working <br /> professionals in
-            Vietnam.
-          </p>
+    <YStack
+      backgroundColor="$myLessonsTopNavBackground"
+      borderTopWidth={1}
+      borderTopColor="$myLessonsTopNavBorder"
+      paddingTop={isCompact ? 40 : 68}
+      paddingBottom={isCompact ? 28 : 36}
+      paddingHorizontal={isCompact ? 20 : 64}
+      gap={isCompact ? 28 : 44}
+    >
+      <XStack
+        maxWidth={1400}
+        width="100%"
+        alignSelf="center"
+        flexWrap="wrap"
+        justifyContent="space-between"
+        gap={isCompact ? 28 : 42}
+      >
+        <YStack flexGrow={1} flexBasis={isCompact ? '100%' : 320} maxWidth={420} gap="$4">
+          <Link href={ROUTES.HOME.index} style={{ color: 'inherit', textDecoration: 'none' }}>
+            <XStack alignItems="center" gap="$2.5">
+              <img src="/icons/Background.svg" alt="TutorMatch" width={32} height={32} />
+              <Text color="$myLessonsHeaderTitle" fontSize={24} fontWeight="800" lineHeight={30}>
+                TutorMatch
+              </Text>
+            </XStack>
+          </Link>
 
-          <div className={styles.icons}>
-            <img src="/icons/foot1.svg" alt="foot1" />
-            <img src="/icons/foot2.svg" alt="foot2" />
-          </div>
-        </div>
+          <Text color="$myLessonsPromoDescription" fontSize={15} lineHeight={24} maxWidth={340}>
+            {t('description')}
+          </Text>
 
-        {/* PRODUCT */}
-        <div className={styles.column}>
-          <h4>Product</h4>
-          <ul>
-            <li>Find a tutor</li>
-            <li>Pricing</li>
-            <li>Enterprise</li>
-          </ul>
-        </div>
+          <XStack gap="$2.5">
+            {FOOTER_SOCIALS.map((social) => (
+              <YStack
+                key={social.src}
+                width={40}
+                height={40}
+                alignItems="center"
+                justifyContent="center"
+                borderRadius={12}
+                borderWidth={1}
+                borderColor="$myLessonsTopNavBorder"
+                backgroundColor="$myLessonsCardBackground"
+                style={{ transition: 'all 280ms cubic-bezier(0.22,1,0.36,1)' }}
+                hoverStyle={{ y: -2, borderColor: '$myLessonsPrimaryButton' }}
+              >
+                <img src={social.src} alt={t(social.altKey as never)} width={20} height={20} />
+              </YStack>
+            ))}
+          </XStack>
+        </YStack>
 
-        {/* COMMUNITY */}
-        <div className={styles.column}>
-          <h4>Community</h4>
-          <ul>
-            <li>Become a tutor</li>
-            <li>Education blog</li>
-            <li>Events</li>
-          </ul>
-        </div>
+        {FOOTER_COLUMNS.map((column) => (
+          <YStack key={column.titleKey} minWidth={isCompact ? '100%' : 170} gap="$3">
+            <Text color="$myLessonsHeaderTitle" fontSize={14} fontWeight="700" lineHeight={20}>
+              {t(column.titleKey as never)}
+            </Text>
+            <YStack gap="$2.5">
+              {column.links.map((link) => (
+                <Link key={link.labelKey} href={link.href} style={{ color: 'inherit', textDecoration: 'none' }}>
+                  <Text
+                    color="$myLessonsPromoDescription"
+                    fontSize={15}
+                    lineHeight={22}
+                    style={{ transition: 'all 260ms cubic-bezier(0.22,1,0.36,1)' }}
+                    hoverStyle={{ color: '$myLessonsPrimaryButton', x: 2 }}
+                  >
+                    {t(link.labelKey as never)}
+                  </Text>
+                </Link>
+              ))}
+            </YStack>
+          </YStack>
+        ))}
+      </XStack>
 
-        {/* SUPPORT */}
-        <div className={styles.column}>
-          <h4>Support</h4>
-          <ul>
-            <li>Help center</li>
-            <li>Privacy policy</li>
-            <li>Contact</li>
-          </ul>
-        </div>
-      </div>
+      <XStack
+        maxWidth={1400}
+        width="100%"
+        alignSelf="center"
+        borderTopWidth={1}
+        borderTopColor="$myLessonsTopNavBorder"
+        paddingTop={isCompact ? 18 : 24}
+        flexDirection={isCompact ? 'column' : 'row'}
+        justifyContent="space-between"
+        alignItems={isCompact ? 'flex-start' : 'center'}
+        gap={isCompact ? 12 : 20}
+      >
+        <Text color="$myLessonsPromoDescription" fontSize={13} lineHeight={20}>
+          {t('copyright')}
+        </Text>
 
-      <div className={styles.bottom}>
-        <p>© 2024 TutorMatch. All rights reserved.</p>
-
-        <div className={styles.links}>
-          <span>Terms</span>
-          <span>Privacy</span>
-        </div>
-      </div>
-    </footer>
-  )
+        <XStack gap="$5">
+          <Link href={ROUTES.HOME.index} style={{ color: 'inherit', textDecoration: 'none' }}>
+            <Text color="$myLessonsPromoDescription" fontSize={13} lineHeight={20} hoverStyle={{ color: '$myLessonsPrimaryButton' }}>
+              {t('bottom.terms')}
+            </Text>
+          </Link>
+          <Link href={ROUTES.HOME.index} style={{ color: 'inherit', textDecoration: 'none' }}>
+            <Text color="$myLessonsPromoDescription" fontSize={13} lineHeight={20} hoverStyle={{ color: '$myLessonsPrimaryButton' }}>
+              {t('bottom.privacy')}
+            </Text>
+          </Link>
+        </XStack>
+      </XStack>
+    </YStack>
+  );
 }

@@ -8,19 +8,19 @@ export const HOME_STATS = [
 export const HOME_FEATURES = [
   {
     id: 'evening-classes',
-    iconKey: 'ft1',
+    iconKey: 'feature-evening-classes',
     titleKey: 'eveningClasses.title',
     descriptionKey: 'eveningClasses.description',
   },
   {
     id: 'flexible-weekends',
-    iconKey: 'ft2',
+    iconKey: 'feature-flexible-weekends',
     titleKey: 'flexibleWeekends.title',
     descriptionKey: 'flexibleWeekends.description',
   },
   {
     id: 'learn-via-mezon',
-    iconKey: 'ft3',
+    iconKey: 'feature-learn-via-mezon',
     titleKey: 'learnViaMezon.title',
     descriptionKey: 'learnViaMezon.description',
   },
@@ -29,13 +29,13 @@ export const HOME_FEATURES = [
 export const HOME_SEAMLESS_FEATURES = [
   {
     id: 'video-call',
-    iconKey: 'ic1seamless',
+    iconKey: 'seamless-virtual-classroom',
     titleKey: 'virtualClassroom.title',
     descriptionKey: 'virtualClassroom.description',
   },
   {
     id: 'messaging',
-    iconKey: 'ic2seamless',
+    iconKey: 'seamless-instant-messaging',
     titleKey: 'instantMessaging.title',
     descriptionKey: 'instantMessaging.description',
   },

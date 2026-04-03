@@ -3,8 +3,9 @@
 import { useTranslations } from 'next-intl';
 import { Text, YStack, XStack, useMedia } from '@mezon-tutors/app/ui';
 import { HOME_FEATURES } from '@mezon-tutors/shared';
+import HomeFeatureCard from './HomeFeatureCard';
 
-export default function FeaturesSection() {
+export default function HomeFeaturesSection() {
   const t = useTranslations('Home.Features');
   const media = useMedia();
   const isCompact = media.sm || media.xs;
@@ -75,46 +76,11 @@ export default function FeaturesSection() {
         }}
       >
         {HOME_FEATURES.map((feature) => (
-          <YStack
-            className="home-glow-card home-feature-card"
+          <HomeFeatureCard
             key={feature.id}
-            padding={isCompact ? '$homeFeatureCardPaddingCompact' : '$homeFeatureCardPadding'}
-            borderRadius="$homeFeatureCard"
-            borderWidth={1}
-            borderColor="$homeFeatureCardBorder"
-            backgroundColor="$homeFeatureCardBackground"
-            width="100%"
-            style={{
-              position: 'relative',
-              overflow: 'visible',
-            }}
-          >
-            <YStack
-              width="$homeFeatureIcon"
-              height="$homeFeatureIcon"
-              alignItems="center"
-              justifyContent="center"
-              marginBottom="$homeFeatureIconMargin"
-              className="feature-icon-wrapper"
-            >
-            <img 
-              className="home-feature-icon" 
-              src={`/icons/${feature.iconKey}.svg`} 
-              alt={t(feature.titleKey)} 
-              width={96} 
-              height={96}
-            />
-            </YStack>
-
-            <YStack flex={1} width="100%">
-              <Text fontSize={22} lineHeight={30} fontWeight="700" marginBottom="$2.5" color="$homeSectionTitle">
-                {t(feature.titleKey)}
-              </Text>
-              <Text fontSize={16} lineHeight={25} color="$homeSectionBody">
-                {t(feature.descriptionKey)}
-              </Text>
-            </YStack>
-          </YStack>
+            isCompact={isCompact}
+            feature={feature}
+          />
         ))}
       </XStack>
     </YStack>

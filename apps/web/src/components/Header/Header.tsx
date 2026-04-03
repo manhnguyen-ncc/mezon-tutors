@@ -10,6 +10,7 @@ import { useLocale, useTranslations } from 'next-intl'
 import { usePathname, useRouter, useSearchParams } from 'next/navigation'
 import { XStack, YStack, Text, Button } from '@mezon-tutors/app/ui'
 import { themes } from '@mezon-tutors/app/theme/theme'
+import { useThemeName } from 'tamagui'
 
 function ThemeIcon({ isDark }: { isDark: boolean }) {
   if (isDark) {
@@ -57,25 +58,12 @@ export default function Header() {
   const router = useRouter()
   const pathname = usePathname()
   const searchParams = useSearchParams()
+  const themeName = useThemeName()
   const isAuthenticated = useAtomValue(isAuthenticatedAtom)
   const user = useAtomValue(userAtom)
-  const [themeMode, setThemeMode] = useState<'light' | 'dark'>('dark')
+  const themeMode: 'light' | 'dark' = themeName === 'dark' ? 'dark' : 'light'
   const [showUserMenu, setShowUserMenu] = useState(false)
   const headerTheme = themeMode === 'dark' ? themes.dark : themes.light
-
-  useEffect(() => {
-    const currentTheme = document.documentElement.getAttribute('data-theme')
-    if (currentTheme === 'dark' || currentTheme === 'light') {
-      setThemeMode(currentTheme)
-      return
-    }
-
-    const savedTheme = window.localStorage.getItem('app-theme')
-    if (savedTheme === 'dark' || savedTheme === 'light') {
-      setThemeMode(savedTheme)
-      document.documentElement.setAttribute('data-theme', savedTheme)
-    }
-  }, [])
 
   useEffect(() => {
     // Prevent accidental dropdown open right after auth state changes/navigation.
@@ -84,9 +72,6 @@ export default function Header() {
 
   const toggleTheme = useCallback(() => {
     const nextTheme = themeMode === 'dark' ? 'light' : 'dark'
-    setThemeMode(nextTheme)
-    document.documentElement.setAttribute('data-theme', nextTheme)
-    window.localStorage.setItem('app-theme', nextTheme)
     window.dispatchEvent(new CustomEvent('app-theme-change', { detail: nextTheme }))
   }, [themeMode])
 

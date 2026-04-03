@@ -3,8 +3,9 @@
 import { useTranslations } from 'next-intl';
 import { Text, YStack, XStack, useMedia } from '@mezon-tutors/app/ui';
 import { HOME_SEAMLESS_FEATURES } from '@mezon-tutors/shared';
+import HomeSeamlessCard from './HomeSeamlessCard';
 
-export default function Seamless() {
+export default function HomeSeamlessSection() {
   const t = useTranslations('Home.Seamless');
   const media = useMedia();
   const isCompact = media.md || media.sm || media.xs;
@@ -52,39 +53,10 @@ export default function Seamless() {
         }}
       >
         {HOME_SEAMLESS_FEATURES.map((feature) => (
-          <XStack
-            className="home-glow-card home-feature-card"
+          <HomeSeamlessCard
             key={feature.id}
-            gap="$homeSeamlessCardInnerGap"
-            padding="$homeSeamlessCardPadding"
-            borderRadius="$homeSeamlessCard"
-            borderWidth={1}
-            borderColor="$homeSeamlessBorder"
-            backgroundColor="$homeSeamlessSurface"
-          >
-            <YStack
-              width="$homeSeamlessIcon"
-              height="$homeSeamlessIcon"
-              borderRadius="$appPill"
-              alignItems="center"
-              justifyContent="center"
-              flexShrink={0}
-              backgroundColor="$homeSeamlessIconBackground"
-              borderWidth={1}
-              borderColor="$homeFeatureIconBorder"
-            >
-              <img src={`/icons/${feature.iconKey}.svg`} alt={t(feature.titleKey)} width={24} height={24} />
-            </YStack>
-
-            <YStack flex={1}>
-              <Text fontSize={19} lineHeight={27} fontWeight="700" color="$homeSectionTitle" marginBottom="$2">
-                {t(feature.titleKey)}
-              </Text>
-              <Text fontSize={14} lineHeight={22} color="$homeSectionBody">
-                {t(feature.descriptionKey)}
-              </Text>
-            </YStack>
-          </XStack>
+            feature={feature}
+          />
         ))}
       </XStack>
     </YStack>

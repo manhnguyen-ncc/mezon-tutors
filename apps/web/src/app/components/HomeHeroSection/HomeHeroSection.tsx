@@ -4,7 +4,7 @@ import { useTranslations } from 'next-intl';
 import { Text, Button, YStack, XStack, useMedia } from '@mezon-tutors/app/ui';
 import { HOME_HERO_CARD } from '@mezon-tutors/shared';
 
-export default function Hero() {
+export default function HomeHeroSection() {
   const t = useTranslations('Home.Hero');
   const media = useMedia();
   const isCompact = media.md || media.sm || media.xs;
