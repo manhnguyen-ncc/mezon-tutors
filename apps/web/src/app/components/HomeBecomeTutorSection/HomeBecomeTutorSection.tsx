@@ -3,7 +3,7 @@
 import { useTranslations } from 'next-intl';
 import Link from 'next/link';
 import { Text, Button, YStack, XStack, useMedia } from '@mezon-tutors/app/ui';
-import { ROUTES } from '@mezon-tutors/shared';
+import { ROUTES, HOME_BECOME_TUTOR_BENEFIT_KEYS } from '@mezon-tutors/shared';
 
 function BenefitItem({ label }: { label: string }) {
   return (
@@ -117,9 +117,9 @@ export default function HomeBecomeTutorSection() {
         </Text>
 
         <YStack marginTop="$6" gap="$homeStatsBenefitGap">
-          <BenefitItem label={t('benefits.payment')} />
-          <BenefitItem label={t('benefits.tools')} />
-          <BenefitItem label={t('benefits.schedule')} />
+          {HOME_BECOME_TUTOR_BENEFIT_KEYS.map((benefitKey) => (
+            <BenefitItem key={benefitKey} label={t(`benefits.${benefitKey}` as never)} />
+          ))}
         </YStack>
 
         <Link href={ROUTES.BECOME_TUTOR.INDEX} style={{ textDecoration: 'none' }}>

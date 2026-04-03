@@ -41,6 +41,8 @@ export const HOME_SEAMLESS_FEATURES = [
   },
 ] as const;
 
+export const HOME_BECOME_TUTOR_BENEFIT_KEYS = ['payment', 'tools', 'schedule'] as const;
+
 export const HOME_HERO_CARD = {
   image: '/tutor.png',
   name: 'Nguyen Minh Anh, 24',
