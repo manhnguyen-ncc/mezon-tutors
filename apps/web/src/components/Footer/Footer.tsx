@@ -4,6 +4,8 @@ import Link from 'next/link';
 import { useTranslations } from 'next-intl';
 import { ROUTES, FOOTER_COLUMNS, FOOTER_SOCIALS } from '@mezon-tutors/shared';
 import { XStack, YStack, Text, useMedia } from '@mezon-tutors/app/ui';
+import FooterSocialButton from './FooterSocialButton';
+import FooterLinkColumn from './FooterLinkColumn';
 
 export default function Footer() {
   const t = useTranslations('Common.Footer');
@@ -44,46 +46,13 @@ export default function Footer() {
 
           <XStack gap="$2.5">
             {FOOTER_SOCIALS.map((social) => (
-              <YStack
-                key={social.src}
-                width={40}
-                height={40}
-                alignItems="center"
-                justifyContent="center"
-                borderRadius={12}
-                borderWidth={1}
-                borderColor="$myLessonsTopNavBorder"
-                backgroundColor="$myLessonsCardBackground"
-                style={{ transition: 'all 280ms cubic-bezier(0.22,1,0.36,1)' }}
-                hoverStyle={{ y: -2, borderColor: '$myLessonsPrimaryButton' }}
-              >
-                <img src={social.src} alt={t(social.altKey as never)} width={20} height={20} />
-              </YStack>
+              <FooterSocialButton key={social.src} social={social} />
             ))}
           </XStack>
         </YStack>
 
         {FOOTER_COLUMNS.map((column) => (
-          <YStack key={column.titleKey} minWidth={isCompact ? '100%' : 170} gap="$3">
-            <Text color="$myLessonsHeaderTitle" fontSize={14} fontWeight="700" lineHeight={20}>
-              {t(column.titleKey as never)}
-            </Text>
-            <YStack gap="$2.5">
-              {column.links.map((link) => (
-                <Link key={link.labelKey} href={link.href} style={{ color: 'inherit', textDecoration: 'none' }}>
-                  <Text
-                    color="$myLessonsPromoDescription"
-                    fontSize={15}
-                    lineHeight={22}
-                    style={{ transition: 'all 260ms cubic-bezier(0.22,1,0.36,1)' }}
-                    hoverStyle={{ color: '$myLessonsPrimaryButton', x: 2 }}
-                  >
-                    {t(link.labelKey as never)}
-                  </Text>
-                </Link>
-              ))}
-            </YStack>
-          </YStack>
+          <FooterLinkColumn key={column.titleKey} column={column} isCompact={isCompact} />
         ))}
       </XStack>
 
