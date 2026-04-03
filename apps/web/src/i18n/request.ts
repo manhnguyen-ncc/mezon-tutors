@@ -25,7 +25,7 @@ const MESSAGE_LOADERS: MessageLoaderConfig[] = [
   { messageKey: 'Tutors', file: 'tutors' },
   { messageKey: 'MyLessons', file: 'my-lessons' },
   { messageKey: 'BecomeTutorGuide', file: 'become-tutor-guide' },
-  { messageKey: 'Home', file: 'home' },
+  { messageKey: 'Home', file: 'home', pick: (payload) => payload.Home },
 ];
 
 export default getRequestConfig(async ({ requestLocale }) => {
