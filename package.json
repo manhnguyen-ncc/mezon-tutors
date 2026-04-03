@@ -30,7 +30,7 @@
   },
   "resolutions": {
     "react": "^19.2.4",
-    "react-dom": "^19.2.4",
+    "react-dom": "19.0.0",
     "react-refresh": "^0.14.0",
     "react-native": "^0.84.1",
     "react-native-svg": "15.11.2",
