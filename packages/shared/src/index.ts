@@ -20,6 +20,7 @@ export * from './constants/tutor-profile';
 export * from './constants/tutor-detail';
 export * from './constants/pagination';
 export * from './constants/urls';
+export * from './constants/regex';
 
 // Utils
 export * from './utils/utils';
