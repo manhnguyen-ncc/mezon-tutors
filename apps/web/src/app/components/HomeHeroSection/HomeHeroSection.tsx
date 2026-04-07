@@ -1,5 +1,3 @@
-'use client';
-
 import { useTranslations } from 'next-intl';
 import { Text, Button, YStack, XStack, useMedia } from '@mezon-tutors/app/ui';
 import { TutorVideoCardIcon, FlashIcon, PlayIcon, StarIcon, WatchDemoIcon } from '@mezon-tutors/app/ui/icons';

@@ -1,5 +1,3 @@
-'use client';
-
 import { useTranslations } from 'next-intl';
 import Link from 'next/link';
 import { Text, Button, YStack, XStack, useMedia } from '@mezon-tutors/app/ui';

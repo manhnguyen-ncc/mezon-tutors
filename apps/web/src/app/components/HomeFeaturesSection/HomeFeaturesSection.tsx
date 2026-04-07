@@ -1,5 +1,3 @@
-'use client';
-
 import { useTranslations } from 'next-intl';
 import { Text, YStack, XStack, useMedia } from '@mezon-tutors/app/ui';
 import { HOME_FEATURES } from '@mezon-tutors/shared';
