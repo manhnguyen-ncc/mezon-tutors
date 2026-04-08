@@ -1,5 +1,3 @@
-'use client'
-
 import { Text, XStack, YStack } from '@mezon-tutors/app/ui'
 import { useTranslations } from 'next-intl'
 import type { CalendarRowModel } from '../types'

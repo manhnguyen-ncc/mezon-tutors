@@ -1,5 +1,3 @@
-'use client'
-
 import { XStack, YStack } from '@mezon-tutors/app/ui'
 import type { ReactNode } from 'react'
 import type { CalendarEvent, CalendarRowModel, CalendarSlotState } from '../types'

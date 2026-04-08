@@ -1,5 +1,3 @@
-'use client'
-
 import { Text, YStack } from '@mezon-tutors/app/ui'
 import type { CalendarWeekDay } from '../types'
 
