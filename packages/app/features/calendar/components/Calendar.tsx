@@ -1,9 +1,8 @@
 'use client'
 
 import { XStack, YStack } from '@mezon-tutors/app/ui'
-import { CALENDAR_CONFIG } from '@mezon-tutors/shared'
+import { CALENDAR_CONFIG, CALENDAR_THEME_CONFIG, DEFAULT_THEME_CONFIG } from '@mezon-tutors/shared'
 import dayjs from 'dayjs'
-import utc from 'dayjs/plugin/utc'
 import { useMemo } from 'react'
 import { useMedia } from 'tamagui'
 import type { BaseCalendarProps } from '../types'
@@ -12,10 +11,8 @@ import { CalendarDayHeader, type CalendarDayHeaderTokens } from './CalendarDayHe
 import { CalendarGridLayer, type CalendarGridLayerProps } from './CalendarGridLayer'
 import { buildRowModels, CalendarLayoutEngine } from './utils'
 
-dayjs.extend(utc)
-
 function formatHour(hour: number): string {
-  return dayjs.utc().startOf('day').add(hour, 'hour').format('HH:mm')
+  return dayjs().hour(hour).minute(0).format('HH:mm')
 }
 
 function formatRangeLabel(startHour: number, endHour: number): string {
@@ -28,9 +25,6 @@ export function Calendar<TEvent = unknown>({
   events = [],
   currentDayIndex,
   currentHour,
-  showTimeline = true,
-  showGridLines = true,
-  showNowLine = false,
   enableGapCollapse = false,
   minGapHours = CALENDAR_CONFIG.MIN_GAP_HOURS,
   readonly = false,
@@ -42,6 +36,9 @@ export function Calendar<TEvent = unknown>({
 }: BaseCalendarProps<TEvent>) {
   const media = useMedia()
   const isCompact = isCompactProp ?? (media.md || media.sm || media.xs)
+
+  const themeConfig = CALENDAR_THEME_CONFIG[themePrefix] || DEFAULT_THEME_CONFIG
+  const { showTimeline, showGridLines, showNowLine } = themeConfig
 
   const timeColumnWidth = isCompact ? CALENDAR_CONFIG.TIME_COLUMN_WIDTH.COMPACT : CALENDAR_CONFIG.TIME_COLUMN_WIDTH.NORMAL
   const rowHeight = isCompact ? CALENDAR_CONFIG.ROW_HEIGHT.COMPACT : CALENDAR_CONFIG.ROW_HEIGHT.NORMAL
@@ -57,9 +54,9 @@ export function Calendar<TEvent = unknown>({
     [rowModels, rowHeight, gapRowHeight]
   )
 
-  const headerBg = `$${themePrefix}GridHeaderBackground` as any
-  const bodyBg = `$${themePrefix}GridBodyBackground` as any
-  const gridBorder = `$${themePrefix}GridBorder` as any
+  const headerBg = `${themePrefix}GridHeaderBackground`
+  const bodyBg = `${themePrefix}GridBodyBackground`
+  const gridBorder = `${themePrefix}GridBorder`
 
   const headerTokens: CalendarDayHeaderTokens = {
     gridBorder,

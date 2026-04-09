@@ -36,15 +36,12 @@ export type BaseCalendarProps<TEvent = unknown> = {
   events?: CalendarEvent<TEvent>[];
   currentDayIndex?: number;
   currentHour?: number;
-  showTimeline?: boolean;
-  showGridLines?: boolean;
-  showNowLine?: boolean;
   enableGapCollapse?: boolean;
   minGapHours?: number;
   readonly?: boolean;
   onSlotClick?: (dayIndex: number, hour: number) => void;
   renderEvent?: (event: CalendarEvent<TEvent>, isCompact: boolean) => ReactNode;
   renderSlot?: (dayIndex: number, hour: number, state?: CalendarSlotState) => ReactNode;
-  themePrefix?: 'myLessons' | 'tutorSchedule' | 'booking' | 'calendar';
+  themePrefix?: string;
   isCompact?: boolean;
 };
