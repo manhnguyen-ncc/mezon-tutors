@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { LessonStatus, Prisma, Role } from '@mezon-tutors/db';
+import { ETrialLessonStatus, Prisma, Role } from '@mezon-tutors/db';
 import dayjs = require('dayjs');
 import type {
   MyLessonApiCategory,
@@ -13,7 +13,7 @@ import { PrismaService } from '../../prisma/prisma.service';
 const utc = require('dayjs/plugin/utc');
 dayjs.extend(utc);
 
-type LessonWithTutor = Prisma.LessonGetPayload<{
+type BookingWithTutor = Prisma.TrialLessonBookingGetPayload<{
   include: {
     tutor: {
       include: {
@@ -43,7 +43,7 @@ export class MyLessonsService {
       return this.emptyResponse();
     }
 
-    const lessons = await this.prisma.lesson.findMany({
+    const lessons = await this.prisma.trialLessonBooking.findMany({
       where: {
         studentId,
       },
@@ -56,20 +56,26 @@ export class MyLessonsService {
         },
       },
       orderBy: {
-        startsAt: 'asc',
+        startAt: 'asc',
       },
     });
 
     const upcomingLessons = lessons
-      .filter((lesson) => lesson.status === LessonStatus.BOOKED)
+      .filter(
+        (lesson) =>
+          lesson.status === ETrialLessonStatus.PENDING || lesson.status === ETrialLessonStatus.CONFIRMED
+      )
       .map((lesson) => this.toLessonApiItem(lesson))
       .filter((item): item is MyLessonApiItem => item !== null);
     const previousLessons = lessons
-      .filter((lesson) => lesson.status === LessonStatus.COMPLETED)
+      .filter((lesson) => lesson.status === ETrialLessonStatus.COMPLETED)
       .map((lesson) => this.toLessonApiItem(lesson))
       .filter((item): item is MyLessonApiItem => item !== null);
 
-    const upcomingLessonRows = lessons.filter((lesson) => lesson.status === LessonStatus.BOOKED);
+    const upcomingLessonRows = lessons.filter(
+      (lesson) =>
+        lesson.status === ETrialLessonStatus.PENDING || lesson.status === ETrialLessonStatus.CONFIRMED
+    );
     const calendarBaseDate = this.resolveCalendarBaseDate(upcomingLessonRows);
     const calendarLessons = this.filterLessonsByWeek(upcomingLessonRows, calendarBaseDate)
       .map((lesson) => this.toLessonApiItem(lesson))
@@ -101,8 +107,10 @@ export class MyLessonsService {
     return null;
   }
 
-  private toLessonApiItem(lesson: LessonWithTutor): MyLessonApiItem | null {
+  private toLessonApiItem(lesson: BookingWithTutor): MyLessonApiItem | null {
     const status = this.mapLessonStatus(lesson.status);
+    const subject = lesson.tutor.subject?.trim() || 'Trial lesson';
+    const endAt = this.toUtc(lesson.startAt).add(lesson.durationMinutes, 'minute').toDate();
 
     if (!status) {
       return null;
@@ -110,20 +118,20 @@ export class MyLessonsService {
 
     return {
       id: lesson.id,
-      subject: lesson.subject,
+      subject,
       tutor_name: this.getTutorName(lesson.tutor),
       tutor_avatar: lesson.tutor.avatar || lesson.tutor.user.avatar,
-      category: this.buildCategoryKey(lesson.subject, lesson.category),
+      category: this.buildCategoryKey(subject, 'other'),
       status,
-      date_label: this.formatDateLabel(lesson.startsAt),
-      time_label: this.formatTimeLabel(lesson.startsAt, lesson.endsAt),
-      day_index: this.toCalendarDayIndex(lesson.startsAt),
-      start_hour: this.getUtcHour(lesson.startsAt),
-      end_hour: this.getUtcHour(lesson.endsAt),
+      date_label: this.formatDateLabel(lesson.startAt),
+      time_label: this.formatTimeLabel(lesson.startAt, endAt),
+      day_index: this.toCalendarDayIndex(lesson.startAt),
+      start_hour: this.getUtcHour(lesson.startAt),
+      end_hour: this.getUtcHour(endAt),
     };
   }
 
-  private buildTutorItems(lessons: LessonWithTutor[]): MyLessonTutorApiItem[] {
+  private buildTutorItems(lessons: BookingWithTutor[]): MyLessonTutorApiItem[] {
     const tutorMap = new Map<
       string,
       {
@@ -142,13 +150,16 @@ export class MyLessonsService {
       const existing = tutorMap.get(lesson.tutor.id);
 
       if (!existing) {
-        const isCompleted = lesson.status === LessonStatus.COMPLETED;
-        const nextLessonAt = lesson.status === LessonStatus.BOOKED ? lesson.startsAt : null;
+        const isCompleted = lesson.status === ETrialLessonStatus.COMPLETED;
+        const nextLessonAt =
+          lesson.status === ETrialLessonStatus.PENDING || lesson.status === ETrialLessonStatus.CONFIRMED
+            ? lesson.startAt
+            : null;
 
         tutorMap.set(lesson.tutor.id, {
           name: this.getTutorName(lesson.tutor),
           avatar: lesson.tutor.avatar || lesson.tutor.user.avatar,
-          subjects: new Set([lesson.subject]),
+          subjects: new Set([lesson.tutor.subject?.trim() || 'Trial lesson']),
           availability: this.formatTutorAvailability(lesson.tutor.availability),
           completedLessons: isCompleted ? 1 : 0,
           nextLessonAt,
@@ -158,17 +169,18 @@ export class MyLessonsService {
         continue;
       }
 
-      existing.subjects.add(lesson.subject);
+      existing.subjects.add(lesson.tutor.subject?.trim() || 'Trial lesson');
 
-      if (lesson.status === LessonStatus.COMPLETED) {
+      if (lesson.status === ETrialLessonStatus.COMPLETED) {
         existing.completedLessons += 1;
       }
 
       if (
-        lesson.status === LessonStatus.BOOKED &&
-        (!existing.nextLessonAt || lesson.startsAt < existing.nextLessonAt)
+        (lesson.status === ETrialLessonStatus.PENDING ||
+          lesson.status === ETrialLessonStatus.CONFIRMED) &&
+        (!existing.nextLessonAt || lesson.startAt < existing.nextLessonAt)
       ) {
-        existing.nextLessonAt = lesson.startsAt;
+        existing.nextLessonAt = lesson.startAt;
       }
     }
 
@@ -187,7 +199,7 @@ export class MyLessonsService {
       .sort((a, b) => a.name.localeCompare(b.name));
   }
 
-  private formatTutorAvailability(slots: LessonWithTutor['tutor']['availability']): string {
+  private formatTutorAvailability(slots: BookingWithTutor['tutor']['availability']): string {
     const activeSlots = slots.filter((slot) => slot.isActive);
 
     if (!activeSlots.length) {
@@ -209,7 +221,7 @@ export class MyLessonsService {
     return `${firstDay} - ${lastDay}, ${firstStart} - ${lastEnd}`;
   }
 
-  private getTutorName(tutor: LessonWithTutor['tutor']): string {
+  private getTutorName(tutor: BookingWithTutor['tutor']): string {
     const fullName = `${tutor.firstName} ${tutor.lastName}`.trim();
     return fullName || tutor.user.username;
   }
@@ -228,11 +240,12 @@ export class MyLessonsService {
     return fallbackCategory.toLowerCase();
   }
 
-  private mapLessonStatus(status: LessonStatus): MyLessonApiItem['status'] | null {
+  private mapLessonStatus(status: ETrialLessonStatus): MyLessonApiItem['status'] | null {
     switch (status) {
-      case LessonStatus.BOOKED:
+      case ETrialLessonStatus.PENDING:
+      case ETrialLessonStatus.CONFIRMED:
         return 'upcoming';
-      case LessonStatus.COMPLETED:
+      case ETrialLessonStatus.COMPLETED:
         return 'completed';
       default:
         return null;
@@ -272,18 +285,18 @@ export class MyLessonsService {
     return this.toUtc('2024-01-01').add(dayIndex, 'day').format('ddd');
   }
 
-  private resolveCalendarBaseDate(upcomingLessonRows: LessonWithTutor[]): Date {
-    return upcomingLessonRows[0]?.startsAt ?? this.toUtc(new Date()).toDate();
+  private resolveCalendarBaseDate(upcomingLessonRows: BookingWithTutor[]): Date {
+    return upcomingLessonRows[0]?.startAt ?? this.toUtc(new Date()).toDate();
   }
 
-  private filterLessonsByWeek(lessons: LessonWithTutor[], baseDate: Date): LessonWithTutor[] {
+  private filterLessonsByWeek(lessons: BookingWithTutor[], baseDate: Date): BookingWithTutor[] {
     const weekStart = this.getWeekStart(baseDate);
     const weekEnd = this.toUtc(weekStart).add(7, 'day').toDate();
 
-    return lessons.filter((lesson) => lesson.startsAt >= weekStart && lesson.startsAt < weekEnd);
+    return lessons.filter((lesson) => lesson.startAt >= weekStart && lesson.startAt < weekEnd);
   }
 
-  private buildCalendarMeta(upcomingLessonRows: LessonWithTutor[], baseDate: Date): Pick<
+  private buildCalendarMeta(upcomingLessonRows: BookingWithTutor[], baseDate: Date): Pick<
     MyLessonsApiResponse,
     'calendar_title' | 'week_days' | 'week_hours' | 'current_day_index' | 'current_hour'
   > {
@@ -321,7 +334,7 @@ export class MyLessonsService {
     });
   }
 
-  private resolveHourRange(upcomingLessonRows: LessonWithTutor[], fallbackHour: number): [number, number] {
+  private resolveHourRange(upcomingLessonRows: BookingWithTutor[], fallbackHour: number): [number, number] {
     if (!upcomingLessonRows.length) {
       const startHour = Math.max(0, fallbackHour - 2);
       const endHour = Math.min(23, startHour + 4);
@@ -332,8 +345,9 @@ export class MyLessonsService {
     let maxHour = 0;
 
     for (const lesson of upcomingLessonRows) {
-      minHour = Math.min(minHour, this.getUtcHour(lesson.startsAt));
-      maxHour = Math.max(maxHour, this.getUtcHour(lesson.endsAt));
+      const endAt = this.toUtc(lesson.startAt).add(lesson.durationMinutes, 'minute').toDate();
+      minHour = Math.min(minHour, this.getUtcHour(lesson.startAt));
+      maxHour = Math.max(maxHour, this.getUtcHour(endAt));
     }
 
     const currentSpan = maxHour - minHour;

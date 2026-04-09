@@ -39,6 +39,36 @@
       "Beginner": "Beginner"
     }
   },
+  "TrialBookingModal": {
+    "title": "Book Trial Lesson",
+    "expertTutorTitle": "{subject} Tutor",
+    "perHour": "/hr",
+    "selectLessonDuration": "SELECT LESSON DURATION",
+    "durationMins": "{value} mins",
+    "selectDate": "SELECT DATE",
+    "availableTimes": "AVAILABLE TIMES",
+    "loadingAvailableTimes": "Loading available times...",
+    "noAvailableTimes": "No available times for this day.",
+    "totalPrice": "TOTAL PRICE",
+    "confirmBooking": "Confirm Booking",
+    "requestSentWait": "Request sent, please wait",
+    "alreadyBooked": "You already booked this tutor",
+    "weekday": {
+      "mon": "Mon",
+      "tue": "Tue",
+      "wed": "Wed",
+      "thu": "Thu",
+      "fri": "Fri",
+      "sat": "Sat",
+      "sun": "Sun"
+    },
+    "period": {
+      "morning": "Morning",
+      "noon": "Noon",
+      "afternoon": "Afternoon",
+      "evening": "Evening"
+    }
+  },
   "Filter": {
     "ANY_SUBJECT": "Any subject",
     "subjectLabel": "Subject",

@@ -10,6 +10,8 @@ export * from './types/my-lessons-api';
 export * from './enums/verification-status';
 export * from './enums/filters';
 export * from './enums/tutor-profile';
+export * from './enums/date-time';
+export * from './enums/trial-lesson-booking';
 
 // Constants
 export * from './constants/admin-tutor-application';
@@ -32,6 +34,7 @@ export * from './utils/utils';
 export * from './utils/enum';
 export * from './utils/youtube';
 export * from './utils/mapper';
-export * from './utils/date';
+export * from './utils/date-time';
 export * from './utils/rating';
 export * from './utils/pagination';
+export * from './utils/tutor-availability-time-slots';

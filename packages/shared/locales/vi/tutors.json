@@ -39,6 +39,36 @@
       "Beginner": "Người mới bắt đầu"
     }
   },
+  "TrialBookingModal": {
+    "title": "Đặt buổi học thử",
+    "expertTutorTitle": "Gia sư {subject}",
+    "perHour": "/giờ",
+    "selectLessonDuration": "CHỌN THỜI LƯỢNG BUỔI HỌC",
+    "durationMins": "{value} phút",
+    "selectDate": "CHỌN NGÀY",
+    "availableTimes": "KHUNG GIỜ TRỐNG",
+    "loadingAvailableTimes": "Đang tải khung giờ trống...",
+    "noAvailableTimes": "Không có khung giờ trống cho ngày này.",
+    "totalPrice": "TỔNG GIÁ",
+    "confirmBooking": "Xác nhận đặt lịch",
+    "requestSentWait": "Yêu cầu đã được gửi, vui lòng chờ",
+    "alreadyBooked": "Bạn đã đặt gia sư này rồi",
+    "weekday": {
+      "mon": "T2",
+      "tue": "T3",
+      "wed": "T4",
+      "thu": "T5",
+      "fri": "T6",
+      "sat": "T7",
+      "sun": "CN"
+    },
+    "period": {
+      "morning": "Buổi sáng",
+      "noon": "Buổi trưa",
+      "afternoon": "Buổi chiều",
+      "evening": "Buổi tối"
+    }
+  },
   "Filter": {
     "ANY_SUBJECT": "Bất kỳ môn học nào",
     "subjectLabel": "Môn học",

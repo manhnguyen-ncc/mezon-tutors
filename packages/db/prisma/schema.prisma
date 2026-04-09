@@ -19,15 +19,9 @@ enum VerificationStatus {
   REJECTED
 }
 
-enum LessonCategory {
-  MATH
-  SCIENCE
-  CHEMISTRY
-  OTHER
-}
-
-enum LessonStatus {
-  BOOKED
+enum ETrialLessonStatus {
+  PENDING
+  CONFIRMED
   COMPLETED
   CANCELLED
 }
@@ -51,19 +45,42 @@ enum IdentityVerificationStatus {
   REJECTED
 }
 
+enum EDayOfWeek {
+  MON
+  TUE
+  WED
+  THU
+  FRI
+  SAT
+  SUN
+}
+
+enum EPaymentStatus {
+  PENDING
+  SUCCEEDED
+  FAILED
+  REFUNDED
+}
+
+enum EPaymentReferenceType {
+  TRIAL_LESSON
+  SUBSCRIPTION
+}
+
 /// Application users table mapped to `users`
 model User {
-  id             String         @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  mezonUserId    String         @unique @map("mezon_user_id")
-  username       String
-  avatar         String
-  role           Role           @default(STUDENT)
-  email          String
-  createdAt      DateTime       @default(now()) @map("created_at")
-  tutorProfile   TutorProfile?
-  studentLessons Lesson[]       @relation("StudentLessons")
-  tutorReviews   TutorReview[]  @relation("TutorReviewAuthor")
-  refreshTokens  RefreshToken[]
+  id                  String               @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  mezonUserId         String               @unique @map("mezon_user_id")
+  username            String
+  avatar              String
+  role                Role                 @default(STUDENT)
+  email               String
+  createdAt           DateTime             @default(now()) @map("created_at")
+  tutorProfile        TutorProfile?
+  trialLessonBookings TrialLessonBooking[]
+  payments            Payment[]
+  tutorReviews        TutorReview[]        @relation("TutorReviewAuthor")
+  refreshTokens       RefreshToken[]
 
   @@map("users")
 }
@@ -95,11 +112,11 @@ model TutorProfile {
   createdAt          DateTime           @default(now()) @map("created_at")
   updatedAt          DateTime           @updatedAt @map("updated_at")
 
-  user         User                @relation(fields: [userId], references: [id], onDelete: Cascade)
-  languages    TutorLanguage[]
-  availability TutorAvailability[]
-  lessons      Lesson[]
-  reviews      TutorReview[]
+  user                User                 @relation(fields: [userId], references: [id], onDelete: Cascade)
+  languages           TutorLanguage[]
+  availability        TutorAvailability[]
+  trialLessonBookings TrialLessonBooking[]
+  reviews             TutorReview[]
 
   adminNotes            TutorAdminNote[]
   professionalDocuments ProfessionalDocument[]
@@ -110,13 +127,13 @@ model TutorProfile {
 
 /// Reviews from students for tutors
 model TutorReview {
-  id         String      @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  tutorId    String      @map("tutor_id") @db.Uuid
-  reviewerId String      @map("reviewer_id") @db.Uuid
+  id         String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tutorId    String   @map("tutor_id") @db.Uuid
+  reviewerId String   @map("reviewer_id") @db.Uuid
   rating     Int
-  comment    String      @db.Text
-  createdAt  DateTime    @default(now()) @map("created_at")
-  updatedAt  DateTime    @updatedAt @map("updated_at")
+  comment    String   @db.Text
+  createdAt  DateTime @default(now()) @map("created_at")
+  updatedAt  DateTime @updatedAt @map("updated_at")
 
   tutor    TutorProfile @relation(fields: [tutorId], references: [id], onDelete: Cascade)
   reviewer User         @relation("TutorReviewAuthor", fields: [reviewerId], references: [id], onDelete: Cascade)
@@ -191,37 +208,37 @@ model TutorLanguage {
 
 /// Tutor weekly availability slots
 model TutorAvailability {
-  id        String       @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  tutorId   String       @map("tutor_id") @db.Uuid
-  dayOfWeek Int          @map("day_of_week")
-  startTime String       @map("start_time")
-  endTime   String       @map("end_time")
-  isActive  Boolean      @default(true) @map("is_active")
-  tutor     TutorProfile @relation(fields: [tutorId], references: [id], onDelete: Cascade)
+  id                  String               @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tutorId             String               @map("tutor_id") @db.Uuid
+  dayOfWeek           Int                  @map("day_of_week")
+  startTime           String               @map("start_time")
+  endTime             String               @map("end_time")
+  isActive            Boolean              @default(true) @map("is_active")
+  tutor               TutorProfile         @relation(fields: [tutorId], references: [id], onDelete: Cascade)
 
   @@unique([tutorId, dayOfWeek, startTime, endTime])
   @@map("tutor_availability")
 }
 
 /// Student booked/completed lesson sessions
-model Lesson {
-  id        String         @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  studentId String         @map("student_id") @db.Uuid
-  tutorId   String         @map("tutor_id") @db.Uuid
-  subject   String
-  category  LessonCategory @default(OTHER)
-  status    LessonStatus   @default(BOOKED)
-  startsAt  DateTime       @map("starts_at")
-  endsAt    DateTime       @map("ends_at")
-  createdAt DateTime       @default(now()) @map("created_at")
-  updatedAt DateTime       @updatedAt @map("updated_at")
+model TrialLessonBooking {
+  id                  String            @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tutorId             String            @map("tutor_id") @db.Uuid
+  studentId           String            @map("student_id") @db.Uuid
+  startAt             DateTime          @map("start_at")
+  durationMinutes     Int               @map("duration_minutes")
+  status              ETrialLessonStatus @default(PENDING)
+  priceAtBooking      Decimal           @map("price_at_booking") @db.Decimal(10, 2)
+  createdAt           DateTime          @default(now()) @map("created_at")
+  updatedAt           DateTime          @updatedAt @map("updated_at")
 
-  student User         @relation("StudentLessons", fields: [studentId], references: [id], onDelete: Cascade)
-  tutor   TutorProfile @relation(fields: [tutorId], references: [id], onDelete: Cascade)
+  tutor               TutorProfile       @relation(fields: [tutorId], references: [id], onDelete: Cascade)
+  student             User               @relation(fields: [studentId], references: [id], onDelete: Cascade)
 
-  @@index([studentId, startsAt])
-  @@index([tutorId, startsAt])
-  @@map("lessons")
+  @@index([tutorId])
+  @@index([studentId])
+  @@index([tutorId, startAt])
+  @@map("trial_lesson_booking")
 }
 
 /// Refresh token for session management
@@ -237,4 +254,25 @@ model RefreshToken {
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@map("refresh_tokens")
+}
+
+model Payment {
+  id             String               @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  studentId      String               @map("student_id") @db.Uuid
+  amount         Decimal              @db.Decimal(10, 2)
+  status         EPaymentStatus        @default(PENDING)
+  method         String
+  referenceType  EPaymentReferenceType @map("reference_type")
+  referenceId    String               @map("reference_id") @db.Uuid
+  createdAt      DateTime             @default(now()) @map("created_at")
+  paidAt         DateTime?            @map("paid_at")
+  failedAt       DateTime?            @map("failed_at")
+  refundedAt     DateTime?            @map("refunded_at")
+  idempotencyKey String?              @map("idempotency_key")
+
+  student User @relation(fields: [studentId], references: [id], onDelete: Cascade)
+
+  @@index([studentId])
+  @@index([referenceType, referenceId])
+  @@map("payments")
 }
