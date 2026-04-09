@@ -8,6 +8,7 @@ import {
 import {
   buildTimeSlotsForDay,
   jsDayToDbDayOfWeek,
+  parseYyyyMmDdToLocalDate,
   timeToMinutes,
   type TrialTimeSlot,
 } from '@mezon-tutors/shared'
@@ -18,17 +19,9 @@ import { EDayOfWeek, EPeriod } from '@mezon-tutors/shared'
 import { useAtomValue } from 'jotai'
 import { isAuthenticatedAtom } from '@mezon-tutors/app/store/auth.atom'
 
-export type DateOption = {
-  id: string
-  day: number
-  fullDate: Date
-  disabled?: boolean
-  muted?: boolean
-}
-
 export type TrialBookingPayload = {
   duration: number
-  date: DateOption
+  startAt: string
   dayOfWeek: number
   time: TrialTimeSlot
 }
@@ -122,10 +115,9 @@ export function TrialBookingModal({
       return {
         id: `${normalized.getFullYear()}-${normalized.getMonth() + 1}-${normalized.getDate()}`,
         day: normalized.getDate(),
-        fullDate: normalized,
         disabled: isPastDate,
         muted: isPastDate,
-      } satisfies DateOption
+      }
     })
   }, [])
 
@@ -138,13 +130,19 @@ export function TrialBookingModal({
     () => calendarDates.find((option) => option.id === dateId) ?? calendarDates[0],
     [calendarDates, dateId]
   )
-  const selectedDateString = useMemo(
-    () => selectedDate.fullDate.toISOString().slice(0, 10),
-    [selectedDate]
-  )
+  const selectedDateString = useMemo(() => {
+    const fullDate = parseYyyyMmDdToLocalDate(selectedDate.id)
+    const y = fullDate.getFullYear()
+    const m = String(fullDate.getMonth() + 1).padStart(2, '0')
+    const d = String(fullDate.getDate()).padStart(2, '0')
+    return `${y}-${m}-${d}`
+  }, [selectedDate])
 
   const dbDayOfWeek = useMemo(
-    () => jsDayToDbDayOfWeek(selectedDate.fullDate.getDay()),
+    () => {
+      const fullDate = parseYyyyMmDdToLocalDate(selectedDate.id)
+      return jsDayToDbDayOfWeek(fullDate.getDay())
+    },
     [selectedDate]
   )
 
@@ -177,10 +175,11 @@ export function TrialBookingModal({
 
   const pastSlotIds = useMemo(() => {
     const now = new Date(nowTs)
+    const fullDate = parseYyyyMmDdToLocalDate(selectedDate.id)
     const isToday =
-      selectedDate.fullDate.getFullYear() === now.getFullYear() &&
-      selectedDate.fullDate.getMonth() === now.getMonth() &&
-      selectedDate.fullDate.getDate() === now.getDate()
+      fullDate.getFullYear() === now.getFullYear() &&
+      fullDate.getMonth() === now.getMonth() &&
+      fullDate.getDate() === now.getDate()
 
     if (!isToday) return new Set<string>()
 
@@ -198,7 +197,7 @@ export function TrialBookingModal({
     }
 
     return ids
-  }, [nowTs, selectedDate.fullDate, timeSlots])
+  }, [nowTs, selectedDate.id, timeSlots])
 
   const occupiedSlotIds = useMemo(() => {
     const occupied = occupiedSlotsResponse?.items ?? []
@@ -263,9 +262,9 @@ export function TrialBookingModal({
   }, [timeSlots])
 
   const dateRows = useMemo(() => {
-    const rows: (DateOption | null)[][] = []
+    const rows: (typeof calendarDates[number] | null)[][] = []
     for (let i = 0; i < calendarDates.length; i += DATE_COLUMNS) {
-      const row: (DateOption | null)[] = calendarDates.slice(i, i + DATE_COLUMNS)
+      const row: (typeof calendarDates[number] | null)[] = calendarDates.slice(i, i + DATE_COLUMNS)
       while (row.length < DATE_COLUMNS) row.push(null)
       rows.push(row)
     }
@@ -284,9 +283,10 @@ export function TrialBookingModal({
 
   const handleConfirm = async () => {
     if (!onConfirm || !selectedTime) return
+    const startAt = `${selectedDateString}T${selectedTime.startTime}:00Z`
     await onConfirm({
       duration,
-      date: selectedDate,
+      startAt,
       dayOfWeek: dbDayOfWeek,
       time: selectedTime as TrialTimeSlot,
     })

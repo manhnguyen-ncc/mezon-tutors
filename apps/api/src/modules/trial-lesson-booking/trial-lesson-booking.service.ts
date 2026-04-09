@@ -1,13 +1,86 @@
-import { BadRequestException, ConflictException, Injectable, NotFoundException } from '@nestjs/common'
+import {
+  BadRequestException,
+  ConflictException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common'
 import { ETrialLessonStatus, VerificationStatus } from '@mezon-tutors/db'
 import { timeToMinutes, utcDateToHHmm, utcDateToMinutes } from '@mezon-tutors/shared'
+import type { PaginatedResponse } from '@mezon-tutors/shared'
 import dayjs = require('dayjs')
 import { PrismaService } from '../../prisma/prisma.service'
 import { CreateTrialLessonBookingDto } from './dto/create-trial-lesson-booking.dto'
+import type { TutorTrialLessonBookingRequestDto } from './dto/tutor-trial-lesson-booking-request.dto'
 
 @Injectable()
 export class TrialLessonBookingService {
   constructor(private readonly prisma: PrismaService) {}
+
+  async getTutorBookingRequests(
+    tutorUserId: string,
+    options?: {
+      status?: ETrialLessonStatus
+      page?: number
+      limit?: number
+    }
+  ): Promise<PaginatedResponse<TutorTrialLessonBookingRequestDto>> {
+    const tutor = await this.prisma.tutorProfile.findUnique({
+      where: { userId: tutorUserId },
+      select: { id: true },
+    })
+
+    if (!tutor) {
+      throw new NotFoundException('Tutor profile not found for current user')
+    }
+
+    const page = Math.max(1, options?.page ?? 1)
+    const limit = Math.max(10, Math.min(100, options?.limit ?? 10))
+    const where = {
+      tutorId: tutor.id,
+    }
+
+    const [total, items] = await this.prisma.$transaction([
+      this.prisma.trialLessonBooking.count({ where }),
+      this.prisma.trialLessonBooking.findMany({
+        where,
+        include: {
+          student: {
+            select: {
+              username: true,
+              avatar: true,
+            },
+          },
+        },
+        orderBy: { createdAt: 'desc' },
+        skip: (page - 1) * limit,
+        take: limit,
+      }),
+    ])
+    const totalPages = Math.ceil(total / limit)
+    return {
+      data: {
+        items: items.map((item) => ({
+          id: item.id,
+          studentName: item.student.username,
+          studentAvatarUrl: item.student.avatar,
+          startAt: item.startAt.toISOString(),
+          durationMinutes: item.durationMinutes,
+          priceAtBooking: Number(item.priceAtBooking),
+          status: item.status,
+          createdAt: item.createdAt.toISOString(),
+        })),
+        meta: {
+          page,
+          limit,
+          total,
+          totalPages,
+          hasNext: page < totalPages,
+          hasPrev: page > 1,
+        },
+      },
+      error: null,
+    }
+  }
 
   async hasStudentBookedTutor(studentId: string, tutorId: string) {
     const booking = await this.prisma.trialLessonBooking.findFirst({
@@ -95,7 +168,7 @@ export class TrialLessonBookingService {
       throw new NotFoundException(`Tutor with ID ${dto.tutorId} not found`)
     }
 
-    const startAt = dayjs(`${dto.date}T${dto.startTime}:00Z`)
+    const startAt = dayjs(dto.startAt)
     if (!startAt.isValid()) {
       throw new BadRequestException('Invalid date or startTime')
     }
@@ -104,14 +177,13 @@ export class TrialLessonBookingService {
       throw new BadRequestException('Cannot book lesson in the past')
     }
 
-    const bookingDay = dto.dayOfWeek
-    const startMinutes = timeToMinutes(dto.startTime)
+    const startMinutes = utcDateToMinutes(startAt.toDate())
     const endMinutes = startMinutes + dto.durationMinutes
 
     const availability = await this.prisma.tutorAvailability.findMany({
       where: {
         tutorId: dto.tutorId,
-        dayOfWeek: bookingDay,
+        dayOfWeek: dto.dayOfWeek,
         isActive: true,
       },
       orderBy: { startTime: 'asc' },

@@ -1,12 +1,16 @@
 import { useMutation, useQuery } from '@tanstack/react-query'
-import type { ApiResponse, ETrialLessonBookingStatus } from '@mezon-tutors/shared'
+import type {
+  ApiResponse,
+  ETrialLessonBookingStatus,
+  PaginatedData,
+  PaginatedResponse,
+} from '@mezon-tutors/shared'
 import { apiClient } from '../api-client'
 import { trialLessonBookingQueryKey } from './trial-lesson-booking.qkey'
 
 export type CreateTrialLessonBookingPayload = {
   tutorId: string
-  date: string
-  startTime: string
+  startAt: string
   dayOfWeek: number
   durationMinutes: number
 }
@@ -38,7 +42,22 @@ export type AlreadyBookedTrialLessonResponse = {
   status: ETrialLessonBookingStatus
 }
 
-const trialLessonBookingApi = {
+export type TrialLessonBookingRequestItem = {
+  id: string
+  studentName: string
+  studentAvatarUrl?: string
+  startAt: string
+  durationMinutes: number
+  priceAtBooking: number
+  status: ETrialLessonBookingStatus
+  createdAt: string
+}
+
+export type TrialLessonBookingRequestsResponse = PaginatedData<TrialLessonBookingRequestItem>
+
+export type TrialLessonBookingRequestStatusFilter = 'PENDING' | 'CONFIRMED' | 'COMPLETED'
+
+export const trialLessonBookingApi = {
   getOccupiedByTutorAndDate(tutorId: string, date: string): Promise<OccupiedTrialLessonSlotsResponse> {
     return apiClient.get<ApiResponse<OccupiedTrialLessonSlotsResponse>, OccupiedTrialLessonSlotsResponse>(
       '/trial-lesson-bookings/occupied',
@@ -65,6 +84,32 @@ const trialLessonBookingApi = {
       payload
     )
   },
+
+  async getMyTrialLessonBookingRequests(params?: {
+    status?: TrialLessonBookingRequestStatusFilter
+    page?: number
+    limit?: number
+  }): Promise<TrialLessonBookingRequestsResponse> {
+    const response = await apiClient.get<PaginatedResponse<TrialLessonBookingRequestItem>>(
+      '/trial-lesson-bookings/my-requests',
+      { params }
+    )
+    const page = response.data
+    if (!page) {
+      return {
+        items: [],
+        meta: {
+          page: params?.page ?? 1,
+          limit: params?.limit ?? 10,
+          total: 0,
+          totalPages: 1,
+          hasNext: false,
+          hasPrev: false,
+        },
+      }
+    }
+    return page
+  },
 }
 
 export function useGetOccupiedTrialLessonSlots(tutorId: string, date: string, enabled = true) {
@@ -88,5 +133,20 @@ export function useCreateTrialLessonBookingMutation() {
   return useMutation({
     mutationFn: (payload: CreateTrialLessonBookingPayload) =>
       trialLessonBookingApi.createTrialLessonBooking(payload),
+  })
+}
+
+export function useGetMyTrialLessonBookingRequests(
+  params?: {
+    status?: TrialLessonBookingRequestStatusFilter
+    page?: number
+    limit?: number
+  },
+  enabled = true
+) {
+  return useQuery({
+    queryKey: trialLessonBookingQueryKey.myRequests(params?.status, params?.page, params?.limit),
+    queryFn: () => trialLessonBookingApi.getMyTrialLessonBookingRequests(params),
+    enabled,
   })
 }

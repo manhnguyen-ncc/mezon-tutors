@@ -5,6 +5,7 @@ export * from './types/api-response';
 export * from './types/auth';
 export * from './types/tutor-profile';
 export * from './types/my-lessons-api';
+export * from './types/trial-lesson-booking';
 
 // Enums
 export * from './enums/verification-status';
@@ -27,7 +28,6 @@ export * from './constants/footer';
 export * from './constants/header';
 export * from './constants/dashboard';
 export * from './constants/dashboard-booking-request';
-export * from './constants/calendar';
 
 // Utils
 export * from './utils/utils';

@@ -1,16 +1,12 @@
 import { Type } from 'class-transformer'
-import { IsDateString, IsInt, IsString, IsUUID, Matches, Max, Min } from 'class-validator'
+import { IsDateString, IsInt, IsUUID, Max, Min } from 'class-validator'
 
 export class CreateTrialLessonBookingDto {
   @IsUUID()
   tutorId: string
 
   @IsDateString()
-  date: string
-
-  @IsString()
-  @Matches(/^\d{2}:\d{2}$/)
-  startTime: string
+  startAt: string
 
   @Type(() => Number)
   @IsInt()

@@ -60,13 +60,10 @@ export function TutorCard({
   }
 
   const handleConfirmBooking = async (payload: TrialBookingPayload) => {
-    const bookingDate = payload.date.fullDate.toISOString().slice(0, 10)
-
     try {
       await createTrialLessonBookingMutation.mutateAsync({
         tutorId: tutor.id,
-        date: bookingDate,
-        startTime: payload.time.startTime,
+        startAt: payload.startAt,
         dayOfWeek: payload.dayOfWeek,
         durationMinutes: payload.duration,
       })

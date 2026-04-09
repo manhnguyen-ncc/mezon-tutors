@@ -24,6 +24,14 @@ export function minutesToTime(totalMinutes: number): string {
   return `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}`
 }
 
+export function parseYyyyMmDdToLocalDate(input: string): Date {
+  const parts = input.split('-').map((p) => Number.parseInt(p, 10))
+  const y = parts[0] ?? 1970
+  const m = parts[1] ?? 1
+  const d = parts[2] ?? 1
+  return new Date(y, m - 1, d)
+}
+
 export function utcDateToHHmm(input: Date): string {
   const h = String(input.getUTCHours()).padStart(2, '0')
   const m = String(input.getUTCMinutes()).padStart(2, '0')
