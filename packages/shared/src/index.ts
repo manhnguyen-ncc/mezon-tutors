@@ -21,6 +21,11 @@ export * from './constants/tutor-detail';
 export * from './constants/pagination';
 export * from './constants/urls';
 export * from './constants/regex';
+export * from './constants/home';
+export * from './constants/footer';
+export * from './constants/header';
+export * from './constants/dashboard';
+export * from './constants/dashboard-booking-request';
 
 // Utils
 export * from './utils/utils';
