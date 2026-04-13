@@ -32,8 +32,8 @@ export const ROUTES = {
   },
   DASHBOARD: {
     INDEX: '/dashboard',
-    BOOKING_REQUESTS: '/dashboard/booking-requests',
-    MY_SCHEDULE: '/dashboard/my-schedule',
-    MY_LESSONS: '/dashboard/my-lessons',
+    BOOKING_REQUESTS: '/dashboard/tutor-dashboard/booking-requests',
+    MY_SCHEDULE: '/dashboard/tutor-dashboard/my-schedule',
+    MY_LESSONS: '/dashboard/student-dashboard/my-lessons',
   },
 } as const;

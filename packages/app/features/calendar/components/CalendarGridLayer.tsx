@@ -22,6 +22,7 @@ export type CalendarGridLayerProps = {
   formatHour: (hour: number) => string
   formatRangeLabel: (start: number, end: number) => string
   themeTokens: CalendarGridLayerTokens
+  translationNamespace?: string
 }
 
 type GridGapItemProps = {
@@ -33,6 +34,7 @@ type GridGapItemProps = {
   gapRowHeight: number
   formatRangeLabel: (start: number, end: number) => string
   themeTokens: CalendarGridLayerTokens
+  translationNamespace?: string
 }
 
 function GridGapItem({
@@ -44,8 +46,9 @@ function GridGapItem({
   gapRowHeight,
   formatRangeLabel,
   themeTokens,
+  translationNamespace = 'MyLessons',
 }: GridGapItemProps) {
-  const t = useTranslations('MyLessons')
+  const t = useTranslations(translationNamespace)
   const top = layoutEngine.getY(row.startHour)
 
   return (

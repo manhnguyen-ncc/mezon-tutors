@@ -2,6 +2,8 @@ import type { ReactNode } from 'react';
 
 export type CalendarViewMode = 'week' | 'month' | 'day';
 
+export type CalendarType = 'calendar' | 'myLessons' | 'mySchedule' | 'tutorSchedule' | 'booking';
+
 export type CalendarSlotState = 'available' | 'selected' | 'occupied' | 'blocked' | 'pending';
 
 export type CalendarWeekDay = {
@@ -25,12 +27,42 @@ export type CalendarEvent<T = unknown> = {
   data: T;
 };
 
+export type CalendarLegendItem = {
+  key: string;
+  label: string;
+  color: string;
+};
+
+export type CalendarPresetData = {
+  title?: string;
+  subtitle?: string;
+  weekLabel?: string;
+  monthLabel?: string;
+  showMonthNav?: boolean;
+  showViewSwitcher?: boolean;
+  legendItems?: CalendarLegendItem[];
+  companyLabel?: string;
+  primaryDurationLabel?: string;
+  secondaryDurationLabel?: string;
+};
+
+export type CalendarCardPresetRenderContext = {
+  data: CalendarPresetData;
+  isCompact: boolean;
+};
+
+export type CalendarCardPresetRenderResult = {
+  header?: ReactNode;
+  footer?: ReactNode;
+};
+
 export type CalendarRowModel =
   | { type: 'hour'; hour: number }
   | { type: 'gap'; startHour: number; endHour: number; hourCount: number };
 
 export type BaseCalendarProps<TEvent = unknown> = {
   viewMode?: CalendarViewMode;
+  type?: CalendarType;
   weekDays: CalendarWeekDay[];
   weekHours: number[];
   events?: CalendarEvent<TEvent>[];

@@ -25,35 +25,127 @@ export const CALENDAR_CONFIG = {
 export type CalendarThemeConfig = {
   showTimeline: boolean;
   showGridLines: boolean;
+  showGridOuterBorder?: boolean; 
   showNowLine: boolean;
+  cardBorder?: boolean;
+  cardBorderRadius?: number;
+  cardPadding?: number;
+  eventMaxWidth?: number;
+  eventMaxHeight?: number;
+  eventBorderRadius?: number;
+  eventPadding?: number;
+  eventTopPadding?: number;
+  showEmptySlots?: boolean;
+  emptySlotText?: string;
+  emptySlotStyle?: 'text' | 'outlinedCard';
+  emptySlotBorderStyle?: 'solid' | 'dashed';
+  emptySlotMaxWidth?: number;
+  emptySlotMinHeight?: number;
+  emptySlotBorderRadius?: number;
+  emptySlotMergeHours?: number;
+  weekendNoSlotDays?: number[];
+  weekendNoSlotLabel?: string;
+  translationNamespace?: string;
 };
 
 export const DEFAULT_THEME_CONFIG: CalendarThemeConfig = {
   showTimeline: true,
   showGridLines: true,
   showNowLine: false,
+  cardBorder: true,
+  cardBorderRadius: 16,
+  cardPadding: 16,
+  eventMaxWidth: undefined,
+  eventMaxHeight: undefined,
+  eventBorderRadius: 12,
+  eventPadding: 8,
+  eventTopPadding: undefined,
+  showEmptySlots: false,
+  emptySlotText: undefined,
+  emptySlotStyle: 'text',
+  emptySlotBorderStyle: 'solid',
+  emptySlotMaxWidth: undefined,
+  emptySlotMinHeight: undefined,
+  emptySlotBorderRadius: 12,
+  emptySlotMergeHours: 1,
+  weekendNoSlotDays: [],
+  weekendNoSlotLabel: undefined,
+  translationNamespace: 'MySchedule',
 };
 
 export const CALENDAR_THEME_CONFIG: Record<string, CalendarThemeConfig> = {
   myLessons: {
     showTimeline: true,
     showGridLines: true,
+    showGridOuterBorder: true,
     showNowLine: true,
+    cardBorder: false,
+    cardBorderRadius: 0,
+    cardPadding: 0,
+    eventMaxWidth: 136,
+    eventMaxHeight: undefined,
+    eventBorderRadius: 12,
+    eventPadding: 8,
+    eventTopPadding: 0,
+    showEmptySlots: false,
+    translationNamespace: 'MyLessons',
   },
   tutorSchedule: {
     showTimeline: true,
-    showGridLines: true,
+    showGridLines: false,
+    showGridOuterBorder: true,
     showNowLine: false,
+    cardBorder: false,
+    cardBorderRadius: 0,
+    cardPadding: 0,
+    eventMaxWidth: 120,
+    eventMaxHeight: 68,
+    eventBorderRadius: 12,
+    eventPadding: 8,
+    eventTopPadding: 8,
+    showEmptySlots: true,
+    emptySlotText: undefined,
+    emptySlotStyle: 'outlinedCard',
+    emptySlotBorderStyle: 'solid',
+    emptySlotMaxWidth: 110,
+    emptySlotMinHeight: 56,
+    emptySlotBorderRadius: 12,
+    emptySlotMergeHours: 1,
+    translationNamespace: 'MySchedule',
   },
   mySchedule: {
-    showTimeline: false,
+    showTimeline: true,
     showGridLines: true,
+    showGridOuterBorder: true,
     showNowLine: false,
+    cardBorder: true,
+    cardBorderRadius: 16,
+    cardPadding: 16,
+    eventBorderRadius: 12,
+    eventTopPadding: 8,
+    showEmptySlots: true,
+    emptySlotText: 'AVAILABLE',
+    emptySlotStyle: 'outlinedCard',
+    emptySlotBorderStyle: 'dashed',
+    emptySlotMaxWidth: 88,
+    emptySlotMinHeight: 64,
+    emptySlotBorderRadius: 12,
+    emptySlotMergeHours: 2,
+    weekendNoSlotDays: [5, 6],
+    weekendNoSlotLabel: 'WEEKEND - NO SLOTS',
+    translationNamespace: 'MySchedule',
   },
   booking: {
     showTimeline: true,
     showGridLines: true,
     showNowLine: false,
+    cardBorder: true,
+    cardBorderRadius: 16,
+    cardPadding: 16,
+    eventBorderRadius: 12,
+    eventTopPadding: 8,
+    showEmptySlots: false,
+    translationNamespace: 'MySchedule',
   },
 };
 

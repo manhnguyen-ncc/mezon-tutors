@@ -1,3 +1,4 @@
+'use client';
 import { useMemo, useState } from 'react'
 import { YStack, Text, Select as TamaguiSelect, SelectProps as TamaguiSelectProps } from 'tamagui'
 import { Check, ChevronDown, ChevronUp } from '@tamagui/lucide-icons'
