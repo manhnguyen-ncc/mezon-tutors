@@ -21,7 +21,12 @@ export function MyScheduleScreen() {
 
   const { data, isLoading, isError } = useMySchedule(user?.mezonUserId, selectedDate);
 
-  const calendar = useMemo(() => buildMyScheduleCalendar(selectedDate), [selectedDate]);
+  const calendar = useMemo(() => {
+    const lessons = data?.lessons || [];
+    const availabilitySlots = data?.availability || [];
+    return buildMyScheduleCalendar(selectedDate, lessons, availabilitySlots);
+  }, [selectedDate, data?.lessons, data?.availability]);
+  
   const schedules = useMemo(() => {
     console.log('📅 Selected date:', selectedDate.format('YYYY-MM-DD'));
     console.log('📊 API data:', data);

@@ -1,4 +1,9 @@
 import dayjs from 'dayjs';
+import timezone from 'dayjs/plugin/timezone';
+import utc from 'dayjs/plugin/utc';
+
+dayjs.extend(utc);
+dayjs.extend(timezone);
 
 export const CALENDAR_CONFIG = {
   MIN_GAP_HOURS: 2,
@@ -170,4 +175,41 @@ export function buildFallbackWeekDays() {
       dateLabel: date.format('DD'),
     };
   });
+}
+
+export function calculateDynamicTimelineHours(
+  events: Array<{ startsAt: Date | string; endsAt: Date | string }>,
+  availabilitySlots?: Array<{ startTime: string; endTime: string }>
+): number[] {
+  const hours = new Set<number>();
+
+  events.forEach((event) => {
+    const startHour = dayjs(event.startsAt).tz('Asia/Ho_Chi_Minh').hour();
+    const endHour = dayjs(event.endsAt).tz('Asia/Ho_Chi_Minh').hour();
+    
+    for (let h = startHour; h <= endHour; h++) {
+      hours.add(h);
+    }
+  });
+
+  if (availabilitySlots) {
+    availabilitySlots.forEach((slot) => {
+      const [startHour] = slot.startTime.split(':').map(Number);
+      const [endHour] = slot.endTime.split(':').map(Number);
+      
+      for (let h = startHour; h <= endHour; h++) {
+        hours.add(h);
+      }
+    });
+  }
+
+  if (hours.size === 0) {
+    return [8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21];
+  }
+
+  const sortedHours = Array.from(hours).sort((a, b) => a - b);
+  const minHour = sortedHours[0];
+  const maxHour = sortedHours[sortedHours.length - 1];
+
+  return Array.from({ length: maxHour - minHour + 1 }, (_, i) => minHour + i);
 }

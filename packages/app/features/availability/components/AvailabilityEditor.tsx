@@ -1,6 +1,6 @@
 'use client';
 
-import { useRef, useState, useEffect } from 'react';
+import { useRef, useState, useEffect, useMemo } from 'react';
 import { useTranslations } from 'next-intl';
 import { useForm, Controller } from 'react-hook-form';
 import {
@@ -124,7 +124,20 @@ export function AvailabilityEditor({
 
   const dayKey = getDayKey(selectedDayIndex);
   const slotsByDayForm = watch('slotsByDay');
-  const slots = slotsByDayForm?.[dayKey] ?? [];
+  const unsortedSlots = slotsByDayForm?.[dayKey] ?? [];
+  
+  const slotsWithIndex = useMemo(() => {
+    return unsortedSlots.map((slot, originalIndex) => ({
+      slot,
+      originalIndex,
+    })).sort((a, b) => {
+      const [aHour, aMin] = a.slot.startTime.split(':').map(Number);
+      const [bHour, bMin] = b.slot.startTime.split(':').map(Number);
+      const aMinutes = aHour * 60 + aMin;
+      const bMinutes = bHour * 60 + bMin;
+      return aMinutes - bMinutes;
+    });
+  }, [unsortedSlots]);
 
   const addSlot = () => {
     const current = form.getValues('slotsByDay') ?? {};
@@ -184,9 +197,9 @@ export function AvailabilityEditor({
         </XStack>
 
         <YStack gap="$3">
-          {slots.map((slot, index) => (
+          {slotsWithIndex.map(({ slot, originalIndex }) => (
             <XStack
-              key={index}
+              key={originalIndex}
               gap="$2"
               alignItems="flex-end"
               flexWrap="wrap"
@@ -198,7 +211,7 @@ export function AvailabilityEditor({
                 </Label>
                 <TimePicker
                   value={slot.startTime}
-                  onChange={(v) => updateSlot(index, { startTime: v })}
+                  onChange={(v) => updateSlot(originalIndex, { startTime: v })}
                   placeholder="09:00"
                 />
               </YStack>
@@ -212,11 +225,11 @@ export function AvailabilityEditor({
                 </Label>
                 <TimePicker
                   value={slot.endTime}
-                  onChange={(v) => updateSlot(index, { endTime: v })}
+                  onChange={(v) => updateSlot(originalIndex, { endTime: v })}
                   placeholder="17:00"
                 />
               </YStack>
-              <Button variant="ghost" size="$2" padding="$2" onPress={() => removeSlot(index)}>
+              <Button variant="ghost" size="$2" padding="$2" onPress={() => removeSlot(originalIndex)}>
                 <TrashIcon size={18} color="#EF4444" />
               </Button>
             </XStack>

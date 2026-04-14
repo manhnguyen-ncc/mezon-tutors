@@ -2,11 +2,18 @@ import dayjs from 'dayjs';
 import timezone from 'dayjs/plugin/timezone';
 import utc from 'dayjs/plugin/utc';
 import type { MyScheduleCalendarMeta } from './types';
+import type { TutorAvailabilitySlotDto } from '@mezon-tutors/shared';
+import { calculateDynamicTimelineHours } from '@mezon-tutors/shared';
+import type { MyScheduleApiResponse } from '@mezon-tutors/app/services/my-schedule.service';
 
 dayjs.extend(utc);
 dayjs.extend(timezone);
 
-export function buildMyScheduleCalendar(selectedDate: dayjs.Dayjs = dayjs()): MyScheduleCalendarMeta {
+export function buildMyScheduleCalendar(
+  selectedDate: dayjs.Dayjs = dayjs(),
+  lessons: MyScheduleApiResponse['lessons'] = [],
+  availabilitySlots: TutorAvailabilitySlotDto[] = []
+): MyScheduleCalendarMeta {
   const now = dayjs().tz('Asia/Ho_Chi_Minh');
   const targetDate = selectedDate.tz('Asia/Ho_Chi_Minh');
   const dayOfWeek = targetDate.day();
@@ -30,10 +37,20 @@ export function buildMyScheduleCalendar(selectedDate: dayjs.Dayjs = dayjs()): My
   const isCurrentWeek = currentMonday.isSame(selectedMonday, 'day');
   const currentDayIndex = isCurrentWeek ? currentMondayOffset : undefined;
 
+  const lessonsWithDates = lessons.map(lesson => {
+    const dayDate = weekDays[lesson.dayIndex].fullDate;
+    return {
+      startsAt: dayjs(dayDate).hour(lesson.startHour).toDate(),
+      endsAt: dayjs(dayDate).hour(lesson.endHour).toDate(),
+    };
+  });
+
+  const weekHours = calculateDynamicTimelineHours(lessonsWithDates, availabilitySlots);
+
   return {
     title: targetDate.format('MMMM YYYY'),
     weekDays,
-    weekHours: [8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20],
+    weekHours,
     currentDayIndex,
     currentHour: isCurrentWeek ? now.hour() + now.minute() / 60 : undefined,
   };
