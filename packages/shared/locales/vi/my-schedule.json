@@ -26,5 +26,9 @@
     "student": "Học sinh",
     "status": "Trạng thái",
     "close": "Đóng"
+  },
+  "availability": {
+    "title": "Quản lý lịch trống",
+    "description": "Đặt lịch dạy hàng tuần của bạn. Học sinh có thể đặt lịch trong các khung giờ này."
   }
 }

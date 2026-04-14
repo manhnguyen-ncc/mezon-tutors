@@ -250,11 +250,16 @@
     },
     "back": "Back",
     "continue": "Review & Submit",
+    "cancel": "Cancel",
+    "save": "Save",
+    "saving": "Saving...",
     "validation": {
       "hourlyRateRequired": "Hourly rate is required.",
       "hourlyRateInvalidFormat": "Hourly rate must be a valid number (up to 2 decimal places).",
       "hourlyRateGreaterThanZero": "Hourly rate must be greater than 0.",
-      "weeklySlotsRequired": "Please add at least one weekly availability slot before continuing."
+      "weeklySlotsRequired": "Please add at least one weekly availability slot before continuing.",
+      "timeRequired": "Start time and end time are required.",
+      "endTimeMustBeAfterStartTime": "End time must be after start time."
     }
   },
   "Completion": {

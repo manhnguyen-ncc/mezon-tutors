@@ -26,5 +26,10 @@
     "student": "Student",
     "status": "Status",
     "close": "Close"
+  },
+  "availability": {
+    "title": "Manage Availability",
+    "description": "Set your weekly teaching schedule. Students can book lessons during these time slots.",
+    "loading": "Loading..."
   }
 }
