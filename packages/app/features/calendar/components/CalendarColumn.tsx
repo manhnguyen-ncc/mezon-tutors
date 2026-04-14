@@ -1,55 +1,57 @@
-import { XStack, YStack } from '@mezon-tutors/app/ui'
-import { Text } from '@mezon-tutors/app/ui'
-import type { ReactNode } from 'react'
-import type { CalendarEvent, CalendarRowModel, CalendarSlotState } from '../types'
-import type { CalendarLayoutEngine } from './utils'
+import { Text, XStack, YStack } from '@mezon-tutors/app/ui';
+import { useMemo } from 'react';
+import type { CSSProperties, ReactNode } from 'react';
+import type { CalendarEvent, CalendarRowModel, CalendarSlotState } from '../types';
+import type { CalendarLayoutEngine } from './utils';
 
 export type CalendarColumnTokens = {
-  gridBorder: string
-  currentColumn: string
-  nowLine: string
-  weekendLabel: string
-}
+  gridBorder: string;
+  currentColumn: string;
+  nowLine: string;
+  weekendLabel: string;
+};
 
 export type CalendarColumnConfig<TEvent> = {
-  layoutEngine: CalendarLayoutEngine
-  rowHeight: number
-  slotPadding: number
-  eventPadding: number
-  eventTopPadding: number
-  readonly: boolean
-  isCompact: boolean
-  showNowLine?: boolean
-  currentHour?: number
-  themeTokens: CalendarColumnTokens
-  weekendNoSlotDays?: number[]
-  weekendNoSlotLabel?: string
-  emptySlotMergeHours?: number
-  onSlotClick?: (dayIndex: number, hour: number) => void
-  renderEvent?: (event: CalendarEvent<TEvent>, isCompact: boolean) => ReactNode
-  renderSlot?: (dayIndex: number, hour: number, state?: CalendarSlotState) => ReactNode
-}
+  layoutEngine: CalendarLayoutEngine;
+  rowHeight: number;
+  slotPadding: number;
+  eventPadding: number;
+  eventTopPadding: number;
+  readonly: boolean;
+  isCompact: boolean;
+  showNowLine?: boolean;
+  currentHour?: number;
+  headerHeight: number;
+  themeTokens: CalendarColumnTokens;
+  weekendNoSlotDays?: number[];
+  weekendNoSlotLabel?: string;
+  emptySlotMergeHours?: number;
+  onSlotClick?: (dayIndex: number, hour: number) => void;
+  renderEvent?: (event: CalendarEvent<TEvent>, isCompact: boolean) => ReactNode;
+  renderSlot?: (dayIndex: number, hour: number, state?: CalendarSlotState) => ReactNode;
+};
 
 type CalendarColumnProps<TEvent> = {
-  dayIndex: number
-  events: CalendarEvent<TEvent>[]
-  rowModels: CalendarRowModel[]
-  isLast: boolean
-  isActive: boolean
-  showGridLines: boolean
-  config: CalendarColumnConfig<TEvent>
-}
+  dayIndex: number;
+  events: CalendarEvent<TEvent>[];
+  rowModels: CalendarRowModel[];
+  isLast: boolean;
+  isActive: boolean;
+  showGridLines: boolean;
+  showTimelineGrid?: boolean;
+  config: CalendarColumnConfig<TEvent>;
+};
 
 type ColumnEmptySlotProps<TEvent> = {
-  row: Extract<CalendarRowModel, { type: 'hour' }>
-  dayIndex: number
-  config: CalendarColumnConfig<TEvent>
-  height?: number
-}
+  row: Extract<CalendarRowModel, { type: 'hour' }>;
+  dayIndex: number;
+  config: CalendarColumnConfig<TEvent>;
+  height?: number;
+};
 
 function ColumnEmptySlot<TEvent>({ row, dayIndex, config, height }: ColumnEmptySlotProps<TEvent>) {
-  const top = config.layoutEngine.getY(row.hour)
-  const hasClick = !config.readonly && config.onSlotClick
+  const top = config.layoutEngine.getY(row.hour);
+  const hasClick = !config.readonly && config.onSlotClick;
 
   return (
     <YStack
@@ -63,20 +65,20 @@ function ColumnEmptySlot<TEvent>({ row, dayIndex, config, height }: ColumnEmptyS
     >
       {config.renderSlot ? config.renderSlot(dayIndex, row.hour) : null}
     </YStack>
-  )
+  );
 }
 
 type ColumnEventSlotProps<TEvent> = {
-  event: CalendarEvent<TEvent>
-  config: CalendarColumnConfig<TEvent>
-}
+  event: CalendarEvent<TEvent>;
+  config: CalendarColumnConfig<TEvent>;
+};
 
 function ColumnEventSlot<TEvent>({ event, config }: ColumnEventSlotProps<TEvent>) {
-  const top = config.layoutEngine.getY(event.startHour)
-  const endHour = event.endHour ?? event.startHour + 1
-  const bottom = config.layoutEngine.getY(endHour)
-  const height = Math.max(0, bottom - top)
-  const inset = height > 8 ? 1 : 0
+  const top = config.layoutEngine.getY(event.startHour);
+  const endHour = event.endHour ?? event.startHour + 1;
+  const bottom = config.layoutEngine.getY(endHour);
+  const height = Math.max(0, bottom - top);
+  const inset = height > 8 ? 1 : 0;
 
   return (
     <YStack
@@ -91,20 +93,42 @@ function ColumnEventSlot<TEvent>({ event, config }: ColumnEventSlotProps<TEvent>
     >
       {config.renderEvent ? config.renderEvent(event, config.isCompact) : null}
     </YStack>
-  )
+  );
 }
 
-function ColumnNowLine({ config }: { config: CalendarColumnConfig<any> }) {
-  if (!config.showNowLine || config.currentHour === undefined) return null
+function ColumnNowLine({ config }: { config: CalendarColumnConfig<unknown> }) {
+  if (!config.showNowLine || config.currentHour === undefined) return null;
 
-  const top = config.layoutEngine.getY(config.currentHour)
+  const top = config.layoutEngine.getY(config.currentHour);
 
   return (
-    <XStack position="absolute" left={0} right={0} top={top} alignItems="center" pointerEvents="none" zIndex={20}>
-      <YStack width={7} height={7} borderRadius={999} backgroundColor={config.themeTokens.nowLine} marginLeft={-4} />
-      <YStack flex={1} height={2} backgroundColor={config.themeTokens.nowLine} />
+    <XStack
+      position="absolute"
+      left={0}
+      right={0}
+      top={top}
+      alignItems="center"
+      pointerEvents="none"
+      zIndex={20}
+    >
+      <YStack
+        width={7}
+        height={7}
+        borderRadius={999}
+        backgroundColor={config.themeTokens.nowLine}
+        marginLeft={-4}
+      />
+      <YStack
+        flex={1}
+        height={2}
+        backgroundColor={config.themeTokens.nowLine}
+      />
     </XStack>
-  )
+  );
+}
+
+function getEventEndHour(event: CalendarEvent<unknown>) {
+  return event.endHour ?? event.startHour + 1;
 }
 
 export function CalendarColumn<TEvent = unknown>({
@@ -114,20 +138,44 @@ export function CalendarColumn<TEvent = unknown>({
   isLast,
   isActive,
   showGridLines,
+  showTimelineGrid = true,
   config,
 }: CalendarColumnProps<TEvent>) {
   const isWeekendNoSlotsColumn =
     events.length === 0 &&
     Boolean(config.weekendNoSlotLabel) &&
-    Boolean(config.weekendNoSlotDays?.includes(dayIndex))
-  const mergeHours = Math.max(1, config.emptySlotMergeHours ?? 1)
+    Boolean(config.weekendNoSlotDays?.includes(dayIndex));
+  const mergeHours = Math.max(1, config.emptySlotMergeHours ?? 1);
 
-  const hasEventInHour = (hour: number) => {
-    return events.some((event) => {
-      const eventEndHour = event.endHour ?? event.startHour + 1
-      return event.startHour < hour + 1 && eventEndHour > hour
-    })
-  }
+  const hourRows = useMemo(
+    () =>
+      rowModels.filter(
+        (row): row is Extract<CalendarRowModel, { type: 'hour' }> => row.type === 'hour'
+      ),
+    [rowModels]
+  );
+
+  const rowHourSet = useMemo(() => new Set(hourRows.map((row) => row.hour)), [hourRows]);
+
+  const occupiedHourSet = useMemo(() => {
+    if (!events.length) return new Set<number>();
+    const occupied = new Set<number>();
+    hourRows.forEach((row) => {
+      const hasOverlap = events.some(
+        (event) => event.startHour < row.hour + 1 && getEventEndHour(event) > row.hour
+      );
+      if (hasOverlap) occupied.add(row.hour);
+    });
+    return occupied;
+  }, [events, hourRows]);
+
+  const hasEventInHour = (hour: number) => occupiedHourSet.has(hour);
+
+  const weekendNoSlotLabelStyle: CSSProperties = {
+    letterSpacing: 1.2,
+    transform: 'rotate(90deg)',
+    whiteSpace: 'nowrap',
+  };
 
   return (
     <YStack
@@ -136,28 +184,28 @@ export function CalendarColumn<TEvent = unknown>({
       minWidth={0}
       borderRightWidth={showGridLines && !isLast ? 1 : 0}
       borderRightColor={config.themeTokens.gridBorder}
+      borderTopWidth={showTimelineGrid ? 1 : 0}
+      borderTopColor={config.themeTokens.gridBorder}
       backgroundColor={isActive ? config.themeTokens.currentColumn : 'transparent'}
       position="relative"
     >
       {rowModels.map((row) => {
-        if (row.type === 'gap') return null
-        if (isWeekendNoSlotsColumn) return null
-        if (config.renderSlot && hasEventInHour(row.hour)) return null
+        if (row.type === 'gap') return null;
+        if (isWeekendNoSlotsColumn) return null;
+        if (config.renderSlot && hasEventInHour(row.hour)) return null;
 
         const isBlockStart =
-          !config.renderSlot ||
-          !hasEventInHour(row.hour - 1) ||
-          mergeHours === 1
+          !config.renderSlot || !hasEventInHour(row.hour - 1) || mergeHours === 1;
 
-        if (!isBlockStart) return null
+        if (!isBlockStart) return null;
 
-        let span = 1
+        let span = 1;
         if (config.renderSlot && mergeHours > 1) {
           while (span < mergeHours) {
-            const nextHour = row.hour + span
-            const hasNextHour = rowModels.some((candidate) => candidate.type === 'hour' && candidate.hour === nextHour)
-            if (!hasNextHour || hasEventInHour(nextHour)) break
-            span += 1
+            const nextHour = row.hour + span;
+            const hasNextHour = rowHourSet.has(nextHour);
+            if (!hasNextHour || hasEventInHour(nextHour)) break;
+            span += 1;
           }
         }
 
@@ -169,11 +217,15 @@ export function CalendarColumn<TEvent = unknown>({
             config={config}
             height={config.rowHeight * span}
           />
-        )
+        );
       })}
 
       {events.map((event) => (
-        <ColumnEventSlot key={event.id} event={event} config={config} />
+        <ColumnEventSlot
+          key={event.id}
+          event={event}
+          config={config}
+        />
       ))}
 
       {isWeekendNoSlotsColumn && (
@@ -181,7 +233,7 @@ export function CalendarColumn<TEvent = unknown>({
           position="absolute"
           left={0}
           right={0}
-          top={0}
+          top={config.headerHeight}
           bottom={0}
           alignItems="center"
           justifyContent="center"
@@ -192,7 +244,7 @@ export function CalendarColumn<TEvent = unknown>({
             fontSize={11}
             fontWeight="700"
             opacity={0.45}
-            style={{ letterSpacing: 1.2, transform: 'rotate(90deg)', whiteSpace: 'nowrap' as any }}
+            style={weekendNoSlotLabelStyle}
           >
             {config.weekendNoSlotLabel}
           </Text>
@@ -201,5 +253,5 @@ export function CalendarColumn<TEvent = unknown>({
 
       {isActive && <ColumnNowLine config={config} />}
     </YStack>
-  )
+  );
 }

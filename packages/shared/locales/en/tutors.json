@@ -63,7 +63,8 @@
       "INDONESIAN": "Indonesian",
       "DUTCH": "Dutch",
       "POLISH": "Polish",
-      "TURKISH": "Turkish"
+      "TURKISH": "Turkish",
+      "OTHER": "Other"
     },
     "Subject": {
       "ANY_SUBJECT": "Any subject",

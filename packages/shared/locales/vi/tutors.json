@@ -63,7 +63,8 @@
       "INDONESIAN": "Tiếng Indonesia",
       "DUTCH": "Tiếng Hà Lan",
       "POLISH": "Tiếng Ba Lan",
-      "TURKISH": "Tiếng Thổ Nhĩ Kỳ"
+      "TURKISH": "Tiếng Thổ Nhĩ Kỳ",
+      "OTHER": "Khác"
     },
     "Subject": {
       "ANY_SUBJECT": "Bất kỳ môn học nào",

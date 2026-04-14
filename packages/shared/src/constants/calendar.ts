@@ -25,11 +25,15 @@ export const CALENDAR_CONFIG = {
 export type CalendarThemeConfig = {
   showTimeline: boolean;
   showGridLines: boolean;
+  showTimelineGrid?: boolean;
+  showDayColumnGridLines?: boolean;
   showGridOuterBorder?: boolean; 
   showNowLine: boolean;
   cardBorder?: boolean;
   cardBorderRadius?: number;
   cardPadding?: number;
+  rowHeight?: number;
+  gapRowHeight?: number;
   eventMaxWidth?: number;
   eventMaxHeight?: number;
   eventBorderRadius?: number;
@@ -116,6 +120,8 @@ export const CALENDAR_THEME_CONFIG: Record<string, CalendarThemeConfig> = {
   mySchedule: {
     showTimeline: true,
     showGridLines: true,
+    showTimelineGrid: true,
+    showDayColumnGridLines: false,
     showGridOuterBorder: true,
     showNowLine: false,
     cardBorder: true,
@@ -123,16 +129,9 @@ export const CALENDAR_THEME_CONFIG: Record<string, CalendarThemeConfig> = {
     cardPadding: 16,
     eventBorderRadius: 12,
     eventTopPadding: 8,
-    showEmptySlots: true,
-    emptySlotText: 'AVAILABLE',
-    emptySlotStyle: 'outlinedCard',
-    emptySlotBorderStyle: 'dashed',
-    emptySlotMaxWidth: 88,
-    emptySlotMinHeight: 64,
-    emptySlotBorderRadius: 12,
-    emptySlotMergeHours: 2,
-    weekendNoSlotDays: [5, 6],
-    weekendNoSlotLabel: 'WEEKEND - NO SLOTS',
+    rowHeight: 100,
+    gapRowHeight: 68,
+    showEmptySlots: false,
     translationNamespace: 'MySchedule',
   },
   booking: {

@@ -12,8 +12,8 @@ export function buildRowModels(
   }
 
   const sortedHours = [...weekHours].sort((a, b) => a - b);
-  
-  // Create a set of occupied hours, including spanning hours
+  const currentHourBucket = currentHour === undefined ? undefined : Math.floor(currentHour);
+
   const occupiedHours = new Set<number>();
   events.forEach((e) => {
     const end = e.endHour ? Math.max(e.startHour + 1, e.endHour) : e.startHour + 1;
@@ -28,7 +28,7 @@ export function buildRowModels(
   while (index < sortedHours.length) {
     const hour = sortedHours[index];
     const isOccupied = occupiedHours.has(hour);
-    const isCurrentHour = hour === currentHour;
+    const isCurrentHour = hour === currentHourBucket;
 
     if (isOccupied || isCurrentHour) {
       rows.push({ type: 'hour', hour });
@@ -39,7 +39,7 @@ export function buildRowModels(
     const startIndex = index;
     while (index < sortedHours.length) {
       const cursorHour = sortedHours[index];
-      if (occupiedHours.has(cursorHour) || cursorHour === currentHour) {
+      if (occupiedHours.has(cursorHour) || cursorHour === currentHourBucket) {
         break;
       }
       index += 1;
@@ -72,21 +72,21 @@ export type CalendarLayoutConfig = {
 };
 
 export class CalendarLayoutEngine {
-  public totalHeight: number = 0;
+  public totalHeight = 0;
   private hourYs = new Map<number, number>();
 
-  constructor(public rowModels: CalendarRowModel[], public config: CalendarLayoutConfig) {
+  constructor(
+    public rowModels: CalendarRowModel[],
+    public config: CalendarLayoutConfig
+  ) {
     let currentY = 0;
-    
+
     this.rowModels.forEach((model) => {
       if (model.type === 'hour') {
         this.hourYs.set(model.hour, currentY);
         currentY += config.rowHeight;
       } else {
-        // Map the start hour of the gap to currentY
         for (let h = model.startHour; h < model.endHour; h++) {
-          // All hours inside the gap map to the top of the gap row
-          // because they are technically hidden/collapsed
           this.hourYs.set(h, currentY);
         }
         currentY += config.gapRowHeight;
@@ -103,7 +103,7 @@ export class CalendarLayoutEngine {
   getY(hour: number): number {
     const upperHour = Math.ceil(hour);
     const lowerHour = Math.floor(hour);
-    
+
     const lowerY = this.hourYs.get(lowerHour) ?? this.extrapolateLowerOrUpper(lowerHour);
 
     if (upperHour === lowerHour) {
@@ -118,18 +118,18 @@ export class CalendarLayoutEngine {
 
   private extrapolateLowerOrUpper(targetHour: number): number {
     if (this.rowModels.length === 0) return 0;
-    
+
     // Find closest lower mapped hour
     let closestLowerHour = -1;
     let closestLowerY = 0;
-    
+
     for (const [hour, y] of this.hourYs.entries()) {
       if (hour <= targetHour && hour > closestLowerHour) {
         closestLowerHour = hour;
         closestLowerY = y;
       }
     }
-    
+
     if (closestLowerHour !== -1) {
       // We found a mapped hour before targetHour
       // Provide an estimated Y by adding rowHeight for every missing hour
@@ -138,7 +138,7 @@ export class CalendarLayoutEngine {
 
     const firstModel = this.rowModels[0];
     const firstHour = firstModel.type === 'hour' ? firstModel.hour : firstModel.startHour;
-    
+
     if (targetHour < firstHour) {
       return (targetHour - firstHour) * this.config.rowHeight;
     }

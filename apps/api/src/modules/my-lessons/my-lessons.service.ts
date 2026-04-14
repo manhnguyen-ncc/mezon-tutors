@@ -33,7 +33,8 @@ export class MyLessonsService {
   }
 
   private getUtcHour(input: string | Date): number {
-    return this.toUtc(input).hour();
+    const dt = this.toUtc(input);
+    return dt.hour() + dt.minute() / 60;
   }
 
   async getOverview(studentMezonUserId?: string): Promise<MyLessonsApiResponse> {
