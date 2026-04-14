@@ -3,6 +3,7 @@
 import { useState, useRef, useEffect } from 'react';
 import { YStack, XStack, Text, Input } from '@mezon-tutors/app/ui';
 import { ChevronDown } from '@tamagui/lucide-icons';
+import { useTranslations } from 'next-intl';
 
 type TimePickerProps = {
   value: string;
@@ -11,6 +12,7 @@ type TimePickerProps = {
 };
 
 export function TimePicker({ value, onChange, placeholder = '09:00' }: TimePickerProps) {
+  const t = useTranslations('TutorProfile.Availability.availability');
   const [isOpen, setIsOpen] = useState(false);
   const [hours, minutes] = value.split(':');
   const [inputValue, setInputValue] = useState(value);
@@ -165,11 +167,10 @@ export function TimePicker({ value, onChange, placeholder = '09:00' }: TimePicke
                 paddingBottom="$1"
                 textAlign="center"
                 backgroundColor="$backgroundCard"
-                position="sticky"
-                top={0}
                 zIndex={1}
+                style={{ position: 'sticky', top: 0 } as any}
               >
-                Hour
+                {t('hour')}
               </Text>
               {hourOptions.map((hour) => (
                 <XStack
@@ -209,11 +210,10 @@ export function TimePicker({ value, onChange, placeholder = '09:00' }: TimePicke
                 paddingBottom="$1"
                 textAlign="center"
                 backgroundColor="$backgroundCard"
-                position="sticky"
-                top={0}
                 zIndex={1}
+                style={{ position: 'sticky', top: 0 } as any}
               >
-                Minute
+                {t('minute')}
               </Text>
               {minuteOptions.map((minute) => (
                 <XStack

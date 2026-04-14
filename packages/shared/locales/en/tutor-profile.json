@@ -246,7 +246,9 @@
       },
       "from": "From",
       "to": "To",
-      "addSlot": "Add availability slot"
+      "addSlot": "Add availability slot",
+      "hour": "Hour",
+      "minute": "Minute"
     },
     "back": "Back",
     "continue": "Review & Submit",

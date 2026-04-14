@@ -1,7 +1,7 @@
 import { Text, XStack, YStack } from '@mezon-tutors/app/ui';
 import { useTranslations } from 'next-intl';
 import { X, Clock, User, BookOpen } from '@tamagui/lucide-icons';
-import { getStatusTheme, getStatusLabelKey } from '../status-theme';
+import { getStatusLabelKey, getStatusTokenName } from '@mezon-tutors/shared';
 import type { ScheduleItem } from '../types';
 
 type LessonDetailModalProps = {
@@ -16,7 +16,9 @@ export function LessonDetailModal({ lesson, isOpen, onClose }: LessonDetailModal
 
   if (!isOpen || !lesson) return null;
 
-  const theme = getStatusTheme(lesson.status);
+  const bgToken = getStatusTokenName(lesson.status, 'Bg') as any;
+  const dotToken = getStatusTokenName(lesson.status, 'Dot') as any;
+  const badgeTextToken = getStatusTokenName(lesson.status, 'BadgeText') as any;
 
   return (
     <YStack
@@ -43,7 +45,7 @@ export function LessonDetailModal({ lesson, isOpen, onClose }: LessonDetailModal
         onPress={(e) => e.stopPropagation()}
       >
         <YStack
-          backgroundColor={theme.background}
+          backgroundColor={bgToken}
           padding="$5"
           borderBottomWidth={1}
           borderBottomColor="$myScheduleModalBorder"
@@ -63,10 +65,10 @@ export function LessonDetailModal({ lesson, isOpen, onClose }: LessonDetailModal
                   paddingHorizontal="$2.5"
                   paddingVertical="$1.5"
                   borderRadius={8}
-                  backgroundColor={theme.dot}
+                  backgroundColor={dotToken}
                 >
                   <Text
-                    color={theme.label}
+                    color={badgeTextToken}
                     fontSize={11}
                     lineHeight={14}
                     fontWeight="700"

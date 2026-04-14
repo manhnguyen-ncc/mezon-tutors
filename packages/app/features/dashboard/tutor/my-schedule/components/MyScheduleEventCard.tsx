@@ -1,6 +1,6 @@
 import { Text, YStack } from '@mezon-tutors/app/ui';
 import { useTranslations } from 'next-intl';
-import { getStatusTheme, getStatusLabelKey } from '../status-theme';
+import { getStatusLabelKey, getStatusTokenName, MY_SCHEDULE_EVENT_CARD_CONFIG } from '@mezon-tutors/shared';
 import type { ScheduleItem } from '../types';
 
 type MyScheduleEventCardProps = {
@@ -11,10 +11,18 @@ type MyScheduleEventCardProps = {
 
 export function MyScheduleEventCard({ schedule, isCompact, onPress }: MyScheduleEventCardProps) {
   const t = useTranslations('MySchedule.legend');
-  const theme = getStatusTheme(schedule.status);
   const [startTime = '', endTime = ''] = schedule.timeLabel.split(' - ');
   const isAvailable = schedule.status === 'available';
   const displayTitle = isAvailable ? t(getStatusLabelKey(schedule.status)).toUpperCase() : schedule.title;
+
+  const config = MY_SCHEDULE_EVENT_CARD_CONFIG;
+  const sizeConfig = isAvailable 
+    ? (isCompact ? config.available.compact : config.available.normal)
+    : (isCompact ? config.event.compact : config.event.normal);
+
+  const bgToken = getStatusTokenName(schedule.status, 'Bg') as any;
+  const labelToken = getStatusTokenName(schedule.status, 'Label') as any;
+  const dotToken = getStatusTokenName(schedule.status, 'Dot') as any;
 
   return (
     <YStack
@@ -22,34 +30,40 @@ export function MyScheduleEventCard({ schedule, isCompact, onPress }: MySchedule
       height="100%"
       maxWidth="100%"
       minWidth={0}
-      borderRadius={12}
-      backgroundColor={theme.background}
+      borderRadius={config.borderRadius}
+      backgroundColor={bgToken}
       borderWidth={1}
-      borderColor={isAvailable ? theme.dot : '$myScheduleEventBorder'}
+      borderColor={isAvailable ? dotToken : '$myScheduleEventBorder'}
       borderStyle={isAvailable ? 'dashed' : 'solid'}
-      borderLeftWidth={isAvailable ? 1 : 4}
-      borderLeftColor={theme.dot}
+      borderLeftWidth={isAvailable ? 1 : config.borderLeftWidth}
+      borderLeftColor={dotToken}
       padding={isCompact ? '$1.5' : '$2'}
       gap={4}
       justifyContent="center"
       alignItems={isAvailable ? 'center' : 'flex-start'}
-      minHeight={isAvailable ? (isCompact ? 50 : 56) : (isCompact ? 70 : 80)}
-      maxHeight={isAvailable ? undefined : (isCompact ? 78 : 88)}
+      minHeight={sizeConfig.minHeight}
+      maxHeight={'maxHeight' in sizeConfig ? sizeConfig.maxHeight : undefined}
       overflow="hidden"
       cursor={isAvailable ? 'default' : 'pointer'}
       hoverStyle={isAvailable ? {} : { opacity: 0.8 }}
       onPress={isAvailable ? undefined : onPress}
     >
-      {!isAvailable && (
-        <Text color={theme.label} fontSize={10} lineHeight={12} fontWeight="600" numberOfLines={1}>
+      {!isAvailable && 'timeFontSize' in sizeConfig && (
+        <Text 
+          color={labelToken} 
+          fontSize={sizeConfig.timeFontSize} 
+          lineHeight={sizeConfig.timeLineHeight} 
+          fontWeight="600" 
+          numberOfLines={1}
+        >
           {startTime} - {endTime}
         </Text>
       )}
 
       <Text
-        color={theme.label}
-        fontSize={isAvailable ? 11 : (isCompact ? 13 : 14)}
-        lineHeight={isAvailable ? 13 : (isCompact ? 15 : 16)}
+        color={labelToken}
+        fontSize={sizeConfig.fontSize}
+        lineHeight={sizeConfig.lineHeight}
         fontWeight="700"
         numberOfLines={isAvailable ? 3 : 2}
         textAlign={isAvailable ? 'center' : 'left'}

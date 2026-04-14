@@ -1,11 +1,10 @@
 import { CalendarCard, type CalendarEvent } from '@mezon-tutors/app';
-import { buildFallbackWeekDays, getFallbackWeekHours } from '@mezon-tutors/shared';
+import { buildFallbackWeekDays, getFallbackWeekHours, ALL_SESSION_STATUSES, getStatusLabelKey, getStatusTokenName } from '@mezon-tutors/shared';
 import { useTranslations } from 'next-intl';
 import { useState } from 'react';
 import { useMedia } from 'tamagui';
-import type { MyScheduleCalendarMeta, ScheduleItem, SessionStatus } from '../types';
+import type { MyScheduleCalendarMeta, ScheduleItem } from '../types';
 import { MyScheduleEventCard } from './MyScheduleEventCard';
-import { getStatusLabelKey, getStatusTheme } from '../status-theme';
 import { LessonDetailModal } from './LessonDetailModal';
 
 type MyScheduleCalendarCardProps = {
@@ -37,11 +36,10 @@ export function MyScheduleCalendarCard({ schedules, calendar }: MyScheduleCalend
       return (a.endHour ?? a.startHour + 1) - (b.endHour ?? b.startHour + 1);
     });
 
-  const allStatuses: SessionStatus[] = ['upcoming', 'pending', 'available', 'blocked'];
-  const legendItems = allStatuses.map((status) => ({
+  const legendItems = ALL_SESSION_STATUSES.map((status) => ({
     key: status,
     label: t(getStatusLabelKey(status)),
-    color: getStatusTheme(status).dot,
+    color: getStatusTokenName(status, 'Dot'),
   }));
 
   const handleLessonPress = (lesson: ScheduleItem) => {

@@ -246,7 +246,9 @@
       },
       "from": "Từ",
       "to": "Đến",
-      "addSlot": "Thêm khung giờ dạy"
+      "addSlot": "Thêm khung giờ dạy",
+      "hour": "Giờ",
+      "minute": "Phút"
     },
     "back": "Quay lại",
     "continue": "Xem lại & Gửi",

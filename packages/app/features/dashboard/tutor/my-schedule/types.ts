@@ -1,6 +1,7 @@
 import type { CalendarWeekDay } from '@mezon-tutors/app';
+import type { SessionStatus } from '@mezon-tutors/shared';
 
-export type SessionStatus = 'upcoming' | 'pending' | 'available' | 'blocked';
+export type { SessionStatus };
 
 export type ScheduleItem = {
   id: string;

@@ -78,6 +78,9 @@ export function MyScheduleHeader() {
             color="$myScheduleAddButtonText"
             icon={<PlusIcon size={18} color={theme.myScheduleAddButtonIcon?.val || '#FFFFFF'} />}
             onPress={() => setIsModalOpen(true)}
+            hoverStyle={{
+              backgroundColor: '$blue11',
+            }}
           >
             {t('addAvailability')}
           </Button>

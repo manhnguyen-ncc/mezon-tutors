@@ -20,13 +20,7 @@ import {
 import { DAY_KEYS, getDayKey } from '@mezon-tutors/shared';
 import { TimePicker } from './TimePicker';
 import type { TimeSlot, AvailabilityData, AvailabilityEditorMode } from '../types';
-
-const ICON_COLOR = '#1253D5';
-
-const defaultSlot: TimeSlot = {
-  startTime: '09:00',
-  endTime: '17:00',
-};
+import { useTheme } from 'tamagui';
 
 type AvailabilityEditorProps = {
   mode: AvailabilityEditorMode;
@@ -48,8 +42,14 @@ export function AvailabilityEditor({
   onSubmitReady,
 }: AvailabilityEditorProps) {
   const t = useTranslations('TutorProfile.Availability');
+  const theme = useTheme();
   const [selectedDayIndex, setSelectedDayIndex] = useState(0);
   const availabilityCardRef = useRef<HTMLDivElement | null>(null);
+
+  const defaultSlot: TimeSlot = {
+    startTime: '09:00',
+    endTime: '17:00',
+  };
 
   const form = useForm<AvailabilityData>({
     defaultValues: initialData ?? {
@@ -177,7 +177,7 @@ export function AvailabilityEditor({
         $xs={{ padding: '$4' }}
       >
         <XStack alignItems="center" gap="$2">
-          <CalendarIcon size={24} color={ICON_COLOR} />
+          <CalendarIcon size={24} color={theme.blue10?.val || '$blue10'} />
           <Paragraph fontWeight="700" fontSize={18}>
             {t('availabilityCardTitle')}
           </Paragraph>
@@ -230,28 +230,30 @@ export function AvailabilityEditor({
                 />
               </YStack>
               <Button variant="ghost" size="$2" padding="$2" onPress={() => removeSlot(originalIndex)}>
-                <TrashIcon size={18} color="#EF4444" />
+                <TrashIcon size={18} color={theme.red10?.val || '$red10'} />
               </Button>
             </XStack>
           ))}
 
           <Button
-            variant="ghost"
-            borderWidth={1}
-            borderColor="$borderSubtle"
-            borderStyle="dashed"
+            backgroundColor="$myScheduleAddButtonBg"
+            borderRadius="$3"
             padding="$3"
+            marginTop="$2"
             onPress={addSlot}
+            hoverStyle={{
+              backgroundColor: '$blue11',
+            }}
           >
             <XStack alignItems="center" gap="$2">
-              <PlusCircleIcon size={20} color={ICON_COLOR} />
-              <Text size="sm" variant="muted">
+              <PlusCircleIcon size={20} color={theme.myScheduleAddButtonIcon?.val || 'white'} />
+              <Text size="sm" color="$myScheduleAddButtonText" fontWeight="600">
                 {t('availability.addSlot')}
               </Text>
             </XStack>
           </Button>
           {errors.slotsByDay?.message && (
-            <Text size="md" color="#EF4444">
+            <Text size="md" color="$red10">
               {errors.slotsByDay?.message}
             </Text>
           )}
