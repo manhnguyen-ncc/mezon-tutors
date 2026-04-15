@@ -1,6 +1,7 @@
 import { CalendarCard } from '@mezon-tutors/app';
 import type { CalendarEvent, CalendarWeekDay } from '@mezon-tutors/app';
 import type { TutorDetailAvailabilitySlotDto } from '@mezon-tutors/shared';
+import { getFallbackWeekHours } from '@mezon-tutors/shared';
 import dayjs from 'dayjs';
 import customParseFormat from 'dayjs/plugin/customParseFormat';
 import 'dayjs/locale/vi';
@@ -48,7 +49,7 @@ function convertSlotsToEvents(
 }
 
 function getWeekHoursFromSlots(slots: TutorDetailAvailabilitySlotDto[]): number[] {
-  if (!slots.length) return [8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20];
+  if (!slots.length) return getFallbackWeekHours();
 
   const hours = new Set<number>();
   slots.forEach((slot) => {
