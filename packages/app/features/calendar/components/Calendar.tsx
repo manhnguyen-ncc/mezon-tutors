@@ -161,17 +161,22 @@ export function Calendar<TEvent = unknown>({
           />
         )}
 
-        {weekDays.map((day, dayIndex) => (
-          <CalendarDayHeader
-            key={`header-${dayIndex}`}
-            day={day}
-            dayIndex={dayIndex}
-            isActive={dayIndex === currentDayIndex}
-            isLast={dayIndex === weekDays.length - 1}
-            showGridLines={showGridLines}
-            tokens={headerTokens}
-          />
-        ))}
+        {weekDays.map((day, dayIndex) => {
+          const isActive = dayIndex === currentDayIndex;
+          const isLast = dayIndex === weekDays.length - 1;
+          
+          return (
+            <CalendarDayHeader
+              key={`header-${dayIndex}`}
+              day={day}
+              dayIndex={dayIndex}
+              isActive={isActive}
+              isLast={isLast}
+              showGridLines={showGridLines}
+              tokens={headerTokens}
+            />
+          );
+        })}
       </XStack>
 
       <YStack
@@ -197,19 +202,24 @@ export function Calendar<TEvent = unknown>({
             />
           )}
 
-          {weekDays.map((_day, dayIndex) => (
-            <CalendarColumn
-              key={`col-${dayIndex}`}
-              dayIndex={dayIndex}
-              events={eventsByDay.get(dayIndex) ?? []}
-              rowModels={rowModels}
-              isLast={dayIndex === weekDays.length - 1}
-              isActive={dayIndex === currentDayIndex}
-              showGridLines={showGridLines}
-              showTimelineGrid={showTimelineGrid}
-              config={columnConfig}
-            />
-          ))}
+          {weekDays.map((_day, dayIndex) => {
+            const isActive = dayIndex === currentDayIndex;
+            const isLast = dayIndex === weekDays.length - 1;
+            
+            return (
+              <CalendarColumn
+                key={`col-${dayIndex}`}
+                dayIndex={dayIndex}
+                events={eventsByDay.get(dayIndex) ?? []}
+                rowModels={rowModels}
+                isLast={isLast}
+                isActive={isActive}
+                showGridLines={showGridLines}
+                showTimelineGrid={showTimelineGrid}
+                config={columnConfig}
+              />
+            );
+          })}
         </XStack>
       </YStack>
     </YStack>

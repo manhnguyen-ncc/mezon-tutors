@@ -1,5 +1,3 @@
-'use client';
-
 import { Button } from '@mezon-tutors/app/ui';
 import { Text, XStack, YStack } from 'tamagui';
 import type {

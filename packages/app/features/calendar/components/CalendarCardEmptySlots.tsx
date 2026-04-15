@@ -1,5 +1,3 @@
-'use client';
-
 import { Text, YStack } from 'tamagui';
 import type { CalendarThemeConfig } from '@mezon-tutors/shared';
 

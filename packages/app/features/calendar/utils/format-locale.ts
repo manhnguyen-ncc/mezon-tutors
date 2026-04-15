@@ -9,8 +9,19 @@ export function formatCalendarTitle(title: string, locale: string): string {
 }
 
 export function formatWeekDays(weekDays: CalendarWeekDay[], locale: string): CalendarWeekDay[] {
-  return weekDays.map((day) => {
-    const dayDate = dayjs.utc(`2026-04-${day.dateLabel}`, 'YYYY-MM-DD').locale(locale);
+  return weekDays.map((day, index) => {
+    let dayDate: dayjs.Dayjs;
+    
+    if (day.fullDate) {
+      dayDate = dayjs(day.fullDate).locale(locale);
+    } else {
+      const now = dayjs();
+      const dayOfWeek = now.day();
+      const mondayOffset = dayOfWeek === 0 ? 6 : dayOfWeek - 1;
+      const monday = now.subtract(mondayOffset, 'day');
+      dayDate = monday.add(index, 'day').locale(locale);
+    }
+    
     return {
       shortLabel: dayDate.format('ddd').toUpperCase(),
       dateLabel: day.dateLabel,
