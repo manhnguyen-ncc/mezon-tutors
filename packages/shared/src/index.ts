@@ -23,6 +23,7 @@ export * from './constants/tutor-profile';
 export * from './constants/tutor-detail';
 export * from './constants/pagination';
 export * from './constants/urls';
+export * from './constants/regex';
 export * from './constants/home';
 export * from './constants/footer';
 export * from './constants/header';

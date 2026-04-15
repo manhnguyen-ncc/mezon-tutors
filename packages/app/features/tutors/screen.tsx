@@ -28,7 +28,8 @@ const PREVIEW_ANIM_MS = 400
 
 export function TutorsScreen() {
   const t = useTranslations('Tutors.Screen')
-  const tFilter = useTranslations('Tutors.Filter')
+  const tSubject = useTranslations('Tutors.Filter.Subject')
+
   const pathname = usePathname()
   const searchParams = useSearchParams()
   const media = useMedia()
@@ -137,7 +138,7 @@ export function TutorsScreen() {
                     ? t('totalLabelNoSubject', { count: totalTutors })
                     : t('totalLabel', {
                         count: totalTutors,
-                        subject: tFilter(subjectFilter),
+                        subject: tSubject(subjectFilter),
                       })}
                 </Text>
                 <XStack gap="$2" alignItems="center">
