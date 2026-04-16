@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { LessonStatus } from '@mezon-tutors/db';
+import { DEFAULT_TIMEZONE, PENDING_STUDENT_ID } from '@mezon-tutors/shared';
 import dayjs = require('dayjs');
 import timezone = require('dayjs/plugin/timezone');
 import utc = require('dayjs/plugin/utc');
@@ -7,6 +8,17 @@ import { PrismaService } from '../../prisma/prisma.service';
 
 dayjs.extend(utc);
 dayjs.extend(timezone);
+
+export interface ScheduleEvent {
+  id: string;
+  dayIndex: number;
+  startHour: number;
+  endHour: number;
+  status: 'available' | 'upcoming' | 'pending' | 'blocked';
+  title: string;
+  studentName: string;
+  timeLabel: string;
+}
 
 @Injectable()
 export class MyScheduleService {
@@ -40,19 +52,20 @@ export class MyScheduleService {
 
     const user = await this.prisma.user.findUnique({
       where: { mezonUserId: tutorMezonUserId },
-      select: { id: true },
+      select: { 
+        id: true,
+        tutorProfile: {
+          select: { id: true }
+        }
+      },
     });
-    if (!user) return emptyResponse;
+    if (!user?.tutorProfile) return emptyResponse;
 
-    const tutorProfile = await this.prisma.tutorProfile.findUnique({
-      where: { userId: user.id },
-      select: { id: true },
-    });
-    if (!tutorProfile) return emptyResponse;
+    const tutorProfileId = user.tutorProfile.id;
 
     let monday: dayjs.Dayjs;
     if (weekStartDate) {
-      monday = dayjs(weekStartDate).tz('Asia/Ho_Chi_Minh').startOf('day');
+      monday = dayjs(weekStartDate).tz(DEFAULT_TIMEZONE).startOf('day');
     } else {
       const now = dayjs();
       const dayOfWeek = now.day();
@@ -64,14 +77,14 @@ export class MyScheduleService {
     const [availability, lessons] = await Promise.all([
       this.prisma.tutorAvailability.findMany({
         where: {
-          tutorId: tutorProfile.id,
+          tutorId: tutorProfileId,
           isActive: true,
         },
         orderBy: [{ dayOfWeek: 'asc' }, { startTime: 'asc' }],
       }),
       this.prisma.lesson.findMany({
         where: {
-          tutorId: tutorProfile.id,
+          tutorId: tutorProfileId,
           startsAt: {
             gte: monday.toDate(),
             lte: sunday.toDate(),
@@ -100,15 +113,15 @@ export class MyScheduleService {
       isActive: slot.isActive,
     }));
 
-    const lessonEvents = lessons.map((lesson) => {
-      const startsAt = dayjs(lesson.startsAt).tz('Asia/Ho_Chi_Minh');
-      const endsAt = dayjs(lesson.endsAt).tz('Asia/Ho_Chi_Minh');
+    const lessonEvents: ScheduleEvent[] = lessons.map((lesson) => {
+      const startsAt = dayjs(lesson.startsAt).tz(DEFAULT_TIMEZONE);
+      const endsAt = dayjs(lesson.endsAt).tz(DEFAULT_TIMEZONE);
       const dayIndex = startsAt.day() === 0 ? 6 : startsAt.day() - 1;
 
       let status: 'upcoming' | 'pending' | 'blocked';
       if (lesson.status === LessonStatus.CANCELLED) {
         status = 'blocked';
-      } else if (lesson.student.mezonUserId === 'mezon-pending-1') {
+      } else if (lesson.student.mezonUserId === PENDING_STUDENT_ID) {
         status = 'pending';
       } else {
         status = 'upcoming';
@@ -126,7 +139,7 @@ export class MyScheduleService {
       };
     });
 
-    const availabilityEvents = availability.flatMap((slot) => {
+    const availabilityEvents: ScheduleEvent[] = availability.flatMap((slot) => {
       const dayIndex = slot.dayOfWeek === 0 ? 6 : slot.dayOfWeek - 1;
       const slotStartHour = this.parseTimeToDecimalHour(slot.startTime);
       const slotEndHour = this.parseTimeToDecimalHour(slot.endTime);
@@ -154,16 +167,7 @@ export class MyScheduleService {
       }
 
       const sortedLessons = overlappingLessons.sort((a, b) => a.startHour - b.startHour);
-      const freeSlots: Array<{
-        id: string;
-        dayIndex: number;
-        startHour: number;
-        endHour: number;
-        status: 'available';
-        title: string;
-        studentName: string;
-        timeLabel: string;
-      }> = [];
+      const freeSlots: ScheduleEvent[] = [];
 
       let currentStart = slotStartHour;
 

@@ -2,6 +2,10 @@ export type SessionStatus = 'upcoming' | 'pending' | 'available' | 'blocked';
 
 export const ALL_SESSION_STATUSES: SessionStatus[] = ['upcoming', 'pending', 'available', 'blocked'];
 
+export const DEFAULT_TIMEZONE = 'Asia/Ho_Chi_Minh';
+
+export const PENDING_STUDENT_ID = 'mezon-pending-1';
+
 export const DEFAULT_AVAILABILITY_SLOT = {
   startTime: '09:00',
   endTime: '17:00',
