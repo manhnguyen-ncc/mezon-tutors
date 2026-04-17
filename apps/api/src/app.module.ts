@@ -12,6 +12,7 @@ import { MyLessonsModule } from './modules/my-lessons/my-lessons.module';
 import { TutorApplicationModule } from './modules/tutor-application/tutor-application.module';
 import { TrialLessonBookingModule } from './modules/trial-lesson-booking/trial-lesson-booking.module';
 import { PayosWebhookModule } from './modules/payos-webhook/payos-webhook.module';
+import { MyScheduleModule } from './modules/my-schedule/my-schedule.module';
 
 @Module({
   imports: [
@@ -27,6 +28,7 @@ import { PayosWebhookModule } from './modules/payos-webhook/payos-webhook.module
     MyLessonsModule,
     TrialLessonBookingModule,
     PayosWebhookModule,
+    MyScheduleModule,
   ],
   controllers: [HealthController],
   providers: [
