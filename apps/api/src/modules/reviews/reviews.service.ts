@@ -1,5 +1,5 @@
 import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
-import { Prisma } from '@prisma/client';
+import { Prisma, ETrialLessonStatus } from '@prisma/client';
 import { PrismaService } from '../../prisma/prisma.service';
 import { CreateReviewDto } from './dto/create-review.dto';
 import { UpdateReviewDto } from './dto/update-review.dto';
@@ -8,29 +8,21 @@ import { UpdateReviewDto } from './dto/update-review.dto';
 export class ReviewsService {
   constructor(private readonly prisma: PrismaService) {}
 
-  async canReview(studentId: string, tutorId: string): Promise<boolean> {
-    const existingReview = await this.prisma.tutorReview.findFirst({
-      where: {
-        reviewerId: studentId,
-        tutorId: tutorId,
-      },
-    });
-
-    return !existingReview;
-  }
-
-  async getMyReview(studentId: string, tutorId: string) {
-    return this.prisma.tutorReview.findFirst({
-      where: {
-        reviewerId: studentId,
-        tutorId: tutorId,
-      },
-    });
-  }
-
   async createReview(studentId: string, dto: CreateReviewDto) {
     try {
       return await this.prisma.$transaction(async (tx) => {
+        const completedLesson = await tx.trialLessonBooking.findFirst({
+          where: {
+            studentId,
+            tutorId: dto.tutorId,
+            status: ETrialLessonStatus.COMPLETED,
+          },
+        });
+
+        if (!completedLesson) {
+          throw new BadRequestException('You must complete a lesson with this tutor before reviewing');
+        }
+
         const existingReview = await tx.tutorReview.findFirst({
           where: {
             reviewerId: studentId,

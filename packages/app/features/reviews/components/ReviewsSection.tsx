@@ -9,6 +9,7 @@ import { ReviewCard } from './ReviewCard';
 import { AllReviewsModal } from './AllReviewsModal';
 import { ReviewModal } from '@mezon-tutors/app';
 import { useCurrentUser } from '../../../services/auth/useCurrentUser';
+import { useGetAlreadyBookedTrialLesson } from '../../../services/trial-lesson-booking/trial-lesson-booking.api';
 
 interface ReviewsSectionProps {
   tutorId: string;
@@ -41,11 +42,10 @@ export function ReviewsSection({
   const { data: currentUser, refetch } = useCurrentUser();
   const currentUserId = currentUser?.id || currentUser?.sub;
 
-  useEffect(() => {
-    const pollInterval = setInterval(() => {
-      refetch();
-    }, 2000);
+  const { data: bookingStatus, isLoading: isLoadingBooking } = useGetAlreadyBookedTrialLesson(tutorId, !!currentUserId);
+  const hasCompletedLesson = bookingStatus?.hasBooked && bookingStatus?.status === 'COMPLETED';
 
+  useEffect(() => {
     const handleFocus = () => {
       refetch();
     };
@@ -53,7 +53,6 @@ export function ReviewsSection({
     window.addEventListener('focus', handleFocus);
 
     return () => {
-      clearInterval(pollInterval);
       window.removeEventListener('focus', handleFocus);
     };
   }, [refetch]);
@@ -63,7 +62,7 @@ export function ReviewsSection({
     return reviews.find(r => r.reviewerId === currentUserId) || null;
   }, [reviews, currentUserId]);
 
-  const showPostReviewButton = !!currentUserId;
+  const showPostReviewButton = !!currentUserId && !isLoadingBooking && hasCompletedLesson;
 
   const sortedReviews = useMemo(() => {
     if (!currentUserId) return reviews;
