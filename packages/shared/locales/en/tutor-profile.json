@@ -142,6 +142,9 @@
     "teaching": {
       "certificateLabel": "Select Certificate",
       "certificatePlaceholder": "e.g. TEFL, TESOL, CELTA",
+      "certificateOther": "Other",
+      "customCertificateLabel": "Certificate Name",
+      "customCertificatePlaceholder": "Enter your certificate name",
       "yearLabel": "Year of Completion",
       "yearPlaceholder": "YYYY",
       "uploadTitle": "Upload your certificate",
@@ -165,6 +168,8 @@
     "back": "Back",
     "continue": "Continue to Video Step",
     "validation": {
+      "certificateTypeRequired": "Certificate type is required",
+      "customCertificateNameRequired": "Certificate name is required",
       "certificateRequired": "Certificate is required",
       "yearRequired": "Year is required",
       "yearInvalid": "Year must be YYYY",

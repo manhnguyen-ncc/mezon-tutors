@@ -142,6 +142,9 @@
     "teaching": {
       "certificateLabel": "Loại chứng chỉ",
       "certificatePlaceholder": "VD: TEFL, TESOL, CELTA",
+      "certificateOther": "Khác",
+      "customCertificateLabel": "Tên chứng chỉ",
+      "customCertificatePlaceholder": "Nhập tên chứng chỉ của bạn",
       "yearLabel": "Năm hoàn thành",
       "yearPlaceholder": "YYYY",
       "uploadTitle": "Tải lên chứng chỉ",
@@ -165,6 +168,8 @@
     "back": "Quay lại",
     "continue": "Tiếp tục tới bước video",
     "validation": {
+      "certificateTypeRequired": "Vui lòng chọn loại chứng chỉ",
+      "customCertificateNameRequired": "Vui lòng nhập tên chứng chỉ",
       "certificateRequired": "Vui lòng nhập chứng chỉ",
       "yearRequired": "Vui lòng nhập năm",
       "yearInvalid": "Năm phải đúng định dạng YYYY",

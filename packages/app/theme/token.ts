@@ -136,6 +136,14 @@ export const tokens = createTokens({
     reviewPostButtonBackground: '#1253D5',
     reviewPostButtonBackgroundHover: '#104BC4',
     reviewPostButtonText: '#FFFFFF',
+
+    // ===== Become Tutor =====
+    becomeTutorPrimary: '#6c5ce7',
+    becomeTutorPrimaryHover: '#5a4fcf',
+    becomeTutorVideoBorder: '#7DD3FC',
+    becomeTutorSuccessAccent: '#22c55e',
+    becomeTutorDangerAccent: '#f97373',
+    becomeTutorIconBlue: '#1253D5',
   },
 
   radius: {
