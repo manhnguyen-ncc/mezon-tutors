@@ -307,16 +307,19 @@
   "EntryStatus": {
     "loading": "Checking your tutor profile...",
     "pending": {
+      "status": "PENDING",
       "title": "Your tutor profile is being reviewed",
       "description": "Please wait for our review result via email. We usually complete this within 48 hours."
     },
     "approved": {
+      "status": "APPROVED",
       "title": "You are already a tutor",
       "description": "Your profile has been approved. You can now manage booking requests and your schedule.",
       "bookingRequests": "Go to Booking Requests",
       "mySchedule": "Go to My Schedule"
     },
     "rejected": {
+      "status": "REJECTED",
       "title": "Your tutor profile needs updates",
       "description": "Your previous submission was rejected. Please update your profile information and submit again.",
       "restart": "Update From Step 1"

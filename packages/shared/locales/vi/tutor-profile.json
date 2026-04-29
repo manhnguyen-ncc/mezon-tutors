@@ -294,16 +294,19 @@
   "EntryStatus": {
     "loading": "Đang kiểm tra hồ sơ gia sư...",
     "pending": {
+      "status": "ĐANG CHỜ DUYỆT",
       "title": "Hồ sơ gia sư của bạn đang được duyệt",
       "description": "Vui lòng chờ kết quả qua email. Chúng tôi thường hoàn tất duyệt trong vòng 48 giờ."
     },
     "approved": {
+      "status": "ĐÃ ĐƯỢC DUYỆT",
       "title": "Hiện tại bạn đã là gia sư",
       "description": "Hồ sơ của bạn đã được duyệt. Bạn có thể quản lý yêu cầu đặt lịch và lịch dạy của mình.",
       "bookingRequests": "Đến Trang Yêu Cầu Đặt Lịch",
       "mySchedule": "Đến Trang Lịch Dạy Của Tôi"
     },
     "rejected": {
+      "status": "ĐÃ BỊ TỪ CHỐI",
       "title": "Hồ sơ gia sư của bạn cần cập nhật",
       "description": "Lần gửi trước của bạn đã bị từ chối. Vui lòng cập nhật thông tin và gửi lại từ bước 1.",
       "restart": "Cập Nhật Lại Từ Bước 1"
