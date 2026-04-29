@@ -128,3 +128,42 @@
     @apply font-sans;
   }
 }
+
+@layer components {
+  .become-tutor-shell {
+    background:
+      radial-gradient(
+        120% 80% at 0% 0%,
+        color-mix(in oklab, var(--primary) 8%, white) 0%,
+        transparent 60%
+      ),
+      radial-gradient(
+        120% 90% at 100% 100%,
+        color-mix(in oklab, var(--secondary) 10%, white) 0%,
+        transparent 58%
+      ),
+      color-mix(in oklab, var(--background) 97%, var(--primary) 3%);
+  }
+
+  .become-tutor-card {
+    background: color-mix(in oklab, var(--card) 94%, white 6%);
+    border-color: color-mix(in oklab, var(--border) 85%, var(--primary) 15%);
+    box-shadow: 0 16px 36px color-mix(in oklab, var(--primary) 10%, transparent);
+  }
+
+  .become-tutor-field {
+    background: color-mix(in oklab, white 92%, var(--muted) 8%);
+    border-color: color-mix(in oklab, var(--border) 75%, var(--primary) 25%);
+  }
+
+  .no-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+
+  .no-scrollbar::-webkit-scrollbar {
+    width: 0;
+    height: 0;
+    display: none;
+  }
+}

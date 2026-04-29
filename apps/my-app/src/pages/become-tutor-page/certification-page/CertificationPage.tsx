@@ -8,7 +8,7 @@ import { useRouter } from "next/navigation";
 import { useForm, Controller } from "react-hook-form";
 import { z } from "zod";
 import { Button, Input, Label, YearPicker } from "@/components/ui";
-import { Combobox, ComboboxInput, ComboboxContent, ComboboxList, ComboboxItem } from "@/components/ui/combobox";
+import { Combobox, ComboboxInput, ComboboxContent, ComboboxList, ComboboxItem, ComboboxEmpty } from "@/components/ui/combobox";
 import { BadgeCheck, Wallet, Info, Upload, GraduationCap, ArrowRight, ArrowLeft } from "lucide-react";
 import { tutorProfileCertificationAtom, markStepCompletedAtom, tutorProfileLastSavedAtAtom, defaultCertificationState } from "@mezon-tutors/app/store/tutor-profile.atom";
 import { CLOUDINARY_FOLDER, formatLastSavedTime, MAX_FILE_SIZE_MB, TEACHING_CERTIFICATES } from "@mezon-tutors/shared";
@@ -50,24 +50,24 @@ export function CertificationPage() {
         const validateFile = (file: File, path: "teachingCertificateFile" | "educationFile", invalidTypeMsg: string, tooLargeMsg: string) => {
           const ext = file.name.split(".").pop()?.toLowerCase() ?? "";
           if (!allowedExt.has(ext)) {
-            ctx.addIssue({ path: [path], code: z.ZodIssueCode.custom, message: invalidTypeMsg });
+            ctx.addIssue({ path: [path], code: "custom", message: invalidTypeMsg });
             return;
           }
           if (file.size > bytesLimit) {
-            ctx.addIssue({ path: [path], code: z.ZodIssueCode.custom, message: tooLargeMsg });
+            ctx.addIssue({ path: [path], code: "custom", message: tooLargeMsg });
           }
         };
 
         const hasTeaching = data.teachingCertificateFile !== null || !!certificationMerged.teachingCertificate.file.dataUrl || !!certificationMerged.teachingCertificate.file.uploadedUrl;
         if (!hasTeaching) {
-          ctx.addIssue({ path: ["teachingCertificateFile"], code: z.ZodIssueCode.custom, message: t("validation.certificateFileRequired") });
+          ctx.addIssue({ path: ["teachingCertificateFile"], code: "custom", message: t("validation.certificateFileRequired") });
         } else if (data.teachingCertificateFile) {
           validateFile(data.teachingCertificateFile, "teachingCertificateFile", t("validation.certificateFileInvalidType"), t("validation.certificateFileTooLarge", { max: MAX_FILE_SIZE_MB }));
         }
 
         const hasEducation = data.educationFile !== null || !!certificationMerged.higherEducation.file.dataUrl || !!certificationMerged.higherEducation.file.uploadedUrl;
         if (!hasEducation) {
-          ctx.addIssue({ path: ["educationFile"], code: z.ZodIssueCode.custom, message: t("validation.educationFileRequired") });
+          ctx.addIssue({ path: ["educationFile"], code: "custom", message: t("validation.educationFileRequired") });
         } else if (data.educationFile) {
           validateFile(data.educationFile, "educationFile", t("validation.educationFileInvalidType"), t("validation.educationFileTooLarge", { max: MAX_FILE_SIZE_MB }));
         }
@@ -274,7 +274,7 @@ export function CertificationPage() {
   };
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen become-tutor-shell">
       <div className="flex flex-col min-h-screen">
         <div className="flex-1 overflow-y-auto pb-28">
           <div className="py-6 px-4 md:py-5 md:px-6">
@@ -303,7 +303,7 @@ export function CertificationPage() {
                 </div>
               </div>
 
-              <div ref={teachingCardRef} className="bg-card rounded-xl p-6 flex flex-col gap-5 border shadow-sm">
+              <div ref={teachingCardRef} className="become-tutor-card rounded-xl p-6 flex flex-col gap-5 border shadow-sm">
                 <div className="flex items-center gap-2">
                   <BadgeCheck className="w-6 h-6 text-primary" />
                   <h2 className="text-xl font-bold">{t("teachingTitle")}</h2>
@@ -316,31 +316,43 @@ export function CertificationPage() {
                       <Controller
                         name="certificateType"
                         control={control}
-                        render={({ field }) => (
-                          <Combobox
-                            value={field.value}
-                            onValueChange={(value) => {
-                              if (value) {
-                                field.onChange(value);
-                              }
-                            }}
-                          >
-                            <ComboboxInput
-                              placeholder={t("teaching.certificatePlaceholder")}
-                              value={field.value || ""}
-                              onChange={(e) => field.onChange(e.target.value)}
-                            />
-                            <ComboboxContent>
-                              <ComboboxList>
-                              {TEACHING_CERTIFICATES.map((cert) => (
-                                <ComboboxItem key={cert} value={cert}>
-                                  {cert}
-                                </ComboboxItem>
-                              ))}
-                              </ComboboxList>
-                            </ComboboxContent>
-                          </Combobox>
-                        )}
+                        render={({ field }) => {
+                          const query = (field.value || "").trim().toLowerCase();
+                          const filteredCertificates = query
+                            ? TEACHING_CERTIFICATES.filter((cert) => cert.toLowerCase().includes(query))
+                            : TEACHING_CERTIFICATES;
+
+                          return (
+                            <Combobox
+                              value={field.value}
+                              onValueChange={(value) => {
+                                if (value) {
+                                  field.onChange(value);
+                                }
+                              }}
+                            >
+                              <ComboboxInput 
+                                className="become-tutor-field"
+                                placeholder={t("teaching.certificatePlaceholder")}
+                                value={field.value || ""}
+                                onChange={(e) => field.onChange(e.target.value)}
+                              />
+                              <ComboboxContent>
+                                <ComboboxList>
+                                  {filteredCertificates.length > 0 ? (
+                                    filteredCertificates.map((cert) => (
+                                      <ComboboxItem key={cert} value={cert}>
+                                        {cert}
+                                      </ComboboxItem>
+                                    ))
+                                  ) : (
+                                    <ComboboxEmpty>{t("teaching.noResults")}</ComboboxEmpty>
+                                  )}
+                                </ComboboxList>
+                              </ComboboxContent>
+                            </Combobox>
+                          );
+                        }}
                       />
                       {errors.certificateType && <p className="text-sm text-destructive">{errors.certificateType.message}</p>}
                     </div>
@@ -379,7 +391,7 @@ export function CertificationPage() {
                 </form>
               </div>
 
-              <div ref={educationCardRef} className="bg-card rounded-xl p-6 flex flex-col gap-5 border shadow-sm">
+              <div ref={educationCardRef} className="become-tutor-card rounded-xl p-6 flex flex-col gap-5 border shadow-sm">
                 <div className="flex items-center gap-2">
                   <Wallet className="w-6 h-6 text-primary" />
                   <h2 className="text-xl font-bold">{t("educationTitle")}</h2>
@@ -389,19 +401,19 @@ export function CertificationPage() {
                   <div className="flex gap-4 flex-col md:flex-row">
                     <div className="flex-1 flex flex-col gap-2">
                       <Label htmlFor="university">{t("education.universityLabel")}</Label>
-                      <Input id="university" placeholder={t("education.universityPlaceholder")} {...register("university")} />
+                      <Input className="become-tutor-field" id="university" placeholder={t("education.universityPlaceholder")} {...register("university")} />
                       {errors.university && <p className="text-sm text-destructive">{errors.university.message}</p>}
                     </div>
                     <div className="flex-1 flex flex-col gap-2">
                       <Label htmlFor="degree">{t("education.degreeLabel")}</Label>
-                      <Input id="degree" placeholder={t("education.degreePlaceholder")} {...register("degree")} />
+                      <Input className="become-tutor-field" id="degree" placeholder={t("education.degreePlaceholder")} {...register("degree")} />
                       {errors.degree && <p className="text-sm text-destructive">{errors.degree.message}</p>}
                     </div>
                   </div>
 
                   <div className="flex flex-col gap-2">
                     <Label htmlFor="specialization">{t("education.specializationLabel")}</Label>
-                    <Input id="specialization" placeholder={t("education.specializationPlaceholder")} {...register("specialization")} />
+                    <Input className="become-tutor-field" id="specialization" placeholder={t("education.specializationPlaceholder")} {...register("specialization")} />
                     {errors.specialization && <p className="text-sm text-destructive">{errors.specialization.message}</p>}
                   </div>
 
@@ -444,3 +456,4 @@ export function CertificationPage() {
     </div>
   );
 }
+

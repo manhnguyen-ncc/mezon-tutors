@@ -135,7 +135,7 @@ export function VideoPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 pb-24">
+    <div className="min-h-screen become-tutor-shell pb-24">
       <div className="max-w-4xl mx-auto px-4 py-8">
         <div className="mb-8">
           <div className="flex items-center justify-between mb-6">
@@ -169,14 +169,14 @@ export function VideoPage() {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           <div className="lg:col-span-2 space-y-6" ref={videoInputSectionRef}>
             <Card 
-              className="overflow-hidden rounded-xl shadow-sm border-2"
+              className="overflow-hidden become-tutor-card rounded-xl shadow-sm border border-2"
               style={{ 
                 borderColor: 'rgb(125, 211, 252)'
               }}
             >
               <CardContent className="p-0">
                 <div 
-                  className="relative bg-gray-100"
+                  className="relative bg-muted/80"
                   style={{ aspectRatio: '16/9', minHeight: '180px' }}
                 >
                   {videoId ? (
@@ -192,7 +192,7 @@ export function VideoPage() {
                       className="absolute inset-0 w-full h-full border-0"
                     />
                   ) : (
-                    <div className="absolute inset-0 flex flex-col items-center justify-center gap-3 p-4 bg-gray-100">
+                    <div className="absolute inset-0 flex flex-col items-center justify-center gap-3 p-4 bg-muted/80">
                       <Video size={44} className="text-gray-400" />
                       <p className="text-gray-500 text-sm text-center max-w-xs">
                         {t('previewPlaceholder')}
@@ -203,7 +203,7 @@ export function VideoPage() {
               </CardContent>
             </Card>
 
-            <Card className="rounded-xl shadow-sm">
+            <Card className="become-tutor-card rounded-xl shadow-sm border">
               <CardContent className="p-6">
                 <div className="space-y-4">
                   <div>
@@ -217,7 +217,7 @@ export function VideoPage() {
                       name="videoLink"
                       render={({ field: { value, onChange } }) => (
                         <Input
-                          className="flex-1"
+                          className="flex-1 become-tutor-field"
                           placeholder={t('link.placeholder')}
                           value={value}
                           onChange={(e) => onChange(e.target.value)}
@@ -243,7 +243,7 @@ export function VideoPage() {
           </div>
 
           <div className="space-y-6">
-            <Card className="border-green-200 bg-green-50 rounded-xl shadow-sm">
+            <Card className="border-green-200 bg-green-50 become-tutor-card rounded-xl shadow-sm border">
               <CardContent className="p-6">
                 <div className="flex items-center gap-3 mb-4">
                   <div className="w-10 h-10 rounded-full bg-green-100 flex items-center justify-center">
@@ -264,7 +264,7 @@ export function VideoPage() {
               </CardContent>
             </Card>
 
-            <Card className="border-red-200 bg-red-50 rounded-xl shadow-sm">
+            <Card className="border-red-200 bg-red-50 become-tutor-card rounded-xl shadow-sm border">
               <CardContent className="p-6">
                 <div className="flex items-center gap-3 mb-4">
                   <div className="w-10 h-10 rounded-full bg-red-100 flex items-center justify-center">
@@ -307,3 +307,4 @@ export function VideoPage() {
     </div>
   );
 }
+

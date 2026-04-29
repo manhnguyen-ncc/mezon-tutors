@@ -11,6 +11,6 @@ export function formatToCurrency(locale: string, currency: string, amount: numbe
 export function formatToVND(amount: number): string {
   return new Intl.NumberFormat(ELocale.VIETNAMESE, {
     style: 'currency',
-    currency: ECurrency.VIETNAMESE,
+    currency: ECurrency.VND,
   }).format(amount)
 }

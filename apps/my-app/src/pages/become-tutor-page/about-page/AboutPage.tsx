@@ -24,6 +24,14 @@ function joinProficienciesArray(proficiencies: string[]): string {
   return proficiencies.filter(Boolean).join(", ");
 }
 
+function buildLanguageEntries(languages: string, proficiencies: string) {
+  const parsedLangs = languages?.trim() ? parseLanguagesString(languages) : [];
+  const parsedProfs = proficiencies?.trim() ? parseProficienciesString(proficiencies) : [];
+  return parsedLangs.length > 0
+    ? parsedLangs.map((lang, i) => ({ language: lang, proficiency: parsedProfs[i] ?? "" }))
+    : [{ language: "", proficiency: "" }];
+}
+
 export function AboutPage() {
   const t = useTranslations("TutorProfile.About");
   const tCountry = useTranslations("Tutors.Filter.Country");
@@ -51,10 +59,10 @@ export function AboutPage() {
             const idx = arr.findIndex((e) => !e.language || !e.proficiency) ?? 0;
             const entry = arr[idx] ?? { language: "", proficiency: "" };
             if (!entry.language) {
-              ctx.addIssue({ code: z.ZodIssueCode.custom, path: [idx, "language"], message: t("validation.languagesRequired") });
+              ctx.addIssue({ code: "custom", path: [idx, "language"], message: t("validation.languagesRequired") });
             }
             if (!entry.proficiency) {
-              ctx.addIssue({ code: z.ZodIssueCode.custom, path: [idx, "proficiency"], message: t("validation.proficiencyRequired") });
+              ctx.addIssue({ code: "custom", path: [idx, "proficiency"], message: t("validation.proficiencyRequired") });
             }
             return;
           }
@@ -62,10 +70,10 @@ export function AboutPage() {
             const hasAnyValue = entry.language || entry.proficiency;
             if (!hasAnyValue) return;
             if (!entry.language) {
-              ctx.addIssue({ code: z.ZodIssueCode.custom, path: [idx, "language"], message: t("validation.languagesRequired") });
+              ctx.addIssue({ code: "custom", path: [idx, "language"], message: t("validation.languagesRequired") });
             }
             if (!entry.proficiency) {
-              ctx.addIssue({ code: z.ZodIssueCode.custom, path: [idx, "proficiency"], message: t("validation.proficiencyRequired") });
+              ctx.addIssue({ code: "custom", path: [idx, "proficiency"], message: t("validation.proficiencyRequired") });
             }
           });
         }),
@@ -77,10 +85,7 @@ export function AboutPage() {
 
   const draftSavedLabel = lastSavedAt && formatLastSavedTime(lastSavedAt) ? t("draftSaved", { time: formatLastSavedTime(lastSavedAt) }) : "";
 
-  const parsedLangs = about.languages?.trim() ? parseLanguagesString(about.languages) : [];
-  const parsedProfs = about.proficiencies?.trim() ? parseProficienciesString(about.proficiencies) : [];
-
-  const initialEntries: { language: string; proficiency: string }[] = parsedLangs.length > 0 ? parsedLangs.map((lang, i) => ({ language: lang, proficiency: parsedProfs[i] ?? "" })) : [{ language: "", proficiency: "" }];
+  const initialEntries = buildLanguageEntries(about.languages, about.proficiencies);
 
   const form = useForm<AboutFormValues>({
     defaultValues: {
@@ -96,14 +101,12 @@ export function AboutPage() {
     mode: "onChange",
   });
 
-  const { control, handleSubmit, setFocus, register, formState: { errors }, setValue } = form;
+  const { control, handleSubmit, setFocus, register, formState: { errors } } = form;
   const { fields, append, remove } = useFieldArray({ control, name: "languageEntries" });
   const formCardRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
-    const parsedLangs = about.languages?.trim() ? parseLanguagesString(about.languages) : [];
-    const parsedProfs = about.proficiencies?.trim() ? parseProficienciesString(about.proficiencies) : [];
-    const entries = parsedLangs.length > 0 ? parsedLangs.map((lang, i) => ({ language: lang, proficiency: parsedProfs[i] ?? "" })) : [{ language: "", proficiency: "" }];
+    const entries = buildLanguageEntries(about.languages, about.proficiencies);
     form.reset({
       firstName: about.firstName,
       lastName: about.lastName,
@@ -131,7 +134,7 @@ export function AboutPage() {
   };
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen become-tutor-shell">
       <div className="flex flex-col min-h-screen">
         <div className="flex-1 overflow-y-auto pb-28">
           <div className="py-6 px-4 md:py-5 md:px-6">
@@ -139,7 +142,7 @@ export function AboutPage() {
               <div className="flex items-center justify-between gap-4 flex-wrap">
                 <div className="flex items-center gap-3">
                   <GraduationCap className="w-8 h-8 text-primary" />
-                  <h1 className="font-bold text-lg">Tutor Registration</h1>
+                  <h1 className="font-bold text-lg">{t("headerTitle")}</h1>
                 </div>
                 <div className="flex items-center gap-3">
                   {draftSavedLabel && <p className="text-sm text-muted-foreground">{draftSavedLabel}</p>}

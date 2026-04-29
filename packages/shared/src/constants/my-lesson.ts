@@ -1,1 +1,1 @@
-export const DEFAULT_AVATAR_URL = 'https://api.dicebear.com/7.x/avataaars/svg?seed=default';
+export const DEFAULT_AVATAR_URL = 'https://img.icons8.com/nolan/1200/user-default.jpg';

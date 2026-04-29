@@ -13,6 +13,7 @@ import {
   VerifiedTutorProfileDto,
 } from '@mezon-tutors/shared';
 import {
+  ECurrency,
   ETrialLessonStatus,
   IdentityVerificationStatus,
   Prisma,
@@ -28,6 +29,25 @@ import { VerifiedTutorQueryDto } from './dto/verified-tutor-query.dto';
 @Injectable()
 export class TutorProfileService {
   constructor(private readonly prisma: PrismaService) {}
+
+  async getMyTutorProfileStatus(userId: string): Promise<{ hasProfile: boolean; verificationStatus: VerificationStatus | null }> {
+    const profile = await this.prisma.tutorProfile.findUnique({
+      where: { userId },
+      select: { verificationStatus: true },
+    })
+
+    if (!profile) {
+      return {
+        hasProfile: false,
+        verificationStatus: null,
+      }
+    }
+
+    return {
+      hasProfile: true,
+      verificationStatus: profile.verificationStatus,
+    }
+  }
 
   async createReview(tutorId: string, reviewerId: string, rating: number, comment: string): Promise<void> {
     const tutor = await this.prisma.tutorProfile.findUnique({
@@ -90,6 +110,7 @@ export class TutorProfileService {
         motivate: dto.motivate,
         headline: dto.headline,
         pricePerHour: dto.pricePerHour,
+        currency: dto.currency ?? ECurrency.VND,
         ratingAverage: 0,
         verificationStatus: VerificationStatus.PENDING,
       },
@@ -140,6 +161,7 @@ export class TutorProfileService {
         motivate: dto.motivate,
         headline: dto.headline,
         pricePerHour: dto.pricePerHour,
+        currency: dto.currency ?? ECurrency.VND,
         isProfessional: !!dto.teachingCertificateName,
       },
     });
@@ -294,7 +316,6 @@ export class TutorProfileService {
         return [{ ratingAverage: 'desc' as const }, defaultOrderBy]
       case ETutorSortBy.TOP_PICKS:
         return [{ totalStudents: 'desc' as const }, defaultOrderBy]
-      case ETutorSortBy.POPULARITY:
       default:
         return [
           { ratingAverage: 'desc' as const },
@@ -304,19 +325,18 @@ export class TutorProfileService {
     }
   }
 
-  private getPricePerLessonFilter(pricePerLesson: string) {
-    const [minStr, maxStr] = pricePerLesson.split('_')
+  private getPricePerLessonFilter(minPrice?: number, maxPrice?: number) {
+    const priceFilter: Prisma.IntFilter = {}
 
-    const min = Number(minStr)
-    const max = Number(maxStr)
-    
-    if (!isNaN(min) && !isNaN(max)) {
-      return {
-        gte: min,
-        lte: max,
-      }
+    if (typeof minPrice === 'number' && !Number.isNaN(minPrice)) {
+      priceFilter.gte = minPrice
     }
-    return undefined
+
+    if (typeof maxPrice === 'number' && !Number.isNaN(maxPrice)) {
+      priceFilter.lte = maxPrice
+    }
+
+    return Object.keys(priceFilter).length > 0 ? priceFilter : undefined
   }
 
   async getVerifiedTutors(
@@ -328,7 +348,8 @@ export class TutorProfileService {
       sortBy = ETutorSortBy.POPULARITY,
       subject = ESubject.ANY_SUBJECT,
       country = ECountry.ANY_COUNTRY,
-      pricePerLesson = '',
+      minPrice,
+      maxPrice,
     } = query
 
     const orderBy = this.getVerifiedTutorOrderBy(sortBy)
@@ -341,8 +362,9 @@ export class TutorProfileService {
       where.subject = SubjectLabel[subject]
     }
 
-    if (pricePerLesson && pricePerLesson !== '') {
-      where.pricePerHour = this.getPricePerLessonFilter(pricePerLesson)
+    const priceFilter = this.getPricePerLessonFilter(minPrice, maxPrice)
+    if (priceFilter) {
+      where.pricePerHour = priceFilter
     }
 
     if (country && country !== ECountry.ANY_COUNTRY) {

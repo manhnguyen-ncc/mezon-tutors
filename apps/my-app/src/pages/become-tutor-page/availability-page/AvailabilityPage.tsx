@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useAtom, useAtomValue, useSetAtom } from 'jotai';
 import { useTranslations } from 'next-intl';
 import { useRouter } from 'next/navigation';
@@ -10,6 +10,7 @@ import { Input } from '@/components/ui/input';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { TimePicker } from '@/components/ui/time-picker';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { 
   Wallet, 
   Calendar, 
@@ -35,7 +36,8 @@ import {
   timeToMinutes,
   BECOME_TUTOR_STEPS,
   calculateStepProgress,
-  AVAILABILITY_EDITOR_CONFIG
+  ECurrency,
+  CURRENCY_UI_CONFIG,
 } from '@mezon-tutors/shared';
 import { useSubmitTutorProfileMutation } from '@mezon-tutors/app/services';
 import type { SubmitTutorProfileDto, TimeSlot } from '@mezon-tutors/shared';
@@ -45,6 +47,7 @@ const PROGRESS_PERCENT = calculateStepProgress(CURRENT_STEP);
 
 type AvailabilityFormValues = {
   hourlyRate: string;
+  currency: ECurrency;
   slotsByDay: Record<string, TimeSlot[]>;
 };
 
@@ -67,6 +70,7 @@ export function AvailabilityPage() {
   const form = useForm<AvailabilityFormValues>({
     defaultValues: {
       hourlyRate: tutorProfileAvailability.hourlyRate ?? '',
+      currency: tutorProfileAvailability.currency ?? ECurrency.USD,
       slotsByDay: tutorProfileAvailability.slotsByDay ?? Object.fromEntries(DAY_KEYS.map((d) => [d, []])),
     },
     mode: 'onChange',
@@ -86,9 +90,10 @@ export function AvailabilityPage() {
   useEffect(() => {
     reset({
       hourlyRate: tutorProfileAvailability.hourlyRate ?? '',
+      currency: tutorProfileAvailability.currency ?? ECurrency.USD,
       slotsByDay: tutorProfileAvailability.slotsByDay ?? Object.fromEntries(DAY_KEYS.map((d) => [d, []])),
     });
-  }, [tutorProfileAvailability.hourlyRate, tutorProfileAvailability.slotsByDay, reset]);
+  }, [tutorProfileAvailability.hourlyRate, tutorProfileAvailability.currency, tutorProfileAvailability.slotsByDay, reset]);
 
   const handleHourlyRateChange = (value: string) => {
     setValue('hourlyRate', value);
@@ -102,6 +107,12 @@ export function AvailabilityPage() {
     setLastSavedAt(new Date().toISOString());
   };
 
+  const handleCurrencyChange = (currency: ECurrency) => {
+    setValue('currency', currency);
+    setTutorProfileAvailability((prev) => ({ ...prev, currency }));
+    setLastSavedAt(new Date().toISOString());
+  };
+
   const draftSavedLabel =
     lastSavedAt && formatLastSavedTime(lastSavedAt)
       ? t('draftSaved', { time: formatLastSavedTime(lastSavedAt) })
@@ -109,7 +120,15 @@ export function AvailabilityPage() {
 
   const dayKey = DAY_KEYS[selectedDayIndex];
   const slotsByDayForm = watch('slotsByDay');
+  const selectedCurrency = watch('currency') ?? ECurrency.USD;
   const daySlots = slotsByDayForm?.[dayKey] ?? [];
+  const currencyConfig = CURRENCY_UI_CONFIG[selectedCurrency] ?? CURRENCY_UI_CONFIG[ECurrency.USD];
+  const formatRecommendedAmount = (amount: number) => {
+    if (selectedCurrency === ECurrency.VND) {
+      return `${amount.toLocaleString('vi-VN')}${currencyConfig.symbol}`;
+    }
+    return `${currencyConfig.symbol}${amount.toLocaleString('en-US')}`;
+  };
 
   const addSlot = () => {
     const current = form.getValues('slotsByDay') ?? {};
@@ -158,6 +177,17 @@ export function AvailabilityPage() {
 
         const startMinutes = timeToMinutes(slot.startTime);
         const endMinutes = timeToMinutes(slot.endTime);
+        const [, startMinute = ''] = slot.startTime.split(':');
+        const [, endMinute = ''] = slot.endTime.split(':');
+
+        if (!['00', '30'].includes(startMinute) || !['00', '30'].includes(endMinute)) {
+          setError('slotsByDay', {
+            type: 'manual',
+            message: t('validation.minuteStepInvalid'),
+          });
+          availabilityCardRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          return false;
+        }
 
         if (startMinutes >= endMinutes) {
           setError('slotsByDay', { 
@@ -176,13 +206,14 @@ export function AvailabilityPage() {
 
   const handleContinue = async () => {
     const hourlyRate = form.getValues('hourlyRate');
+    const currency = form.getValues('currency');
     const slotsByDay = form.getValues('slotsByDay') ?? {};
     
     if (!hourlyRate || !HOURLY_RATE_REGEX.test(hourlyRate.trim()) || Number(hourlyRate) <= 0) {
       return;
     }
 
-    if (!validateWeeklySlots({ hourlyRate, slotsByDay })) {
+    if (!validateWeeklySlots({ hourlyRate, currency, slotsByDay })) {
       return;
     }
 
@@ -234,6 +265,7 @@ export function AvailabilityPage() {
       educationFileUrl: certification.higherEducation.file?.uploadedUrl ?? '',
       videoUrl: video.videoLink,
       pricePerHour: Number.parseFloat(hourlyRate) || 0,
+      currency,
       availability,
     };
 
@@ -245,7 +277,7 @@ export function AvailabilityPage() {
   const dayTabs = t.raw('availability.tabs') as string[];
 
   return (
-    <div className="min-h-screen bg-gray-50 pb-24">
+    <div className="min-h-screen become-tutor-shell pb-24">
       <div className="max-w-4xl mx-auto px-4 py-8">
         <div className="mb-8">
           <div className="flex items-center justify-between mb-6">
@@ -276,7 +308,7 @@ export function AvailabilityPage() {
           </div>
         </div>
 
-        <Card className="mb-8 rounded-xl shadow-sm">
+        <Card className="mb-8 become-tutor-card rounded-xl shadow-sm border">
           <CardContent className="p-6">
             <div className="flex items-center gap-3 mb-4">
               <Wallet size={24} className="text-blue-600" />
@@ -285,8 +317,8 @@ export function AvailabilityPage() {
             <p className="text-gray-600 text-sm mb-4">{t('rate.question')}</p>
             <div className="space-y-2">
               <div className="flex gap-2">
-                <div className="flex-1 flex items-center h-12 rounded-lg border border-gray-300 bg-gray-50 px-4">
-                  <span className="text-gray-500 mr-2">$</span>
+                <div className="flex-1 flex items-center !h-12 rounded-lg border border-gray-300 bg-muted/60 px-4">
+                  <span className="text-gray-500 mr-2">{currencyConfig.symbol}</span>
                   <Controller
                     control={control}
                     name="hourlyRate"
@@ -318,11 +350,38 @@ export function AvailabilityPage() {
                     )}
                   />
                 </div>
-                <div className="px-4 h-12 rounded-lg border border-gray-300 bg-gray-50 flex items-center justify-center">
-                  <span className="text-sm text-gray-500">{t('rate.currencyLabel')}</span>
-                </div>
+                <Controller
+                  control={control}
+                  name="currency"
+                  render={({ field }) => (
+                    <Select
+                      value={field.value}
+                      onValueChange={(value) => {
+                        const next = value as ECurrency;
+                        field.onChange(next);
+                        handleCurrencyChange(next);
+                      }}
+                    >
+                      <SelectTrigger className="!h-12 min-w-[120px] bg-muted/60 border-gray-300">
+                        <SelectValue placeholder={t('rate.currencyLabel')} />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {Object.values(ECurrency).map((currency) => (
+                          <SelectItem key={currency} value={currency}>
+                            {currency}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  )}
+                />
               </div>
-              <p className="text-sm text-gray-500">{t('rate.recommended')}</p>
+              <p className="text-sm text-gray-500">
+                {t('rate.recommended', {
+                  min: formatRecommendedAmount(currencyConfig.recommendedMin),
+                  max: formatRecommendedAmount(currencyConfig.recommendedMax),
+                })}
+              </p>
               {errors.hourlyRate?.message && (
                 <div className="flex items-center gap-2 text-red-600 text-sm">
                   <AlertCircle size={16} />
@@ -333,7 +392,7 @@ export function AvailabilityPage() {
           </CardContent>
         </Card>
 
-        <Card className="mb-8 rounded-xl shadow-sm" ref={availabilityCardRef}>
+        <Card className="mb-8 become-tutor-card rounded-xl shadow-sm border overflow-visible" ref={availabilityCardRef}>
           <CardContent className="p-6">
             <div className="flex items-center gap-3 mb-4">
               <Calendar size={24} className="text-blue-600" />

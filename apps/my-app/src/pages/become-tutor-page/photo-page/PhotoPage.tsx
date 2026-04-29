@@ -47,24 +47,24 @@ export function PhotoPage() {
           const ext = file.name.split(".").pop()?.toLowerCase() ?? "";
           const mimeOk = file.type.startsWith("image/");
           if (!allowedImageExt.has(ext) || !mimeOk) {
-            ctx.addIssue({ path: [path], code: z.ZodIssueCode.custom, message: msgType === "photo" ? t("validation.photoInvalidType") : t("validation.identityInvalidType") });
+            ctx.addIssue({ path: [path], code: "custom", message: msgType === "photo" ? t("validation.photoInvalidType") : t("validation.identityInvalidType") });
             return;
           }
           if (file.size > bytesLimit) {
-            ctx.addIssue({ path: [path], code: z.ZodIssueCode.custom, message: msgType === "photo" ? t("validation.photoInvalidSize", { max: MAX_IMAGE_SIZE_MB }) : t("validation.identityInvalidSize", { max: MAX_IMAGE_SIZE_MB }) });
+            ctx.addIssue({ path: [path], code: "custom", message: msgType === "photo" ? t("validation.photoInvalidSize", { max: MAX_IMAGE_SIZE_MB }) : t("validation.identityInvalidSize", { max: MAX_IMAGE_SIZE_MB }) });
           }
         };
 
         const hasPhoto = data.profilePhotoFile !== null || !!tutorProfilePhoto.photo?.dataUrl || !!tutorProfilePhoto.photo?.uploadedUrl;
         if (!hasPhoto) {
-          ctx.addIssue({ path: ["profilePhotoFile"], code: z.ZodIssueCode.custom, message: t("validation.photoRequired") });
+          ctx.addIssue({ path: ["profilePhotoFile"], code: "custom", message: t("validation.photoRequired") });
         } else if (data.profilePhotoFile) {
           checkImageFile(data.profilePhotoFile, "profilePhotoFile", "photo");
         }
 
         const hasIdentity = data.identityPhotoFile !== null || !!tutorProfilePhoto.identity?.dataUrl || !!tutorProfilePhoto.identity?.uploadedUrl;
         if (!hasIdentity) {
-          ctx.addIssue({ path: ["identityPhotoFile"], code: z.ZodIssueCode.custom, message: t("validation.identityRequired") });
+          ctx.addIssue({ path: ["identityPhotoFile"], code: "custom", message: t("validation.identityRequired") });
         } else if (data.identityPhotoFile) {
           checkImageFile(data.identityPhotoFile, "identityPhotoFile", "identity");
         }
@@ -87,7 +87,7 @@ export function PhotoPage() {
     reValidateMode: "onChange",
   });
 
-  const { handleSubmit, setFocus, getValues, register, formState: { errors }, setValue } = form;
+  const { handleSubmit, setFocus, register, formState: { errors }, setValue } = form;
 
   useEffect(() => {
     setPreviewPhotoUrl(tutorProfilePhoto.photo?.dataUrl || tutorProfilePhoto.photo?.uploadedUrl || null);
@@ -208,7 +208,7 @@ export function PhotoPage() {
   const draftSavedLabel = lastSavedAt && formatLastSavedTime(lastSavedAt) ? t("draftSaved", { time: formatLastSavedTime(lastSavedAt) }) : "";
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen become-tutor-shell">
       <div className="flex flex-col min-h-screen">
         <div className="flex-1 overflow-y-auto pb-28">
           <div className="py-6 px-4 md:py-5 md:px-6">
@@ -242,7 +242,7 @@ export function PhotoPage() {
                 <p className="text-muted-foreground font-medium">{t("subtitle")}</p>
               </div>
 
-              <div ref={photoCardRef} className="bg-card rounded-xl p-6 flex flex-col gap-6 border shadow-sm">
+              <div ref={photoCardRef} className="become-tutor-card rounded-xl p-6 flex flex-col gap-6 border shadow-sm">
                 <div className="flex flex-col items-center gap-6">
                   <div className="relative w-[40%] md:w-[30%] aspect-square">
                     <div className="w-full h-full rounded-full border-2 border-muted-foreground/30 overflow-hidden flex items-center justify-center bg-muted">
@@ -298,14 +298,14 @@ export function PhotoPage() {
                 <p className="text-muted-foreground font-medium">{t("identity.subtitle")}</p>
               </div>
 
-              <div ref={identityCardRef} className="bg-card rounded-xl p-6 flex flex-col items-center gap-6 border shadow-sm">
+              <div ref={identityCardRef} className="become-tutor-card rounded-xl p-6 flex flex-col items-center gap-6 border shadow-sm">
                 <div className="w-full md:w-[55%] aspect-[16/10] rounded-lg border overflow-hidden flex items-center justify-center bg-muted">
                   {previewIdentityUrl ? (
                     <img src={previewIdentityUrl} alt="Identity" className="w-full h-full object-cover" />
                   ) : (
                     <div className="flex flex-col items-center gap-2 text-muted-foreground/50">
                       <ImageIcon className="w-16 h-16" />
-                      <p className="text-sm">No identity photo</p>
+                      <p className="text-sm">{t("identity.emptyState")}</p>
                     </div>
                   )}
                 </div>
@@ -348,24 +348,24 @@ export function PhotoPage() {
                 <p className="text-muted-foreground text-sm">{t("cardSubtitle")}</p>
               </div>
 
-              <div ref={formCardRef} className="bg-card rounded-xl p-6 flex flex-col gap-4 border shadow-sm">
+              <div ref={formCardRef} className="become-tutor-card rounded-xl p-6 flex flex-col gap-4 border shadow-sm">
                 <form onSubmit={handleSubmit(onSaveContinue, onValidationError)} className="flex flex-col gap-4">
                   <div className="flex gap-4 flex-col md:flex-row">
                     <div className="flex-1 flex flex-col gap-2">
                       <Label htmlFor="headline">{t("fields.headlineLabel")}</Label>
-                      <Input id="headline" placeholder={t("fields.headlinePlaceholder")} {...register("headline")} />
+                      <Input className="become-tutor-field" id="headline" placeholder={t("fields.headlinePlaceholder")} {...register("headline")} />
                       {errors.headline && <p className="text-sm text-destructive">{errors.headline.message}</p>}
                     </div>
                     <div className="flex-1 flex flex-col gap-2">
                       <Label htmlFor="motivate">{t("fields.motivateLabel")}</Label>
-                      <Input id="motivate" placeholder={t("fields.motivatePlaceholder")} {...register("motivate")} />
+                      <Input className="become-tutor-field" id="motivate" placeholder={t("fields.motivatePlaceholder")} {...register("motivate")} />
                       {errors.motivate && <p className="text-sm text-destructive">{errors.motivate.message}</p>}
                     </div>
                   </div>
 
                   <div className="flex flex-col gap-2">
                     <Label htmlFor="introduce">{t("fields.introduceLabel")}</Label>
-                    <Input id="introduce" placeholder={t("fields.introducePlaceholder")} {...register("introduce")} />
+                    <Input className="become-tutor-field" id="introduce" placeholder={t("fields.introducePlaceholder")} {...register("introduce")} />
                     {errors.introduce && <p className="text-sm text-destructive">{errors.introduce.message}</p>}
                   </div>
                 </form>
@@ -392,3 +392,4 @@ export function PhotoPage() {
     </div>
   );
 }
+

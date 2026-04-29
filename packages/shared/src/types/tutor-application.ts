@@ -1,4 +1,5 @@
 import { VerificationStatus } from '../enums/verification-status';
+import { ECurrency } from '../enums/currency';
 import { ABOUT_COUNTRIES } from '../constants/tutor-profile';
 import {
   VALID_IDENTITY_VERIFICATION_STATUSES,
@@ -46,6 +47,7 @@ export interface SubmitTutorProfileDto {
   videoUrl: string;
 
   pricePerHour: number;
+  currency: ECurrency;
   availability: TutorAvailabilitySlotDto[];
 }
 

@@ -13,7 +13,7 @@ export function FinalPage() {
   const footerLinks = t.raw('footer.links') as string[];
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen become-tutor-shell">
       <div className="max-w-4xl mx-auto px-4 py-16">
         <div className="flex flex-col items-center justify-center text-center space-y-8">
           <div className="relative">
@@ -37,7 +37,7 @@ export function FinalPage() {
           </div>
 
           <div className="flex gap-6 flex-wrap justify-center">
-            <Card className="w-64 rounded-xl shadow-sm">
+            <Card className="w-64 become-tutor-card rounded-xl shadow-sm border">
               <CardContent className="p-6 text-center">
                 <div className="w-14 h-14 rounded-full bg-blue-100 flex items-center justify-center mx-auto mb-4">
                   <Clock size={28} className="text-blue-400" />
@@ -51,7 +51,7 @@ export function FinalPage() {
               </CardContent>
             </Card>
 
-            <Card className="w-64 rounded-xl shadow-sm">
+            <Card className="w-64 become-tutor-card rounded-xl shadow-sm border">
               <CardContent className="p-6 text-center">
                 <div className="w-14 h-14 rounded-full bg-purple-100 flex items-center justify-center mx-auto mb-4">
                   <Mail size={28} className="text-purple-500" />
